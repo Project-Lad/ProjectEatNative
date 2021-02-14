@@ -23,7 +23,7 @@ const Data = () =>{
     let start = 0;
 
     function getData(e){
-        e.preventDefault();
+        e.preventDefault(); //need to put api key (below) into .env file
         fetch(`https://developers.zomato.com/api/v2.1/search?&start=${start}&count=${count}&lat=${latitude}&lon=${longitude}&sort=real_distance&order=asc&apikey=54dd7ea36253c6415fe32b8f3b30b29c`,{
             "method": "GET"
         })
