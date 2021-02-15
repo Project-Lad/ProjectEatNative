@@ -1,25 +1,27 @@
 import React, {useState} from 'react';
-import {Text, View, Button, Linking} from "react-native";
-import Swiper from 'react-native-deck-swiper';
+import {Text, View, Button, Linking, Image} from "react-native";
 import styles from '../App';
+import burger from '../assets/burger.jpg';
+import SwipeCards from "react-native-swipe-cards-deck";
 
 let data = [];
 
-const Card = ({ card }) => {
-    return (
-        <View style={styles.card}>
-        </View>
-    );
-};
 
-const CardDetails = ({ index }) => (
-    <View key={data[index].id} style={{ alignItems: 'center' }}>
-        <Text numberOfLines={2}>
-            {data[index].name}
-        </Text>
-        <Button title="Find Place" className="btnMaps" onPress={() => Linking.openURL(data[index].googleURL)} target="_blank"/>
-    </View>
-);
+class Card extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return (
+            <View style={styles.card}>
+                <Image source={burger} />
+                <Text style={styles.cardsText}>{this.props.name}</Text>
+                <Button title="Find Place" className="btnMaps" onPress={() => Linking.openURL(this.props.googleURL)} target="_blank"/>
+            </View>
+        )
+    }
+}
 
 const Cards = (props) => {
     let times = [];
@@ -70,10 +72,6 @@ const Cards = (props) => {
     }
 
     console.log(data)
-    const [index, setIndex] = React.useState(0);
-    const onSwiped = () => {
-        setIndex((index + 1) % data.length);
-    };
 
     if (data.length === 0) {
         return (
@@ -81,23 +79,17 @@ const Cards = (props) => {
         )
     } else {
         return (
-            <View>
-                <Swiper
+            <View style={styles.container}>
+                <SwipeCards
                     cards={data}
-                    cardIndex={index}
-                    renderCard={card => <Card card={card}/>}
-                    infinite
-                    backgroundColor={'transparent'}
-                    onSwiped={onSwiped}
-                    cardVerticalMargin={50}
-                    stackSize={4}
-                    stackScale={10}
-                    stackSeparation={14}
-                    animateOverlayLabelsOpacity
-                    animateCardOpacity
-                    disableTopSwipe
-                    disableBottomSwipe />
-                <CardDetails index={index}/>
+                    renderCard={(cardData) => <Card {...cardData} />}
+                    keyExtractor={(cardData) => String(cardData.id)}
+                    renderNoMoreCards={() => <NoMoreCards />}
+
+                    // If you want a stack of cards instead of one-per-one view, activate stack mode
+                    //stack={true}
+                    //stackDepth={3}
+                />
             </View>
         )
     }

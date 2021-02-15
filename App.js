@@ -1,36 +1,31 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
-import {Container, Content} from 'native-base';
+import { StyleSheet, View} from 'react-native';
 import Data from "./components/API.js";
 
 export default function App() {
   return (
-    <Container style={styles.container}>
-      <View style={styles.content}>
-        <Data/>
-      </View>
+    <View style={styles.container}>
+      <Data/>
       <StatusBar style="auto" />
-    </Container>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {},
-    content: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+    container: {
+        flex: 0.78,
+        backgroundColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
     },
     card: {
-        flex: 0.45,
-        borderRadius: 8,
-        shadowRadius: 25,
-        shadowOpacity: 0.08,
-        shadowOffset: {width: 0, height: 0},
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff'
-    }
+        justifyContent: "center",
+        alignItems: "center",
+        width: 300,
+        height: 300,
+    },
+    cardsText: {
+        fontSize: 40,
+    },
 });

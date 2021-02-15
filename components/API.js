@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Button, View, Text} from 'react-native';
+import {Button, View, Text} from 'react-native';
 import Cards from "./Cards";
 
 //checks for location
@@ -34,9 +34,8 @@ const Data = () =>{
             .catch(err =>{
                 console.log(err)
             })
-
-
     }
+
     function refreshData(e){
         e.preventDefault();
         start += 20;
@@ -47,9 +46,9 @@ const Data = () =>{
     return(
         <View className='container'>
             <Text>{restaurantData.length}</Text>
-            <View>
-                <Cards restaurantData={restaurantData} />
-            </View>
+
+            <Cards restaurantData={restaurantData} />
+
             <View>
                 <Button title="Get Data" className="btn info" onPress={getData}/>
             </View>
