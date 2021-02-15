@@ -34,6 +34,8 @@ const Data = () =>{
             .catch(err =>{
                 console.log(err)
             })
+
+
     }
     function refreshData(e){
         e.preventDefault();
@@ -41,14 +43,12 @@ const Data = () =>{
 
         getData(e);
     }
+
     return(
         <View className='container'>
             <Text>{restaurantData.length}</Text>
-            {/*<div><pre>{JSON.stringify(restaurantData, null, 2)}</pre></div>*/}
             <View>
-                {restaurantData.map(restaurant => (
-                    <Cards restaurantData={restaurant}/>
-                ))}
+                <Cards restaurantData={restaurantData} />
             </View>
             <View>
                 <Button title="Get Data" className="btn info" onPress={getData}/>
@@ -59,4 +59,5 @@ const Data = () =>{
         </View>
     )
 }
+
 export default Data;

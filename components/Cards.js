@@ -1,48 +1,106 @@
 import React, {useState} from 'react';
 import {Text, View, Button, Linking} from "react-native";
-import {ScrollView} from "react-native";
+import Swiper from 'react-native-deck-swiper';
+import styles from '../App';
 
-const Cards = (props) =>{
-    const [isFlipped, setIsFlipped]= useState(false);
+let data = [];
+
+const Card = ({ card }) => {
+    return (
+        <View style={styles.card}>
+        </View>
+    );
+};
+
+const CardDetails = ({ index }) => (
+    <View key={data[index].id} style={{ alignItems: 'center' }}>
+        <Text numberOfLines={2}>
+            {data[index].name}
+        </Text>
+        <Button title="Find Place" className="btnMaps" onPress={() => Linking.openURL(data[index].googleURL)} target="_blank"/>
+    </View>
+);
+
+const Cards = (props) => {
     let times = [];
     let address = [];
     let name = [];
     let counter = 0;
     let googleURL = "https://www.google.com/maps/search/?api=1&query=";
 
-    address = props.restaurantData.restaurant.location.address.split(' ');
-    name = props.restaurantData.restaurant.name.split(' ');
+    for (var i = 0; i < props.restaurantData.length; i++) {
+        const current = props.restaurantData[i];
+        address = current.restaurant.location.address.split(' ');
+        name = current.restaurant.name.split(' ');
 
-    while (name[counter] != null) {
-        googleURL += name[counter];
-        googleURL += "+";
-        counter++;
+        while (name[counter] != null) {
+            googleURL += name[counter];
+            googleURL += "+";
+            counter++;
+        }
+
+        counter = 0;
+
+        while (address[counter] != null) {
+            googleURL += address[counter];
+            googleURL += "+";
+            counter++;
+        }
+
+        const id = current.restaurant.id;
+        name = current.restaurant.name;
+        const price_range = current.restaurant.price_range;
+        const rating = current.restaurant.user_rating.aggregate_rating;
+        address = current.restaurant.location.address;
+        const phone_numbers = current.restaurant.phone_numbers;
+
+        data.push({
+            id: id,
+            name: name,
+            price_range: price_range,
+            rating: rating,
+            address: address,
+            phone_numbers: phone_numbers,
+            googleURL: googleURL
+        })
+
+        counter = 0;
+        console.log(googleURL);
+        googleURL = "https://www.google.com/maps/search/?api=1&query=";
     }
 
-    counter = 0;
+    console.log(data)
+    const [index, setIndex] = React.useState(0);
+    const onSwiped = () => {
+        setIndex((index + 1) % data.length);
+    };
 
-    while (address[counter] != null) {
-        googleURL += address[counter];
-        googleURL += "+";
-        counter++;
+    if (data.length === 0) {
+        return (
+            <View/>
+        )
+    } else {
+        return (
+            <View>
+                <Swiper
+                    cards={data}
+                    cardIndex={index}
+                    renderCard={card => <Card card={card}/>}
+                    infinite
+                    backgroundColor={'transparent'}
+                    onSwiped={onSwiped}
+                    cardVerticalMargin={50}
+                    stackSize={4}
+                    stackScale={10}
+                    stackSeparation={14}
+                    animateOverlayLabelsOpacity
+                    animateCardOpacity
+                    disableTopSwipe
+                    disableBottomSwipe />
+                <CardDetails index={index}/>
+            </View>
+        )
     }
-    console.log(props);
-
-    return(
-        <View id={"card-div"}>
-            <Text>{props.restaurantData.restaurant.id}</Text>
-            <Text className="name">{props.restaurantData.restaurant.name}</Text>
-            {console.log(props.name)}
-            <Text className="price-range">{props.restaurantData.restaurant.price_range}</Text>
-            <Text className="rating">Rating: {props.restaurantData.restaurant.user_rating.aggregate_rating}</Text>
-            <Text className="address">{props.restaurantData.restaurant.location.address}</Text>
-            <Text className="phone-numbers">{props.restaurantData.restaurant.phone_numbers}</Text>
-            {times = props.restaurantData.restaurant.timings.split(',').map(time =>
-                    <Text className="times">{time}</Text>
-            )}
-            <Button title="Find Place" className="btnMaps" onPress={() => Linking.openURL(`${googleURL}`)} target="_blank"/>
-        </View>
-    )
 }
 
 export default Cards;
