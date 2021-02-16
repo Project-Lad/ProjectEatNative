@@ -73,6 +73,15 @@ const Cards = (props) => {
 
     console.log(data)
 
+    function handleYup (card) {
+        console.log(`Yup for ${card.name}`)
+        return true;
+    }
+    function handleNope (card) {
+        console.log(`Nope for ${card.name}`)
+        return true;
+    }
+
     if (data.length === 0) {
         return (
             <View/>
@@ -89,6 +98,8 @@ const Cards = (props) => {
                     // If you want a stack of cards instead of one-per-one view, activate stack mode
                     //stack={true}
                     //stackDepth={3}
+                    handleYup={handleYup}
+                    handleNope={handleNope}
                 />
             </View>
         )
