@@ -1,15 +1,12 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import React, { Component } from 'react'
+import {Alert, Button, StyleSheet, Text, TextInput, View} from 'react-native'
 import firebase from "firebase";
-import "firebase/firestore";
 
-export default class Login extends Component {
+class ForgotPassword extends Component {
     constructor() {
         super();
         this.state = {
             email: '',
-            password: '',
-            isLoading: false
         }
     }
 
@@ -19,73 +16,48 @@ export default class Login extends Component {
         this.setState(state);
     }
 
-    userLogin = () => {
-        if(this.state.email === '' && this.state.password === '') {
-            Alert.alert('Enter details to signin!')
+    forgotPassword = () => {
+        if(this.state.email === '') {
+            Alert.alert('Enter Email!')
         } else {
             this.setState({
                 isLoading: true,
             })
-             firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+            firebase.auth().sendPasswordResetEmail(this.state.email)
                 .then((res) => {
                     console.log(res)
-                    console.log('User logged-in successfully!')
+                    console.log('Email Sent')
                     this.setState({
                         isLoading: false,
                         email: '',
                         password: ''
                     })
-                    this.props.navigation.navigate('Swipe Feature')
+                    this.props.navigation.navigate('Login')
                 })
                 .catch(error => this.setState({ errorMessage: error.message }))
         }
     }
-
     render() {
-        if(this.state.isLoading){
-            return(
-                <View style={styles.preloader}>
-                    <ActivityIndicator size="large" color="#9E9E9E"/>
-                </View>
-            )
-        }
         return (
             <View style={styles.container}>
+
                 <TextInput
                     style={styles.inputStyle}
                     placeholder="Email"
                     value={this.state.email}
                     onChangeText={(val) => this.updateInputVal(val, 'email')}
                 />
-                <TextInput
-                    style={styles.inputStyle}
-                    placeholder="Password"
-                    value={this.state.password}
-                    onChangeText={(val) => this.updateInputVal(val, 'password')}
-                    maxLength={15}
-                    secureTextEntry={true}
-                />
                 <Button
                     color="#3740FE"
-                    title="Signin"
-                    onPress={() => this.userLogin()}
+                    title="Reset Password"
+                    onPress={() => this.forgotPassword()}
                 />
-
-                <Text
-                    style={styles.loginText}
-                    onPress={() => this.props.navigation.navigate('SignUp')}>
-                    Don't have account? Click here to signup
-                </Text>
-                <Text
-                    style={styles.loginText}
-                    onPress={() => this.props.navigation.navigate('Forgot Password')}>
-                    Forgot Password?
-                </Text>
             </View>
-        );
+        )
     }
 }
 
+export default ForgotPassword
 const styles = StyleSheet.create({
     container: {
         flex: 1,
