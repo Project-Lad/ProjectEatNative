@@ -7,17 +7,42 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
 
-function HomeScreen({ navigation }) {
+function MyStack() {
     return (
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
-                <Text>Login</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Create Account')}>
-                <Text>Sign up</Text>
-            </TouchableOpacity>
-        </View>
+        <Stack.Navigator
+            initialRouteName="Signup"
+            screenOptions={{
+                headerTitleAlign: 'center',
+                headerStyle: {
+                    backgroundColor: '#3740FE',
+                },
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                },
+            }}>
+            <Stack.Screen
+                name="SignUp"
+                component={SignUp}
+                options={{ title: 'Signup' }}
+            />
+            <Stack.Screen
+                name="Login"
+                component={Login}
+                options={
+                    {title: 'Login'},
+                    {headerLeft: null}
+                }
+            />
+            <Stack.Screen
+                name="Swipe Feature"
+                component={SwipeFeature}
+                options={
+                    { title: 'Swipe Feature' },
+                    {headerLeft: null}
+                }
+            />
+        </Stack.Navigator>
     );
 }
 const Stack = createStackNavigator();
@@ -25,11 +50,7 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
       <NavigationContainer>
-          <Stack.Navigator initialRouteName="Home">
-              <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-              <Stack.Screen name="Login" component={Login} />
-              <Stack.Screen name="Create Account" component={SignUp} />
-          </Stack.Navigator>
+          <MyStack/>
       </NavigationContainer>
   );
 }
