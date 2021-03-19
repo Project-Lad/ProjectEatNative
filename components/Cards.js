@@ -32,8 +32,12 @@ const Cards = (props) => {
 
     for (var i = 0; i < props.restaurantData.length; i++) {
         const current = props.restaurantData[i];
-        address = current.restaurant.location.address.split(' ');
-        name = current.restaurant.name.split(' ');
+        //console.log(props)
+        //address = current.restaurant.location.address.split(' ');
+        //name = current.restaurant.name.split(' ');
+
+        address = current.address.formatted.split(' ');
+        name = current.restaurant_name.split(' ');
 
         while (name[counter] != null) {
             googleURL += name[counter];
@@ -49,29 +53,35 @@ const Cards = (props) => {
             counter++;
         }
 
-        const id = current.restaurant.id;
+        /*const id = current.restaurant.id;
         name = current.restaurant.name;
         const price_range = current.restaurant.price_range;
         const rating = current.restaurant.user_rating.aggregate_rating;
         address = current.restaurant.location.address;
-        const phone_numbers = current.restaurant.phone_numbers;
+        const phone_numbers = current.restaurant.phone_numbers;*/
+
+        const id = current.restaurant_id;
+        name = current.restaurant_name;
+        const price_range = current.price_range;
+        address = current.address;
+        const phone_numbers = current.restaurant_phone;
 
         data.push({
             id: id,
             name: name,
             price_range: price_range,
-            rating: rating,
+            //rating: rating,
             address: address,
             phone_numbers: phone_numbers,
             googleURL: googleURL
         })
 
         counter = 0;
-        console.log(googleURL);
+        //console.log(googleURL);
         googleURL = "https://www.google.com/maps/search/?api=1&query=";
     }
 
-    console.log(data)
+    //console.log(data)
 
     function handleYup (card) {
         console.log(`Yup for ${card.name}`)
