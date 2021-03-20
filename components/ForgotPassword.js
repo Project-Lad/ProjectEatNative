@@ -7,15 +7,14 @@ class ForgotPassword extends Component {
         super();
         this.state = {
             email: '',
+            isLoading:false
         }
     }
-
     updateInputVal = (val, prop) => {
         const state = this.state;
         state[prop] = val;
         this.setState(state);
     }
-
     forgotPassword = () => {
         if(this.state.email === '') {
             Alert.alert('Enter Email!')
@@ -24,8 +23,7 @@ class ForgotPassword extends Component {
                 isLoading: true,
             })
             firebase.auth().sendPasswordResetEmail(this.state.email)
-                .then((res) => {
-                    console.log(res)
+                .then(() => {
                     console.log('Email Sent')
                     this.setState({
                         isLoading: false,
@@ -40,15 +38,15 @@ class ForgotPassword extends Component {
     render() {
         return (
             <View style={styles.container}>
-
                 <TextInput
                     style={styles.inputStyle}
                     placeholder="Email"
                     value={this.state.email}
+                    keyboardType={'email-address'}
                     onChangeText={(val) => this.updateInputVal(val, 'email')}
                 />
                 <Button
-                    color="#3740FE"
+                    color="#e98477"
                     title="Reset Password"
                     onPress={() => this.forgotPassword()}
                 />
@@ -56,7 +54,6 @@ class ForgotPassword extends Component {
         )
     }
 }
-
 export default ForgotPassword
 const styles = StyleSheet.create({
     container: {
@@ -74,11 +71,6 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         borderColor: "#ccc",
         borderBottomWidth: 1
-    },
-    loginText: {
-        color: '#3740FE',
-        marginTop: 25,
-        textAlign: 'center'
     },
     preloader: {
         left: 0,

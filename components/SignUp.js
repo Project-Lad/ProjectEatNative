@@ -20,25 +20,26 @@ export default class Signup extends Component {
         this.setState(state);
     }
 
-    registerUser = () => {
-        if(this.state.email === '' && this.state.password === '') {
-            Alert.alert('Enter details to signup!')
+    registerUser = async () => {
+        if (this.state.email === '' && this.state.password === '') {
+            Alert.alert('Enter details to Sign Up!')
         } else {
             this.setState({
                 isLoading: true,
             })
-            firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-                .then((res) => {
-                    console.log('User registered successfully!')
-                    this.setState({
-                        isLoading: false,
-                        displayName: '',
-                        email: '',
-                        password: ''
+            await firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+                .then((cred) => {
+                    cred.user.updateProfile({
+                        displayName: this.state.displayName
                     })
-                    this.props.navigation.navigate('Swipe Feature')
+                     firebase.firestore().collection('users').doc(cred.user.uid).set({
+                         username: this.state.displayName,
+                         email: this.state.email
+                    }).then(() => {
+                        this.props.navigation.navigate('Profile')
+                    })
                 })
-                .catch(error => this.setState({ errorMessage: error.message }))
+                .catch(error => this.setState({errorMessage: error.message}))
         }
     }
 
@@ -54,7 +55,7 @@ export default class Signup extends Component {
             <View style={styles.container}>
                 <TextInput
                     style={styles.inputStyle}
-                    placeholder="Name"
+                    placeholder="Username"
                     value={this.state.displayName}
                     onChangeText={(val) => this.updateInputVal(val, 'displayName')}
                 />
@@ -62,6 +63,7 @@ export default class Signup extends Component {
                     style={styles.inputStyle}
                     placeholder="Email"
                     value={this.state.email}
+                    keyboardType={'email-address'}
                     onChangeText={(val) => this.updateInputVal(val, 'email')}
                 />
                 <TextInput
@@ -73,8 +75,8 @@ export default class Signup extends Component {
                     secureTextEntry={true}
                 />
                 <Button
-                    color="#3740FE"
-                    title="Signup"
+                    color="#e98477"
+                    title="Sign Up"
                     onPress={() => this.registerUser()}
                 />
 
@@ -106,7 +108,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1
     },
     loginText: {
-        color: '#3740FE',
+        color: '#000',
         marginTop: 25,
         textAlign: 'center'
     },

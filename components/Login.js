@@ -21,7 +21,7 @@ export default class Login extends Component {
 
     userLogin = () => {
         if(this.state.email === '' && this.state.password === '') {
-            Alert.alert('Enter details to signin!')
+            Alert.alert('Enter details to Sign In!')
         } else {
             this.setState({
                 isLoading: true,
@@ -35,7 +35,7 @@ export default class Login extends Component {
                         email: '',
                         password: ''
                     })
-                    this.props.navigation.navigate('Swipe Feature')
+                    this.props.navigation.navigate('Profile')
                 })
                 .catch(error => this.setState({ errorMessage: error.message }))
         }
@@ -55,6 +55,7 @@ export default class Login extends Component {
                     style={styles.inputStyle}
                     placeholder="Email"
                     value={this.state.email}
+                    keyboardType={'email-address'}
                     onChangeText={(val) => this.updateInputVal(val, 'email')}
                 />
                 <TextInput
@@ -66,8 +67,8 @@ export default class Login extends Component {
                     secureTextEntry={true}
                 />
                 <Button
-                    color="#3740FE"
-                    title="Signin"
+                    color="#e98477"
+                    title="Sign In"
                     onPress={() => this.userLogin()}
                 />
 
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1
     },
     loginText: {
-        color: '#3740FE',
+        color: '#000',
         marginTop: 25,
         textAlign: 'center'
     },

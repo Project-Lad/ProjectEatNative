@@ -1,24 +1,25 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from "react-native";
+import {StyleSheet} from "react-native";
 import SwipeFeature from "./components/SwipeFeature";
-import {NavigationContainer, useBackButton} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
-import {Button} from "react-native-web";
 import ForgotPassword from "./components/ForgotPassword";
+import Profile from "./components/Profile";
+import EditAccount from "./components/EditAccount";
 
 function MyStack() {
     return (
         <Stack.Navigator
-            initialRouteName="Signup"
+            initialRouteName="Login"
             screenOptions={{
                 headerTitleAlign: 'center',
                 headerStyle: {
-                    backgroundColor: '#3740FE',
+                    backgroundColor: '#37edfe',
                 },
-                headerTintColor: '#fff',
+                headerTintColor: '#333',
                 headerTitleStyle: {
                     fontWeight: 'bold',
                 },
@@ -32,22 +33,26 @@ function MyStack() {
                 name="Login"
                 component={Login}
                 options={{title: 'Login', headerLeft: null}}
-
             />
             <Stack.Screen
                 name="Swipe Feature"
                 component={SwipeFeature}
-                options={
-                    { title: 'Swipe Feature', headerLeft: null}}
+                options={{ title: 'Swipe Feature', headerLeft: null}}
             />
             <Stack.Screen
                 name="Forgot Password"
                 component={ForgotPassword}
-                options={
-                    { title: 'Forgot Password', headerLeft:()=>{
-                        <Button title="Back" onPress={() => this.props.navigation.navigate('SignUp')}/>
-                        }
-                    }}
+                options={{ title: 'ForgotPassword'}}
+            />
+            <Stack.Screen
+                name="Profile"
+                component={Profile}
+                options={{ title: 'Profile', headerLeft: null}}
+            />
+            <Stack.Screen
+                name="Edit Account"
+                component={EditAccount}
+                options={{ title: 'Edit Account',}}
             />
         </Stack.Navigator>
     );

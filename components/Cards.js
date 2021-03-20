@@ -84,11 +84,11 @@ const Cards = (props) => {
     //console.log(data)
 
     function handleYup (card) {
-        console.log(`Yup for ${card.name}`)
+        console.log(`Yup for ${card.id}`)
         return true;
     }
     function handleNope (card) {
-        console.log(`Nope for ${card.name}`)
+        console.log(`Nope for ${card.id}`)
         return true;
     }
 
