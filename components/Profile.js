@@ -4,7 +4,6 @@ import firebase from "firebase";
 import "firebase/firestore";
 
 export default class Dashboard extends Component {
-
     signOut = () => {
         firebase.auth().signOut().then(() => {
             this.props.navigation.navigate('Login')
@@ -42,11 +41,18 @@ export default class Dashboard extends Component {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => Alert.alert('Friends List Screen')}
+                        onPress={() => this.props.navigation.navigate('Friendslist')}
                         style = {styles.buttonStyle}
                     >
                         <Text style={styles.textButton}>Friends List</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.buttonStyle}
+                        onPress={() => this.props.navigation.navigate('Swipe Feature')}>
+                        <Text style={styles.textButton}>Swipe Feature</Text>
+                    </TouchableOpacity>
+
                     <TouchableOpacity
                         onPress={() => this.signOut()}
                         style = {styles.buttonStyle}
