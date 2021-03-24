@@ -35,7 +35,7 @@ export default class Dashboard extends Component {
 
                 <View styles={styles.buttonView}>
                     <TouchableOpacity
-                        onPress={() => Alert.alert('Generate Code Screen')}
+                        onPress={() => this.props.navigation.navigate('Session')}
                         style = {styles.buttonStyle}
                     >
                         <Text style={styles.textButton}>Generate Code</Text>
