@@ -9,6 +9,8 @@ import SignUp from "./components/SignUp";
 import ForgotPassword from "./components/ForgotPassword";
 import Profile from "./components/Profile";
 import EditAccount from "./components/EditAccount";
+import FriendsList from "./components/FriendsList";
+import Session from "./components/Session";
 
 function MyStack() {
     return (
@@ -53,6 +55,16 @@ function MyStack() {
                 name="Edit Account"
                 component={EditAccount}
                 options={{ title: 'Edit Account',}}
+            />
+            <Stack.Screen
+                name="FriendsList"
+                component={FriendsList}
+                options={{ title: 'Friends List',}}
+            />
+            <Stack.Screen
+                name="Session"
+                component={Session}
+                options={{ title: 'Session'}}
             />
         </Stack.Navigator>
     );
