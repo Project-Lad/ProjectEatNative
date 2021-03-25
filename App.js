@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import {StyleSheet} from "react-native";
+import {StyleSheet, Text, TouchableOpacity} from "react-native";
 import SwipeFeature from "./components/SwipeFeature";
 import {NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -9,6 +9,8 @@ import SignUp from "./components/SignUp";
 import ForgotPassword from "./components/ForgotPassword";
 import Profile from "./components/Profile";
 import EditAccount from "./components/EditAccount";
+import FriendsList from "./components/FriendsList";
+import AddFriend from "./components/AddFriend";
 
 function MyStack() {
     return (
@@ -38,6 +40,23 @@ function MyStack() {
                 name="Swipe Feature"
                 component={SwipeFeature}
                 options={{ title: 'Swipe Feature', headerLeft: null}}
+            />
+            <Stack.Screen
+                name="FriendsList"
+                component={FriendsList}
+                options={({navigation}) =>({ title: 'Friends List',
+                    headerRight: () => (
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('Add Friends')}>
+                            <Text style={{marginRight:20, fontSize:25}}>+</Text>
+                        </TouchableOpacity>
+                    )
+                })}
+            />
+            <Stack.Screen
+                name="Add Friends"
+                component={AddFriend}
+                options={{ title: 'ForgotPassword'}}
             />
             <Stack.Screen
                 name="Forgot Password"

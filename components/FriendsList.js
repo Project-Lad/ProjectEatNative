@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, Button, Alert, TouchableOpacity, Log
 import firebase from '../firebase'
 import "firebase/firestore";
 
-export default function Friendslist(){
+export default function FriendsList(){
     const [friend, setFriend] = useState()
     async function fetchUser(){
         const citiesRef = firebase.firestore().collection('users');

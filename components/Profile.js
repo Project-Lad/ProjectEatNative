@@ -41,7 +41,7 @@ export default class Dashboard extends Component {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => this.props.navigation.navigate('Friendslist')}
+                        onPress={() => this.props.navigation.navigate('FriendsList')}
                         style = {styles.buttonStyle}
                     >
                         <Text style={styles.textButton}>Friends List</Text>
