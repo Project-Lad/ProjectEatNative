@@ -30,6 +30,7 @@ const Cards = (props) => {
     let name = [];
     let counter = 0;
     let googleURL = "https://www.google.com/maps/search/?api=1&query=";
+    let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users')
 
     for (let i = 0; i < props.restaurantData.length; i++) {
         const current = props.restaurantData[i];
@@ -83,42 +84,41 @@ const Cards = (props) => {
 
     //console.log(data)
 
-    function handleYup (card) {
-
-        let state = {
-            match: false,
-            resId: card.id,
-            counter: 0
-        }
+    function handleYup(card) {
+        let match = false
+        let counter = 1
+        let restaurantID = card.id
 
         console.log(props.code)
 
-        /*
+
         usersRef.doc(firebase.auth().currentUser.uid).set({
-            resId: true
-        }).then(() => {
+            resId: restaurantID
+        }, {merge: true}).then(() => {
             console.log("Restaurant successfully written!");
         }).catch((error) => {
             console.error("Error writing restaurant: ", error);
         });
 
+        usersRef.onSnapshot(querySnapshot => {
+            console.log(querySnapshot.size)
+            querySnapshot.forEach(documentSnapshot => {
+                if (documentSnapshot.id !== firebase.auth().currentUser.uid) {
+                    for (const restaurant in documentSnapshot.data()) {
+                        if(documentSnapshot.data()[restaurant] === restaurantID){
+                            counter += 1
 
-        const snapshot = usersRef.get()
-
-        snapshot.forEach(document => {
-            console.log(document.id, " compared to ", firebase.auth().currentUser.uid)
-            if(document.id !== firebase.auth().currentUser.uid) {
-                console.log("Not current user")
-                for (let restaurant in document.data()) {
-                    console.log(restaurant)
-                    if(restaurant === this.state.resId) {
-                        this.state.match = true
-                        console.log("Matched!")
+                            if(querySnapshot.size === counter) {
+                                match = true
+                                alert("Matched!")
+                                console.log("Matched!")
+                            }
+                        }
                     }
                 }
-            }
-            this.state.counter += 1
-        })*/
+            })
+        })
+
 
         return true;
     }
