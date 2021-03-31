@@ -1,25 +1,31 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator, FlatList } from 'react-native';
+import React, { Component,useState } from 'react';
+import { StyleSheet, Text, View, Button, FlatList} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 
-let code = 0
-let users = []
-let TAG = "Console: "
+export let getCode = undefined;
+
+
+let TAG = "Console: ";
+/*let code = 0;*/
 
 export default class Session extends Component {
-    constructor() {
-        super();
-        this.state = {
-            isLoading: true
-        }
+
+    state = {
+        isLoading: true,
+        users: [],
+        code:0
+    }
+
+    constructor(props) {
+        super(props);
 
         let counter = 0
 
         while (counter === 0) {
-            code = this.createCode()
+            this.state.code = this.createCode()
 
-            counter = this.checkForDocument(code)
+            counter = this.checkForDocument(this.state.code)
         }
 
         let displayName = firebase.auth().currentUser.displayName
@@ -27,7 +33,7 @@ export default class Session extends Component {
         console.log(displayName)
 
 
-        firebase.firestore().collection('sessions').doc(code).collection('users')
+        firebase.firestore().collection('sessions').doc(this.state.code).collection('users')
             .doc(firebase.auth().currentUser.uid).set({
             displayName: displayName
         }).then(() => {
@@ -37,11 +43,11 @@ export default class Session extends Component {
                 console.error(TAG, "Error writing user: ", error);
             });
 
-
-        this.checkForUsers(code)
-
+        this.checkForUsers()
 
         this.state.isLoading = false
+
+
     }
 
     createCode = () => {
@@ -61,6 +67,7 @@ export default class Session extends Component {
         sessionsRef.get()
             .then((docSnapshot) => {
                 if (docSnapshot.exists) {
+                    console.log('That session currently exists')
                     return 0
                 } else {
                     return 1
@@ -68,35 +75,44 @@ export default class Session extends Component {
             })
     }
 
-    checkForUsers = async () => {
-        const usersRef = firebase.firestore().collection('sessions').doc(code).collection('users')
+    checkForUsers = () => {
+        const usersRef = firebase.firestore().collection('sessions').doc(this.state.code).collection('users')
+        let usersLocal = [];
 
-        const snapshot = await usersRef.get();
-        snapshot.forEach(doc => {
-            console.log(doc.id, '=>', doc.data());
-        });
+        usersRef.onSnapshot(querySnapshot => {
+            console.log('Total users: ', querySnapshot.size)
+            querySnapshot.forEach(documentSnapshot => {
+                console.log('UserID: ', documentSnapshot.id, documentSnapshot.data())
+                usersLocal.push({
+                    displayName: documentSnapshot.data().displayName,
+                    id: documentSnapshot.id
+                })
+            })
+
+            this.setState({users: usersLocal})
+
+            usersLocal = []
+            console.log(this.state.users)
+        })
     }
 
     render() {
-        if(this.state.isLoading){
-            return(
-                <View style={styles.preloader}>
-                    <ActivityIndicator size="large" color="#9E9E9E"/>
-                </View>
-            )
-        }
         return (
             <View style={styles.container}>
                 <FlatList
-                    data={users}
+                    data={this.state.users}
+                    renderItem={({item}) => <Text>{item.displayName}</Text>}
+                    keyExtractor={item => item.id}
                 />
-
-                <Text>{code}</Text>
+                {
+                    console.log(this.state.users)
+                }
+                <Text>{this.state.code}</Text>
 
                 <Button
                     color="#e98477"
                     title="Start"
-                    onPress={() => this.props.navigation.navigate('Swipe Feature')}
+                    onPress={() => this.props.navigation.navigate('Swipe Feature',{code:this.state.code})}
                 />
             </View>
         );

@@ -1,12 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, View} from 'react-native';
+import { StyleSheet, View,Text} from 'react-native';
 import Data from "./API.js";
 
-export default function SwipeFeature() {
+export default function SwipeFeature({route}) {
     return (
         <View style={styles.container}>
-            <Data/>
+            <Data code={route.params.code}/>
             <StatusBar style="auto" />
         </View>
     );

@@ -3,9 +3,11 @@ import {Text, View, Button, Linking, Image} from "react-native";
 import styles from '../App';
 import burger from '../assets/burger.jpg';
 import SwipeCards from "react-native-swipe-cards-deck";
+import firebase from "../firebase";
+import "firebase/firestore"
+
 
 let data = [];
-
 
 class Card extends React.Component {
     constructor(props) {
@@ -24,13 +26,12 @@ class Card extends React.Component {
 }
 
 const Cards = (props) => {
-    let times = [];
     let address = [];
     let name = [];
     let counter = 0;
     let googleURL = "https://www.google.com/maps/search/?api=1&query=";
 
-    for (var i = 0; i < props.restaurantData.length; i++) {
+    for (let i = 0; i < props.restaurantData.length; i++) {
         const current = props.restaurantData[i];
         //console.log(props)
         //address = current.restaurant.location.address.split(' ');
@@ -70,7 +71,6 @@ const Cards = (props) => {
             id: id,
             name: name,
             price_range: price_range,
-            //rating: rating,
             address: address,
             phone_numbers: phone_numbers,
             googleURL: googleURL
@@ -84,7 +84,42 @@ const Cards = (props) => {
     //console.log(data)
 
     function handleYup (card) {
-        console.log(`Yup for ${card.id}`)
+
+        let state = {
+            match: false,
+            resId: card.id,
+            counter: 0
+        }
+
+        console.log(props.code)
+
+        /*
+        usersRef.doc(firebase.auth().currentUser.uid).set({
+            resId: true
+        }).then(() => {
+            console.log("Restaurant successfully written!");
+        }).catch((error) => {
+            console.error("Error writing restaurant: ", error);
+        });
+
+
+        const snapshot = usersRef.get()
+
+        snapshot.forEach(document => {
+            console.log(document.id, " compared to ", firebase.auth().currentUser.uid)
+            if(document.id !== firebase.auth().currentUser.uid) {
+                console.log("Not current user")
+                for (let restaurant in document.data()) {
+                    console.log(restaurant)
+                    if(restaurant === this.state.resId) {
+                        this.state.match = true
+                        console.log("Matched!")
+                    }
+                }
+            }
+            this.state.counter += 1
+        })*/
+
         return true;
     }
     function handleNope (card) {
@@ -112,6 +147,7 @@ const Cards = (props) => {
                     handleNope={handleNope}
                 />
             </View>
+
         )
     }
 }

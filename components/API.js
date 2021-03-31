@@ -18,16 +18,15 @@ function getPosition(position) {
     longitude = position.coords.longitude;
 }
 //Get Zomato Api data
-const Data = () =>{
+const Data = (props) =>{
 
+    //need to put api key (below) into .env file
     Documenu.configure('17efbfca576d7bfa2076432e98e05d9e')
 
     let [restaurantData, setRestaurantData]= useState([]);
-    let count = 20;
-    let start = 0;
 
     function getData(e){
-        e.preventDefault(); //need to put api key (below) into .env file
+        e.preventDefault();
         const params = {
             "lat": latitude,
             "distance": "3",
@@ -55,25 +54,16 @@ const Data = () =>{
                 console.log(err)
             })*/
 
-    function refreshData(e){
-        /*e.preventDefault();
-        start += 20;
-
-        getData(e);*/
-    }
-
     return(
         <View className='container'>
             <Text>{restaurantData.length}</Text>
 
-            <Cards restaurantData={restaurantData} />
+            <Cards restaurantData={restaurantData} code={props.code}/>
 
             <View>
                 <Button title="Get Data" className="btn info" onPress={getData}/>
             </View>
-            <View onSubmit={refreshData}>
-                <Button title="Get Next 20 Restaurants" className="btn" type='submit'/>
-            </View>
+            {console.log(props.code)}
         </View>
     )
 }
