@@ -1,20 +1,29 @@
-import React, {Component, useState} from 'react'
-import { Button, StyleSheet, TextInput, View} from 'react-native'
+import React, { useState} from 'react'
+import { Button, StyleSheet, TextInput, View,Text } from 'react-native'
 import firebase from "../firebase";
 
 export default function AddFriend() {
     const [friend, setFriend] = useState()
+    const [friendUsername, setFriendUsername] = useState({
+        username:'',
+        userID:''
+    })
 
     async function addFriends() {
-        const citiesRef = firebase.firestore().collection('users');
-        const snapshot = await citiesRef.where('username', '==', friend).get();
+        const findUser = firebase.firestore().collection('users');
+        const snapshot = await findUser.where('username', '==', friend).get();
         if (snapshot.empty) {
             console.log('No matching documents.');
+            alert('No Person Exists.');
             return;
         }
 
         snapshot.forEach(doc => {
-            console.log(doc.data().username);
+            console.log(doc.data());
+            setFriendUsername({
+                username:doc.data().username,
+                userID:doc.id
+            })
         });
     }
 
@@ -30,6 +39,10 @@ export default function AddFriend() {
                 title="Search"
                 onPress={addFriends}
             />
+            <View>
+                <Text>{friendUsername.username}</Text>
+                <Text>{friendUsername.userID}</Text>
+            </View>
         </View>
     )
 }

@@ -6,21 +6,22 @@ import "firebase/firestore";
 export default function FriendsList(){
     const [friend, setFriend] = useState()
     async function fetchUser(){
-        const citiesRef = firebase.firestore().collection('users');
-        const snapshot = await citiesRef.where('username', '==', 'BettinaYoung').get();
+        const findUser = firebase.firestore().collection('users');
+        const snapshot = await findUser.where('username', '==', 'BettinaYoung').get();
         if (snapshot.empty) {
             console.log('No matching documents.');
             return;
         }
 
         snapshot.forEach(doc => {
-            setFriend(doc.id, '=>', doc.data().username);
-            console.log(doc.data().username);
+            setFriend(doc.data());
+            console.log(doc.data());
         });
     }
     return(
         <View>
             <Button title="Get Data" onPress={fetchUser}/>
+            <Text>{friend}</Text>
         </View>
     )
 }

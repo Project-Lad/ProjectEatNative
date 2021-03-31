@@ -3,11 +3,7 @@ import { StyleSheet, Text, View, Button, FlatList} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 
-export let getCode = undefined;
-
-
 let TAG = "Console: ";
-/*let code = 0;*/
 
 export default class Session extends Component {
 
