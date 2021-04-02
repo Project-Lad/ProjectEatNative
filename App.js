@@ -11,7 +11,9 @@ import Profile from "./components/Profile";
 import EditAccount from "./components/EditAccount";
 import AddFriend from "./components/AddFriend";
 import FriendsList from "./components/FriendsList";
-import Session from "./components/Session";
+import HostSession from "./components/HostSession";
+import GuestSession from "./components/GuestSession";
+import Connect from "./components/Connect";
 
 function MyStack() {
     return (
@@ -58,8 +60,8 @@ function MyStack() {
                 options={{ title: 'Edit Account',}}
             />
             <Stack.Screen
-                name="Session"
-                component={Session}
+                name="HostSession"
+                component={HostSession}
                 options={{ title: 'Session',}}
             />
             <Stack.Screen
@@ -73,6 +75,16 @@ function MyStack() {
                         </TouchableOpacity>
                     )
                 })}
+            />
+            <Stack.Screen
+                name="Guest Session"
+                component={GuestSession}
+                options={{title:'Session',}}
+            />
+            <Stack.Screen
+                name="Connect"
+                component={Connect}
+                options={{title:'Connect to a Session',}}
             />
             <Stack.Screen
                 name="Add Friends"

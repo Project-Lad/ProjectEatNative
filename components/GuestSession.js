@@ -5,71 +5,50 @@ import "firebase/firestore";
 
 let TAG = "Console: ";
 
-export default class Session extends Component {
+export default class GuestSession extends Component {
 
     state = {
         isLoading: true,
         users: [],
-        code:0
+        code: 0
     }
 
-    constructor(props) {
-        super(props);
+     constructor(props) {
+         super(props);
 
-        let counter = 0
+         let displayName = firebase.auth().currentUser.displayName
+         this.state.code = props.route.params.code
+         //console.log(this.state.code)
 
-        while (counter === 0) {
-            this.state.code = this.createCode()
+         //this.setState(props.code)
 
-            counter = this.checkForDocument(this.state.code)
-        }
+         //console.log(displayName)
+         const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
 
-        let displayName = firebase.auth().currentUser.displayName
+         docRef.get().then((docSnapshot) => {
+             if (docSnapshot.exists) {
+                 docRef.collection('users').doc(firebase.auth().currentUser.uid).set({
+                     displayName: displayName
+                 }, {merge: true}).then(() => {
+                     console.log(TAG, "User successfully written!");
+                 })
+                     .catch((error) => {
+                         console.error(TAG, "Error writing user: ", error);
+                     });
 
-        console.log(displayName)
+                 this.checkForUsers()
+             } else {
+                 alert("Error: Session could not be found, please re-enter code")
+                 this.props.navigation.navigate('Connect')
+             }
+         })
+
+         //this.checkForUsers()
+
+         this.state.isLoading = false
 
 
-        firebase.firestore().collection('sessions').doc(this.state.code).collection('users')
-            .doc(firebase.auth().currentUser.uid).set({
-            displayName: displayName
-        }).then(() => {
-            console.log(TAG, "User successfully written!");
-        })
-            .catch((error) => {
-                console.error(TAG, "Error writing user: ", error);
-            });
-
-        this.checkForUsers()
-
-        this.state.isLoading = false
-
-
-    }
-
-    createCode = () => {
-        let result = '';
-        const characters = '0123456789';
-        const charactersLength = characters.length;
-        for (let i = 0; i < 10; i++ ) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-
-        return result;
-    }
-
-    checkForDocument = (code) => {
-        const sessionsRef = firebase.firestore().collection('sessions').doc(code)
-
-        sessionsRef.get()
-            .then((docSnapshot) => {
-                if (docSnapshot.exists) {
-                    console.log('That session currently exists')
-                    return 0
-                } else {
-                    return 1
-                }
-            })
-    }
+     }
 
     checkForUsers = () => {
         const usersRef = firebase.firestore().collection('sessions').doc(this.state.code).collection('users')
@@ -100,16 +79,9 @@ export default class Session extends Component {
                     renderItem={({item}) => <Text>{item.displayName}</Text>}
                     keyExtractor={item => item.id}
                 />
-                {
-                    console.log(this.state.users)
-                }
-                <Text>{this.state.code}</Text>
 
-                <Button
-                    color="#e98477"
-                    title="Start"
-                    onPress={() => this.props.navigation.navigate('Swipe Feature',{code:this.state.code})}
-                />
+
+                <Text>{this.state.code}</Text>
             </View>
         );
     }

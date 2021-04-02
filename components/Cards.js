@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Text, View, Button, Linking, Image} from "react-native";
 import styles from '../App';
 import burger from '../assets/burger.jpg';

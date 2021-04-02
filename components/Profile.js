@@ -34,7 +34,7 @@ export default class Dashboard extends Component {
 
                 <View styles={styles.buttonView}>
                     <TouchableOpacity
-                        onPress={() => this.props.navigation.navigate('Session')}
+                        onPress={() => this.props.navigation.navigate('HostSession')}
                         style = {styles.buttonStyle}
                     >
                         <Text style={styles.textButton}>Generate Code</Text>
@@ -51,6 +51,12 @@ export default class Dashboard extends Component {
                         style={styles.buttonStyle}
                         onPress={() => this.props.navigation.navigate('Swipe Feature')}>
                         <Text style={styles.textButton}>Swipe Feature</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.buttonStyle}
+                        onPress={() => this.props.navigation.navigate('Connect')}>
+                        <Text style={styles.textButton}>Connect to a Session</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
