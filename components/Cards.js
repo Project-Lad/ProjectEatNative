@@ -96,6 +96,7 @@ const Cards = (props) => {
             resId: restaurantID
         }, {merge: true}).then(() => {
             console.log("Restaurant successfully written!");
+            //DOES NOT WRITE MULTIPLE RESTAURANTS, REPLACES THEM. NEEDS IMMEDIATE FIX
         }).catch((error) => {
             console.error("Error writing restaurant: ", error);
         });
@@ -118,7 +119,6 @@ const Cards = (props) => {
                 }
             })
         })
-
 
         return true;
     }

@@ -18,7 +18,10 @@ export default class HostSession extends Component {
 
         let counter = 0
 
+        //counter cycles until it creates a valid code
         while (counter === 0) {
+
+            //updates current code state to current code
             this.state.code = this.createCode()
 
             counter = this.checkForDocument(this.state.code)
@@ -26,17 +29,20 @@ export default class HostSession extends Component {
 
         let displayName = firebase.auth().currentUser.displayName
 
-        //console.log(displayName)
-
-        firebase.firestore().collection('sessions').doc(this.state.code).set({match: false}).then(() => {
-            firebase.firestore().collection('sessions').doc(this.state.code)
-                .collection('users').doc(firebase.auth().currentUser.uid).set({
-                displayName: displayName
-            }).then(() => {
-                console.log(TAG, "User successfully written")
-            }).catch((error) => {
-                console.error(TAG, "Error writing user: ", error);
-            })
+        //creates session using the newly generated code
+        firebase.firestore().collection('sessions').doc(this.state.code).set({match: false, start: false})
+            .then(() => {
+                //adds the current host user to the document
+                firebase.firestore().collection('sessions').doc(this.state.code)
+                    .collection('users').doc(firebase.auth().currentUser.uid).set({
+                    displayName: displayName
+                }).then(() => {
+                    console.log(TAG, "User successfully written")
+                }).catch((error) => {
+                    console.error(TAG, "Error writing user: ", error);
+                })
+        }).catch((error) => {
+            console.log("Error creating session: ", error)
         })
 
         this.checkForUsers()
@@ -76,18 +82,20 @@ export default class HostSession extends Component {
         const usersRef = firebase.firestore().collection('sessions').doc(this.state.code).collection('users')
         let usersLocal = [];
 
+        //creates an observer to watch for new documents that may appear
         usersRef.onSnapshot(querySnapshot => {
-            console.log('Total users: ', querySnapshot.size)
+            //for each document in the collection, push them onto the usersLocal array
             querySnapshot.forEach(documentSnapshot => {
-                console.log('UserID: ', documentSnapshot.id, documentSnapshot.data())
                 usersLocal.push({
                     displayName: documentSnapshot.data().displayName,
                     id: documentSnapshot.id
                 })
             })
 
+            //resets the users state to the new array when updated
             this.setState({users: usersLocal})
 
+            //usersLocal is reset so duplicate users are not created in lobby
             usersLocal = []
             console.log(this.state.users)
         })
@@ -101,15 +109,25 @@ export default class HostSession extends Component {
                     renderItem={({item}) => <Text>{item.displayName}</Text>}
                     keyExtractor={item => item.id}
                 />
-                {
-                    console.log(this.state.users)
-                }
+
                 <Text>{this.state.code}</Text>
 
                 <Button
                     color="#e98477"
                     title="Start"
-                    onPress={() => this.props.navigation.navigate('Swipe Feature',{code:this.state.code})}
+                    onPress={() => {
+                        //updates the start field in the current session to true to send everyone to the swipe feature
+                        firebase.firestore().collection('sessions')
+                            .doc(this.state.code).update({start: true})
+                            .then(r => {
+                                console.log("Session start updated to true")
+                            }).catch(error => {
+                                console.log(`Encountered Update Error: ${error}`)
+                            })
+
+                        //navigate to the swipe page manually
+                        this.props.navigation.navigate('Swipe Feature',{code:this.state.code})
+                    }}
                 />
             </View>
         );
