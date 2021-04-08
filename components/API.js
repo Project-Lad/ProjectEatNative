@@ -21,7 +21,7 @@ function getPosition(position) {
 const Data = (props) =>{
 
     //need to put api key (below) into .env file
-    Documenu.configure('17efbfca576d7bfa2076432e98e05d9e')
+    Documenu.configure('5f47fcd33b2c457af0b7963593044ce8')
 
     let [restaurantData, setRestaurantData]= useState([]);
 

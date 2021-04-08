@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Text, View, Button, Linking, Image} from "react-native";
 import styles from '../App';
 import burger from '../assets/burger.jpg';
@@ -26,6 +26,7 @@ class Card extends React.Component {
 }
 
 const Cards = (props) => {
+    let [resCounter, setCounter] = useState(0)
     let address = [];
     let name = [];
     let counter = 0;
@@ -93,9 +94,10 @@ const Cards = (props) => {
 
 
         usersRef.doc(firebase.auth().currentUser.uid).set({
-            resId: restaurantID
+            [resCounter]: restaurantID
         }, {merge: true}).then(() => {
             console.log("Restaurant successfully written!");
+            setCounter(resCounter + 1);
         }).catch((error) => {
             console.error("Error writing restaurant: ", error);
         });
