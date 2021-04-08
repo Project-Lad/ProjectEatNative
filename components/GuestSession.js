@@ -17,37 +17,33 @@ export default class GuestSession extends Component {
          super(props);
 
          let displayName = firebase.auth().currentUser.displayName
+
          this.state.code = props.route.params.code
-         //console.log(this.state.code)
 
-         //this.setState(props.code)
-
-         //console.log(displayName)
+         //obtain a doc reference to the session that was input on the Connect screen
          const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
 
          docRef.get().then((docSnapshot) => {
+             //if this document exists
              if (docSnapshot.exists) {
+                 //add the user to the document, merge so that way everyone's lobby updates properly
                  docRef.collection('users').doc(firebase.auth().currentUser.uid).set({
                      displayName: displayName
                  }, {merge: true}).then(() => {
                      console.log(TAG, "User successfully written!");
-                 })
-                     .catch((error) => {
-                         console.error(TAG, "Error writing user: ", error);
-                     });
+                 }).catch((error) => {
+                     console.error(TAG, "Error writing user: ", error);
+                 });
 
                  this.checkForUsers()
+                 this.checkForSessionStart()
              } else {
                  alert("Error: Session could not be found, please re-enter code")
                  this.props.navigation.navigate('Connect')
              }
          })
 
-         //this.checkForUsers()
-
          this.state.isLoading = false
-
-
      }
 
     checkForUsers = () => {
@@ -55,19 +51,35 @@ export default class GuestSession extends Component {
         let usersLocal = [];
 
         usersRef.onSnapshot(querySnapshot => {
-            console.log('Total users: ', querySnapshot.size)
+            //check the entire query, for each document push them onto local array
             querySnapshot.forEach(documentSnapshot => {
-                console.log('UserID: ', documentSnapshot.id, documentSnapshot.data())
+                //push their id and displayName onto the array
                 usersLocal.push({
                     displayName: documentSnapshot.data().displayName,
                     id: documentSnapshot.id
                 })
             })
 
+            //add the user to usersLocal array
             this.setState({users: usersLocal})
 
+            //reset the usersLocal array to avoid duplicates
             usersLocal = []
-            console.log(this.state.users)
+        })
+    }
+
+    checkForSessionStart = () => {
+        //document reference to current session created
+        const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
+
+        //observer is created that when .start changes to true, it navigates to the swipe feature
+        docRef.onSnapshot((documentSnapshot) => {
+            if(documentSnapshot.data().start) {
+                //navigate
+                this.props.navigation.navigate('Swipe Feature',{code:this.state.code})
+            }
+        }, error => {
+            console.log(`Encountered Error: ${error}`)
         })
     }
 
