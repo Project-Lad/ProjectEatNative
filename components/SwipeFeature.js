@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, View,Text} from 'react-native';
-import Data from "./API.js";
+import { StyleSheet, View} from 'react-native';
+import Data from "./YelpAPI.js";
 
 export default function SwipeFeature({route}) {
+
     return (
         <View style={styles.container}>
             <Data code={route.params.code}/>
@@ -14,18 +15,8 @@ export default function SwipeFeature({route}) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 0.78,
+        flex: 0.9,
         backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
-    },
-    card: {
-        justifyContent: "center",
-        alignItems: "center",
-        width: 300,
-        height: 300,
-    },
-    cardsText: {
-        fontSize: 40,
-    },
-});
+    }});

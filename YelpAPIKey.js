@@ -1,0 +1,2 @@
+const APIKEY = 'uZwwv8nodZZ_HkNk9SKAN2mAyjJ3ZPtReRNCJOcKwThunVOj6fQ4CzQWFsUpsVaDelo233paUi_LEJ_gLU3pT65HHskO23DpM94jX6KUfqcRCumJxFdCeS4V7t9wYHYx'
+export default APIKEY

@@ -1,5 +1,5 @@
-import React, { Component,useState } from 'react';
-import { StyleSheet, Text, View, Button, FlatList} from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View, FlatList} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 
@@ -91,7 +91,6 @@ export default class GuestSession extends Component {
                     renderItem={({item}) => <Text>{item.displayName}</Text>}
                     keyExtractor={item => item.id}
                 />
-
 
                 <Text>{this.state.code}</Text>
             </View>

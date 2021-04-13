@@ -1,12 +1,16 @@
 import React, {useState} from 'react';
 import {Button, View, Text} from 'react-native';
 import Cards from "./Cards";
-import Documenu from 'documenu'
+//import Documenu from 'documenu'
 
 //checks for location
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(getPosition);
 }
+
+const yelp = require('yelp-fusion')
+const client = yelp.client('uZwwv8nodZZ_HkNk9SKAN2mAyjJ3ZPtReRNCJOcKwThunVOj6fQ4CzQWFsUpsVaDelo233paUi_LEJ_gLU3pT65HHskO23DpM94jX6KUfqcRCumJxFdCeS4V7t9wYHYx')
+
 //Declares lat and long vars
 let latitude;
 let longitude;
@@ -17,17 +21,19 @@ function getPosition(position) {
     latitude = position.coords.latitude;
     longitude = position.coords.longitude;
 }
-//Get Zomato Api data
+
 const Data = (props) =>{
 
     //need to put api key (below) into .env file
-    Documenu.configure('5f47fcd33b2c457af0b7963593044ce8')
+    //Documenu.configure('5f47fcd33b2c457af0b7963593044ce8') hydrafirestorm api key
 
     let [restaurantData, setRestaurantData]= useState([]);
 
     function getData(e){
         e.preventDefault();
-        const params = {
+
+
+        /*const params = {
             "lat": latitude,
             "distance": "3",
             "lon": longitude,
@@ -40,32 +46,17 @@ const Data = (props) =>{
             })
             .catch(err => {
                 console.log(err)
-            })
-    }
-        /*fetch(`https://developers.zomato.com/api/v2.1/search?&start=${start}&count=${count}&lat=${latitude}&lon=${longitude}&sort=real_distance&order=asc&apikey=54dd7ea36253c6415fe32b8f3b30b29c`,{
-            "method": "GET"
-        })
-            .then(response => response.json())
-            .then (response =>{
-                setRestaurantData(response.restaurants);
-                console.log(response)
-            })
-            .catch(err =>{
-                console.log(err)
             })*/
+    }
 
     return(
         <View className='container'>
-            <Text>{restaurantData.length}</Text>
-
             <Cards restaurantData={restaurantData} code={props.code}/>
 
-            <View>
-                <Button title="Get Data" className="btn info" onPress={getData}/>
-            </View>
-            {console.log(props.code)}
+            <Button title="Get Data" onPress={getData}/>
         </View>
     )
 }
+
 
 export default Data;

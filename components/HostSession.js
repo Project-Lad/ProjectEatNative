@@ -1,4 +1,4 @@
-import React, { Component,useState } from 'react';
+import React, {Component} from 'react';
 import { StyleSheet, Text, View, Button, FlatList} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -104,6 +104,7 @@ export default class HostSession extends Component {
     render() {
         return (
             <View style={styles.container}>
+
                 <FlatList
                     data={this.state.users}
                     renderItem={({item}) => <Text>{item.displayName}</Text>}

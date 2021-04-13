@@ -14,6 +14,7 @@ import FriendsList from "./components/FriendsList";
 import HostSession from "./components/HostSession";
 import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
+import {useFonts, Capriola_400Regular} from '@expo-google-fonts/capriola'
 
 function MyStack() {
     return (
@@ -97,6 +98,9 @@ function MyStack() {
 const Stack = createStackNavigator();
 
 export default function App() {
+    let [fontsLoaded] = useFonts({
+        Capriola_400Regular,
+    })
   return (
       <NavigationContainer>
           <MyStack/>
@@ -120,5 +124,5 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 250, height: 2 },
         shadowOpacity: 0.2,
         elevation: 5,
-    },
+    }
 });
