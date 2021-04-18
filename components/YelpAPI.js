@@ -42,7 +42,7 @@ const Data = (props) => {
     }
 
     return(
-        <View classNam='container'>
+        <View className='container'>
             <Cards restaurantData={restaurantData} code={props.code}/>
             <Button title='Get Data' className="btn info" onPress={getData}/>
             <Text>{props.code}</Text>

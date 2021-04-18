@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import {StyleSheet, TouchableOpacity, Text} from "react-native";
 import SwipeFeature from "./components/SwipeFeature";
@@ -15,6 +14,7 @@ import HostSession from "./components/HostSession";
 import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
 import {useFonts, Capriola_400Regular} from '@expo-google-fonts/capriola'
+import Decision from "./components/Decision";
 
 function MyStack() {
     return (
@@ -44,6 +44,11 @@ function MyStack() {
                 name="Swipe Feature"
                 component={SwipeFeature}
                 options={{ title: 'Swipe Feature', headerLeft: null}}
+            />
+            <Stack.Screen
+                name="Final Decision"
+                component={Decision}
+                options={{ title: 'Final Decision', headerLeft: null}}
             />
             <Stack.Screen
                 name="Forgot Password"
