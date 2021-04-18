@@ -19,7 +19,7 @@ export default class Login extends Component {
         this.setState(state);
     }
 
-    userLogin = () => {
+    userLogin = (email, password) => {
         if(this.state.email === '' && this.state.password === '') {
             Alert.alert('Enter details to Sign In!')
         } else {
@@ -28,16 +28,25 @@ export default class Login extends Component {
             })
              firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
                 .then((res) => {
-                    console.log(res)
+                    //console.log(res)
                     console.log('User logged-in successfully!')
                     this.setState({
                         isLoading: false,
                         email: '',
                         password: ''
                     })
-                    this.props.navigation.navigate('Profile')
+                    this.props.navigation.navigate('Login',{screen:'Profile'})
                 })
-                .catch(error => this.setState({ errorMessage: error.message }))
+                .catch(error =>{
+                    this.setState({
+                        errorMessage: error.message,
+                        isLoading:false
+                    });
+                    if(this.state.email || this.state.password !== firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)){
+                        alert('invalid password')
+
+                    }
+                })
         }
     }
 
@@ -57,6 +66,7 @@ export default class Login extends Component {
                     value={this.state.email}
                     keyboardType={'email-address'}
                     onChangeText={(val) => this.updateInputVal(val, 'email')}
+                    windowSoftInputMode="adjustPan"
                 />
                 <TextInput
                     style={styles.inputStyle}
@@ -65,6 +75,7 @@ export default class Login extends Component {
                     onChangeText={(val) => this.updateInputVal(val, 'password')}
                     maxLength={15}
                     secureTextEntry={true}
+                    windowSoftInputMode="adjustPan"
                 />
                 <Button
                     color="#e98477"
