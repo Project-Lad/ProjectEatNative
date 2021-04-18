@@ -257,8 +257,6 @@ const Cards = (props) => {
                 }
             })
         })
-
-
         return true;
     }
 
@@ -279,8 +277,7 @@ const Cards = (props) => {
                     visible={modalVisible}
                     onRequestClose={() => {
                         setModalVisible(!modalVisible);
-                    }}
-                >
+                    }}>
                     <View style={styles.modalView}>
                         <Text style={styles.modalText}>Let's Eat!</Text>
                         <Image source={{uri: `${cardState.imageURL}`}} style={styles.cardImageModal}/>

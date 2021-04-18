@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, {useEffect,useState} from 'react';
 import {StyleSheet, TouchableOpacity, Text} from "react-native";
 import SwipeFeature from "./components/SwipeFeature";
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useIsFocused} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
@@ -14,12 +14,12 @@ import FriendsList from "./components/FriendsList";
 import HostSession from "./components/HostSession";
 import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
-import {useFonts, Capriola_400Regular} from '@expo-google-fonts/capriola'
+import firebase from "./firebase";
 
-function MyStack() {
+function AuthStack() {
     return (
         <Stack.Navigator
-            initialRouteName="Login"
+            initialRouteName="Profile"
             screenOptions={{
                 headerTitleAlign: 'center',
                 headerStyle: {
@@ -31,25 +31,11 @@ function MyStack() {
                 },
             }}>
             <Stack.Screen
-                name="SignUp"
-                component={SignUp}
-                options={{ title: 'Signup' }}
-            />
-            <Stack.Screen
-                name="Login"
-                component={Login}
-                options={{title: 'Login', headerLeft: null}}
-            />
-            <Stack.Screen
                 name="Swipe Feature"
                 component={SwipeFeature}
                 options={{ title: 'Swipe Feature', headerLeft: null}}
             />
-            <Stack.Screen
-                name="Forgot Password"
-                component={ForgotPassword}
-                options={{ title: 'ForgotPassword'}}
-            />
+
             <Stack.Screen
                 name="Profile"
                 component={Profile}
@@ -95,15 +81,56 @@ function MyStack() {
         </Stack.Navigator>
     );
 }
+
+function LoginSignup(){
+    return(
+    <Stack.Navigator
+        initialRouteName="Login"
+        screenOptions={{
+            headerTitleAlign: 'center',
+            headerStyle: {
+                backgroundColor: '#37edfe',
+            },
+            headerTintColor: '#333',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+        }}>
+        <Stack.Screen
+            name="SignUp"
+            component={SignUp}
+            options={{ title: 'Signup' }}
+        />
+        <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{title: 'Login', headerLeft: null}}
+        />
+        <Stack.Screen
+            name="Forgot Password"
+            component={ForgotPassword}
+            options={{ title: 'ForgotPassword'}}
+        />
+    </Stack.Navigator>
+    )
+}
 const Stack = createStackNavigator();
 
 export default function App() {
-    let [fontsLoaded] = useFonts({
-        Capriola_400Regular,
-    })
+    const [isLoggedIn, setLogIn] = useState(false)
+    useEffect(()=>{
+        firebase.auth().onAuthStateChanged(user => {
+            if(user) {
+                setLogIn(true)
+            } else {
+                setLogIn(false)
+            }
+        })
+    },[])
+
   return (
       <NavigationContainer>
-          <MyStack/>
+          {isLoggedIn ? (<AuthStack/>) : (<LoginSignup/>)}
       </NavigationContainer>
   );
 }

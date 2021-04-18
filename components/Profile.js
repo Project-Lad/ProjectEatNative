@@ -1,74 +1,81 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Alert, TouchableOpacity } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Button, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import firebase from "firebase";
 import "firebase/firestore";
+import {useIsFocused, useNavigation} from '@react-navigation/native'
 
-export default class Dashboard extends Component {
-    signOut = () => {
-        firebase.auth().signOut().then(() => {
-            this.props.navigation.navigate('Login')
-        })
-            .catch(error => this.setState({ errorMessage: error.message }))
+export default function Dashboard(){
+    const currentUser = firebase.auth().currentUser
+    const [userInformation, setUserInformation] = useState({
+        displayName: '',
+        photoURL:null
+    })
+    const navigation = useNavigation()
+    const isFocused = useIsFocused();
+
+     useEffect(() => {
+         /*         firebase.firestore().collection('users').doc(currentUser.uid).get().then(doc=>{
+                     setUserDBData(doc.data())
+                 })*/
+         setUserInformation({
+             displayName: currentUser.displayName,
+             photoURL: currentUser.photoURL
+         })
+
+     }, [isFocused])
+    console.log(userInformation.displayName)
+
+
+    async function signOut(){
+        await firebase.auth().signOut()
     }
-
-    render() {
-        this.state = {
-            displayName: firebase.auth().currentUser.displayName,
-            email: firebase.auth().currentUser.email
-        }
-        return (
-            <View style={styles.container}>
-                <View style = {styles.card}>
-                    <Text style = {styles.textStyle}>
-                        Username: {this.state.displayName}
-                    </Text>
-                    <Text style = {styles.textStyle}>
-                        Email: {this.state.email}
-                    </Text>
-                    <TouchableOpacity
-                        style={styles.editButton}
-                        onPress={() => this.props.navigation.navigate('Edit Account')}>
-                        <Text>Edit Account</Text>
-                    </TouchableOpacity>
+    return(
+        <View style={styles.container}>
+            <View style = {styles.card}>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    {userInformation.photoURL && <Image source={{ uri: userInformation.photoURL }} style={{ width: 200, height: 200 }} />}
                 </View>
-
-                <View styles={styles.buttonView}>
-                    <TouchableOpacity
-                        onPress={() => this.props.navigation.navigate('HostSession')}
-                        style = {styles.buttonStyle}
-                    >
-                        <Text style={styles.textButton}>Generate Code</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => this.props.navigation.navigate('Friends List')}
-                        style = {styles.buttonStyle}
-                    >
-                        <Text style={styles.textButton}>Friends List</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.buttonStyle}
-                        onPress={() => this.props.navigation.navigate('Swipe Feature')}>
-                        <Text style={styles.textButton}>Swipe Feature</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.buttonStyle}
-                        onPress={() => this.props.navigation.navigate('Connect')}>
-                        <Text style={styles.textButton}>Connect to a Session</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => this.signOut()}
-                        style = {styles.buttonStyle}
-                    >
-                        <Text style={styles.textButton}>Logout</Text>
-                    </TouchableOpacity>
-                </View>
+                <Text style = {styles.textStyle}>
+                    Username: {userInformation.displayName}
+                </Text>
+                <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() => navigation.navigate('Edit Account')}>
+                    <Text>Edit Account</Text>
+                </TouchableOpacity>
             </View>
-        );
-    }
+
+            <View styles={styles.buttonView}>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('HostSession')}
+                    style = {styles.buttonStyle}
+                >
+                    <Text style={styles.textButton}>Generate Code</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Friends List')}
+                    style = {styles.buttonStyle}
+                >
+                    <Text style={styles.textButton}>Friends List</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.buttonStyle}
+                    onPress={() => navigation.navigate('Connect')}>
+                    <Text style={styles.textButton}>Connect to a Session</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={signOut}
+                    style = {styles.buttonStyle}
+                >
+                    <Text style={styles.textButton}>Logout</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    )
+
 }
 
 const styles = StyleSheet.create({
