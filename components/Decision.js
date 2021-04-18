@@ -51,7 +51,7 @@ const Decision = ({route}) => {
         setIsLoading(true)
     }, []);
 
-    setData()
+    setData() //somehow this works? however whenever any button is pushed or picture is swiped, this is called.
 
     function getData(){
         const myHeaders = new Headers();
