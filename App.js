@@ -14,6 +14,7 @@ import FriendsList from "./components/FriendsList";
 import HostSession from "./components/HostSession";
 import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
+import Decision from "./components/Decision";
 import firebase from "./firebase";
 
 function AuthStack() {
@@ -35,7 +36,16 @@ function AuthStack() {
                 component={SwipeFeature}
                 options={{ title: 'Swipe Feature', headerLeft: null}}
             />
-
+            <Stack.Screen
+                name="Final Decision"
+                component={Decision}
+                options={{ title: 'Final Decision', headerLeft: null}}
+            />
+            <Stack.Screen
+                name="Forgot Password"
+                component={ForgotPassword}
+                options={{ title: 'ForgotPassword'}}
+            />
             <Stack.Screen
                 name="Profile"
                 component={Profile}

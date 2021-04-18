@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {Text, View, Button, Linking, Image, Modal, Pressable, StyleSheet, Platform} from "react-native";
+import {useNavigation} from '@react-navigation/native'
 import burger from '../assets/burger.jpg';
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
@@ -49,8 +50,6 @@ class Card extends React.Component {
                     <Image source={this.props.rating} />
                     <Text style={styles.yelpText}>Based on {this.props.review_count} Reviews</Text>
                 </View>
-
-                <Text style={styles.cardsText}>{this.props.is_closed}</Text>
             </View>
         )
     }
@@ -59,6 +58,7 @@ class Card extends React.Component {
 const Cards = (props) => {
     let [resCounter, setCounter] = useState(0);
     let [modalVisible, setModalVisible] = useState(false);
+    const navigation = useNavigation();
     let [cardState, setCardState] = useState({
         id: "0",
         name: "name",
@@ -67,36 +67,16 @@ const Cards = (props) => {
         rating: "rating",
         review_count: "0",
         distance: "0",
-        is_closed: "",
         phone_numbers: "phone_number",
-        googleURL: "googleURL",
         imageURL: "imageURL"
     });
     let address = [];
     let name = [];
     let counter = 0;
-    let googleURL = "https://www.google.com/maps/search/?api=1&query=";
     let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users')
 
     for (let i = 0; i < props.restaurantData.length; i++) {
         const current = props.restaurantData[i];
-
-        address = [current.location.address1, current.location.city, current.location.state];
-        name = current.name.split(' ');
-
-        while (name[counter] != null) {
-            googleURL += name[counter];
-            googleURL += "+";
-            counter++;
-        }
-
-        counter = 0;
-
-        while (address[counter] != null) {
-            googleURL += address[counter];
-            googleURL += "+";
-            counter++;
-        }
 
         const id = current.id;
         name = current.name;
@@ -120,13 +100,6 @@ const Cards = (props) => {
         const imageURL = current.image_url;
         const distance = current.distance;
         const review_count = current.review_count;
-        let open_or_closed;
-
-        if(current.is_closed === true) {
-            open_or_closed = "Closed"
-        } else {
-            open_or_closed = "Open Now!"
-        }
 
         if(Platform.OS === 'android') {
             switch(rating) {
@@ -204,18 +177,12 @@ const Cards = (props) => {
             rating: rating,
             review_count: review_count,
             distance: distance,
-            is_closed: open_or_closed,
             phone_numbers: phone_number,
-            googleURL: googleURL,
             imageURL: imageURL
         })
 
         counter = 0;
-        //console.log(googleURL);
-        googleURL = "https://www.google.com/maps/search/?api=1&query=";
     }
-
-    //console.log(data)
 
     function handleYup(card) {
         let match = false
@@ -265,6 +232,85 @@ const Cards = (props) => {
         return true;
     }
 
+    function loveIt () {
+        const increment = 1;
+        let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
+            .collection('matched').doc(cardState.id)
+
+        let sessionSize;
+        usersRef.onSnapshot(querySnapshot => {
+            sessionSize = querySnapshot.size
+        })
+
+        matchedRef.get().then((doc) => {
+            if(doc.data() == null) {
+                console.log("Document Doesn't Exist, Creating Document")
+                matchedRef.set({
+                    counter: 1
+                }).then(() => {
+                    console.log("Matched restaurant successfully created!");
+                }).catch((error) => {
+                    console.error("Error creating matched restaurant: ", error);
+                });
+
+
+            }
+
+            if(doc.data() != null) {
+                matchedRef.update({
+                    counter: doc.data().counter + increment
+                }).then(() => {
+                    console.log("Restaurant Counter Updated!");
+                }).catch((error) => {
+                    console.error("Error Updating restaurant: ", error);
+                });
+            }
+
+            matchedRef.onSnapshot(docSnapshot => {
+                console.log(docSnapshot.data())
+                if((docSnapshot.data().counter / sessionSize) > 0.50) {
+                    //move screens. read document id, send that to next screen and pull data using the yelp api to
+                    //populate the screen with information
+                    //console.log(docSnapshot.id)
+                    navigation.navigate('Final Decision',{id: docSnapshot.id})
+                    console.log("Majority Rule")
+                }
+            })
+        })
+    }
+
+    function hateIt() {
+        let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
+            .collection('matched').doc(cardState.id)
+
+        let sessionSize;
+        usersRef.onSnapshot(querySnapshot => {
+            sessionSize = querySnapshot.size
+        })
+
+        matchedRef.get().then((doc) => {
+            if(doc.data() == null) {
+                console.log("Document Doesn't Exist, Creating Document")
+                matchedRef.set({
+                    counter: 0
+                }).then(() => {
+                    console.log("Matched restaurant successfully created!");
+                }).catch((error) => {
+                    console.error("Error creating matched restaurant: ", error);
+                });
+            }
+
+            matchedRef.onSnapshot(docSnapshot => {
+                console.log(docSnapshot.data())
+                if((docSnapshot.data().counter / sessionSize) > 0.50) {
+                    //move screens. read document id, send that to next screen and pull data using the yelp api to
+                    //populate the screen with information
+                    console.log("Majority Rule")
+                }
+            })
+        })
+    }
+
     if (data.length === 0) {
         return (
             <View/>
@@ -283,11 +329,17 @@ const Cards = (props) => {
                         <Image source={{uri: `${cardState.imageURL}`}} style={styles.cardImageModal}/>
                         <Text style={styles.modalText}>The group chose {'\n' + cardState.name}</Text>
                         <Pressable style={styles.button}
-                                   onPress={() => Linking.openURL(cardState.googleURL)}>
-                            <Text style={styles.modalText}>Find on Google Maps</Text>
+                                   onPress={() => {
+                                       loveIt(cardState)
+                                       setModalVisible(!modalVisible)
+                                   }}>
+                            <Text style={styles.modalText}>Love It!</Text>
                         </Pressable>
                         <Pressable style={styles.button}
-                                   onPress={() => setModalVisible(!modalVisible)}>
+                                   onPress={() => {
+                                       hateIt(cardState)
+                                       setModalVisible(!modalVisible)
+                                   }}>
                             <Text style={styles.modalText}>Keep Swiping</Text>
                         </Pressable>
                     </View>
