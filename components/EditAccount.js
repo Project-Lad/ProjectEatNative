@@ -8,24 +8,25 @@ import * as ImagePicker from "expo-image-picker";
 export default function EditAccount(){
     const navigation = useNavigation()
     const currentUser = firebase.auth().currentUser
-    const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName,})
+    const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName})
     const [newProfilePicture, setNewProfilePicture] = useState({photoURL: currentUser.photoURL})
 
 
     function userName() {
-            firebase.auth().currentUser.updateProfile({
-                displayName: newProfileUsername,
+        firebase.auth().currentUser.updateProfile({
+            displayName: newProfileUsername,
+            photoURL:newProfilePicture.photoURL
+        }).then(()=>{
+            firebase.firestore().collection('users').doc(currentUser.uid).set({
+                username: newProfileUsername,
                 photoURL:newProfilePicture.photoURL
-            }).then(()=>{
-                firebase.firestore().collection('users').doc(currentUser.uid).set({
-                    username: newProfileUsername,
-                    photoURL:newProfilePicture.photoURL
-                },{merge:true})
-            }).then(()=>{
-                navigation.navigate('Profile')
-            }).catch(function(error) {
-                console.log(error)
-            })
+            },{merge:true})
+        }).then(()=>{
+            navigation.navigate('Profile')
+        }).catch(function(error) {
+            console.log(error)
+            alert(error)
+        })
     }
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
