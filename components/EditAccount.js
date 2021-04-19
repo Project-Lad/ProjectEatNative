@@ -13,23 +13,19 @@ export default function EditAccount(){
 
 
     function userName() {
-        if(newProfileUsername !== newProfileUsername.displayName && newProfilePicture !== newProfilePicture.photoURL){
             firebase.auth().currentUser.updateProfile({
-                displayName: newProfileUsername.displayName,
+                displayName: newProfileUsername,
                 photoURL:newProfilePicture.photoURL
-            })
-            firebase.firestore().collection('users').doc(currentUser.uid).set({
-                username: newProfileUsername,
-            },{merge:true}).then(()=>{
-                navigation.goBack('Profile')
+            }).then(()=>{
+                firebase.firestore().collection('users').doc(currentUser.uid).set({
+                    username: newProfileUsername,
+                    photoURL:newProfilePicture.photoURL
+                },{merge:true})
+            }).then(()=>{
+                navigation.navigate('Profile')
             }).catch(function(error) {
                 console.log(error)
-            });
-        }else if(newProfileUsername === newProfileUsername.displayName){
-            alert('This is your same Username')
-        }else{
-            return
-        }
+            })
     }
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -53,8 +49,8 @@ export default function EditAccount(){
                 onChangeText={setNewProfileUsername}
             />
             <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
-                 <Image source={{ uri: newProfilePicture.photoURL }} style={{ width: 125, height: 125 }} />
-                 <Button title="Pick a new Profile Picture" onPress={pickImage} />
+                <Image source={{ uri: newProfilePicture.photoURL }} style={{ width: 125, height: 125 }} />
+                <Button title="Pick a new Profile Picture" onPress={pickImage} />
             </View>
             <Button
                 color="#e98477"

@@ -5,7 +5,6 @@ import "firebase/firestore";
 import {useIsFocused, useNavigation} from '@react-navigation/native'
 
 export default function Dashboard(){
-    const currentUser = firebase.auth().currentUser
     const [userInformation, setUserInformation] = useState({
         displayName: '',
         photoURL:null
@@ -13,16 +12,14 @@ export default function Dashboard(){
     const navigation = useNavigation()
     const isFocused = useIsFocused();
 
-     useEffect(() => {
-         /*         firebase.firestore().collection('users').doc(currentUser.uid).get().then(doc=>{
-                     setUserDBData(doc.data())
-                 })*/
-         setUserInformation({
-             displayName: currentUser.displayName,
-             photoURL: currentUser.photoURL
-         })
+    useEffect(() => {
+        const currentUser = firebase.auth().currentUser
+        setUserInformation({
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL
+        })
 
-     }, [isFocused])
+    }, [isFocused])
     console.log(userInformation.displayName)
 
 
