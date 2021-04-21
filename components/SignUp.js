@@ -17,7 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 export default function Signup(){
     const navigation = useNavigation()
-    const [userDisplayName, setUserDisplayName] = useState({displayName:''})
+    const [userDisplayName, setUserDisplayName] = useState()
     const [userEmail, setUserEmail] = useState({email:''})
     const [userPassword, setUserPassword] = useState({password:''})
     const [isLoading, setLoading] = useState(false)
@@ -61,12 +61,13 @@ export default function Signup(){
             await firebase.auth().createUserWithEmailAndPassword(userEmail.email, userPassword.password)
                 .then((cred) => {
                     cred.user.updateProfile({
-                        displayName: userDisplayName.displayName,
+                        displayName: userDisplayName,
                         photoURL:image.photoURL
                     })
                     firebase.firestore().collection('users').doc(cred.user.uid).set({
-                        username: userDisplayName.displayName,
-                        email: userEmail.email
+                        username: userDisplayName,
+                        email: userEmail.email,
+                        photoURL:image.photoURL
                     }).then(() => {
                        navigation.navigate('Profile')
                     })
@@ -90,8 +91,8 @@ export default function Signup(){
             <TextInput
                 style={styles.inputStyle}
                 placeholder="Username"
-                onChangeText={(username)=>setUserDisplayName({displayName:username})}
-                value={userDisplayName.displayName}
+                onChangeText={(username)=>setUserDisplayName(username)}
+                value={userDisplayName}
             />
             <TextInput
                 style={styles.inputStyle}
