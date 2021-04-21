@@ -43,7 +43,7 @@ export default class Login extends Component {
                         isLoading:false
                     });
                     if(this.state.email || this.state.password !== firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)){
-                        alert('invalid password')
+                        alert('Invalid email or password')
 
                     }
                 })
