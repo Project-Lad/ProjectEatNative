@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import {Text, View, Button, Linking, Image, Modal, Pressable, StyleSheet, Platform} from "react-native";
 import {useNavigation} from '@react-navigation/native'
-import burger from '../assets/burger.jpg';
+import burger from '../assets/burger.gif';
+import Data from './YelpAPI.js'
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
 import androidStar15 from '../assets/android/stars_regular_1_half.png'
@@ -29,8 +30,6 @@ import firebase from "../firebase";
 import "firebase/firestore"
 
 
-let data = [];
-
 class Card extends React.Component {
     constructor(props) {
         super(props);
@@ -55,6 +54,30 @@ class Card extends React.Component {
     }
 }
 
+class LoadingCard extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return (
+            <View style={styles.card}>
+                <Image source={burger} style={styles.cardImage}/>
+
+                <Text style={styles.cardsText}>Finding Local Restaurants...</Text>
+
+                <View style={styles.yelpStars}>
+                    <Text style={styles.yelpText}>Please remember, if you are waiting a long time
+                        for the restaurants to load, there may be no restaurants nearby or your connection was lost.
+                        If this is the case,please increase the distance or establish a connection.</Text>
+                </View>
+            </View>
+        )
+    }
+}
+
+let data = [];
+
 const Cards = (props) => {
     let [resCounter, setCounter] = useState(0);
     let [modalVisible, setModalVisible] = useState(false);
@@ -75,113 +98,122 @@ const Cards = (props) => {
     let counter = 0;
     let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users')
 
-    for (let i = 0; i < props.restaurantData.length; i++) {
-        const current = props.restaurantData[i];
+    setData(props.restaurantData)
 
-        const id = current.id;
-        name = current.name;
-        const price_range = current.price;
-        address = current.location.address1;
-        if(current.location.address2 !== '' && current.location.address2 !== 'null') {
-            address += ', ';
-            address += current.location.address2;
-        }
+    function setData(restaurantData) {
+        try{
+            for (let i = 0; i < restaurantData.length; i++) {
+                const current = restaurantData[i];
+                console.log(current.name)
 
-        if(current.location.address3 !== '' && current.location.address3 !== 'null') {
-            address += ', ';
-            address += current.location.address3;
-        }
+                const id = current.id;
+                name = current.name;
+                const price_range = current.price;
+                address = current.location.address1;
+                if(current.location.address2 !== '' && current.location.address2 !== 'null') {
+                    address += ', ';
+                    address += current.location.address2;
+                }
 
-        address += '\n';
+                if(current.location.address3 !== '' && current.location.address3 !== 'null') {
+                    address += ', ';
+                    address += current.location.address3;
+                }
 
-        address += current.location.city + ', ' + current.location.state;
-        const phone_number = current.display_phone;
-        let rating = current.rating;
-        const imageURL = current.image_url;
-        const distance = current.distance;
-        const review_count = current.review_count;
+                address += '\n';
 
-        if(Platform.OS === 'android') {
-            switch(rating) {
-                case 0:
-                    rating = androidStar0
-                    break;
-                case 1:
-                    rating = androidStar1
-                    break;
-                case 1.5:
-                    rating = androidStar15
-                    break;
-                case 2:
-                    rating = androidStar2
-                    break;
-                case 2.5:
-                    rating = androidStar25
-                    break;
-                case 3:
-                    rating = androidStar3
-                    break;
-                case 3.5:
-                    rating = androidStar35
-                    break;
-                case 4:
-                    rating = androidStar4
-                    break;
-                case 4.5:
-                    rating = androidStar45
-                    break;
-                case 5:
-                    rating = androidStar5
-                    break;
+                address += current.location.city + ', ' + current.location.state;
+                const phone_number = current.display_phone;
+                let rating = current.rating;
+                const imageURL = current.image_url;
+                const distance = current.distance;
+                const review_count = current.review_count;
+
+                if(Platform.OS === 'android') {
+                    switch(rating) {
+                        case 0:
+                            rating = androidStar0
+                            break;
+                        case 1:
+                            rating = androidStar1
+                            break;
+                        case 1.5:
+                            rating = androidStar15
+                            break;
+                        case 2:
+                            rating = androidStar2
+                            break;
+                        case 2.5:
+                            rating = androidStar25
+                            break;
+                        case 3:
+                            rating = androidStar3
+                            break;
+                        case 3.5:
+                            rating = androidStar35
+                            break;
+                        case 4:
+                            rating = androidStar4
+                            break;
+                        case 4.5:
+                            rating = androidStar45
+                            break;
+                        case 5:
+                            rating = androidStar5
+                            break;
+                    }
+                } else {
+                    switch(rating) {
+                        case 0:
+                            rating = iosStar0
+                            break;
+                        case 1:
+                            rating = iosStar1
+                            break;
+                        case 1.5:
+                            rating = iosStar15
+                            break;
+                        case 2:
+                            rating = iosStar2
+                            break;
+                        case 2.5:
+                            rating = iosStar25
+                            break;
+                        case 3:
+                            rating = iosStar3
+                            break;
+                        case 3.5:
+                            rating = iosStar35
+                            break;
+                        case 4:
+                            rating = iosStar4
+                            break;
+                        case 4.5:
+                            rating = iosStar45
+                            break;
+                        case 5:
+                            rating = iosStar5
+                            break;
+                    }
+                }
+
+                data.push({
+                    id: id,
+                    name: name,
+                    price_range: price_range,
+                    address: address,
+                    rating: rating,
+                    review_count: review_count,
+                    distance: distance,
+                    phone_numbers: phone_number,
+                    imageURL: imageURL
+                })
+
+                counter = 0;
             }
-        } else {
-            switch(rating) {
-                case 0:
-                    rating = iosStar0
-                    break;
-                case 1:
-                    rating = iosStar1
-                    break;
-                case 1.5:
-                    rating = iosStar15
-                    break;
-                case 2:
-                    rating = iosStar2
-                    break;
-                case 2.5:
-                    rating = iosStar25
-                    break;
-                case 3:
-                    rating = iosStar3
-                    break;
-                case 3.5:
-                    rating = iosStar35
-                    break;
-                case 4:
-                    rating = iosStar4
-                    break;
-                case 4.5:
-                    rating = iosStar45
-                    break;
-                case 5:
-                    rating = iosStar5
-                    break;
-            }
+        } catch (e) {
+            console.log("Error: ", e)
         }
-
-        data.push({
-            id: id,
-            name: name,
-            price_range: price_range,
-            address: address,
-            rating: rating,
-            review_count: review_count,
-            distance: distance,
-            phone_numbers: phone_number,
-            imageURL: imageURL
-        })
-
-        counter = 0;
     }
 
     function handleYup(card) {
@@ -305,6 +337,7 @@ const Cards = (props) => {
                 if((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
+                    navigation.navigate('Final Decision',{id: docSnapshot.id})
                     console.log("Majority Rule")
                 }
             })
@@ -313,7 +346,9 @@ const Cards = (props) => {
 
     if (data.length === 0) {
         return (
-            <View/>
+            <View style={styles.container}>
+                <LoadingCard code={props.code} offset={props.offset}/>
+            </View>
         )
     } else {
         return (
@@ -349,11 +384,11 @@ const Cards = (props) => {
                     cards={data}
                     renderCard={(cardData) => <Card {...cardData} />}
                     keyExtractor={(cardData) => String(cardData.id)}
-                    renderNoMoreCards={() => <NoMoreCards />}
-
-                    // If you want a stack of cards instead of one-per-one view, activate stack mode
-                    //stack={true}
-                    //stackDepth={3}
+                    renderNoMoreCards={() =>
+                    {
+                        data=[]
+                        return (<Data code={props.code} offset={props.offset+50}/>)
+                    }}
                     handleYup={handleYup}
                     handleNope={handleNope}
                 />

@@ -1,7 +1,7 @@
 //checks for location
 import APIKEY from "../YelpAPIKey.js";
 import Cards from "./Cards.js";
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, View, Text} from "react-native";
 
 if (navigator.geolocation) {
@@ -22,6 +22,10 @@ function getPosition(position) {
 const Data = (props) => {
     let [restaurantData, setRestaurantData] = useState([]);
 
+    useEffect(() => {
+        getData()
+    }, [])
+
     function getData(){
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${APIKEY}`);
@@ -32,20 +36,18 @@ const Data = (props) => {
             redirect: 'follow'
         };
 
-        fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=0&radius=2000`, requestOptions)
+        fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=2000&sort_by=distance`, requestOptions)
             .then(response => response.json())
             .then(result => {
                 setRestaurantData(result.businesses);
-                console.log(result.businesses);
+                //console.log(result.businesses);
             })
             .catch(error => console.log('error', error));
     }
 
     return(
         <View className='container'>
-            <Cards restaurantData={restaurantData} code={props.code}/>
-            <Button title='Get Data' className="btn info" onPress={getData}/>
-            <Text>{props.code}</Text>
+            <Cards restaurantData={restaurantData} code={props.code} lat={latitude} lon={longitude} offset={props.offset}/>
         </View>
     )
 }
