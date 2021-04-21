@@ -1,5 +1,5 @@
 //checks for location
-import APIKEY from "../YelpAPIKey.js";
+import {YELP_API_KEY} from '@env'
 import React, {useState, useEffect} from 'react';
 import {Button, View, Text, Image, Platform, Linking, StyleSheet, ScrollView} from "react-native";
 import androidStar0 from '../assets/android/stars_regular_0.png'
@@ -55,7 +55,7 @@ const Decision = ({route}) => {
 
     function getData(){
         const myHeaders = new Headers();
-        myHeaders.append("Authorization", `Bearer ${APIKEY}`);
+        myHeaders.append("Authorization", `Bearer ${YELP_API_KEY}`);
 
         const requestOptions = {
             method: 'GET',
