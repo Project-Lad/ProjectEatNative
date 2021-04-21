@@ -1,47 +1,52 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import firebase from "firebase";
+import firebase from "../firebase";
 import "firebase/firestore";
 import {useIsFocused, useNavigation} from '@react-navigation/native'
 
+
 export default function Dashboard(){
-    const currentUser = firebase.auth().currentUser
-    const [userInformation, setUserInformation] = useState({
-        displayName: '',
-        photoURL:null
-    })
+    const user = firebase.auth().currentUser.uid
+    const [newProfileUsername, setNewProfileUsername] = useState()
+    const [newProfilePicture, setNewProfilePicture] = useState()
     const navigation = useNavigation()
     const isFocused = useIsFocused();
 
-     useEffect(() => {
-         /*         firebase.firestore().collection('users').doc(currentUser.uid).get().then(doc=>{
-                     setUserDBData(doc.data())
-                 })*/
-         setUserInformation({
-             displayName: currentUser.displayName,
-             photoURL: currentUser.photoURL
-         })
+    function userInformation(){
+        firebase.firestore().collection('users').doc(user).get().then((doc)=>{
+            setNewProfileUsername(doc.data().username)
+            setNewProfilePicture(doc.data().photoURL)
+        })
+    }
+       useEffect(()=>{
+           userInformation()
+        },[isFocused])
 
-     }, [isFocused])
-    console.log(userInformation.displayName)
-
+    /*console.log(user.displayName)*/
+    console.log(user)
+    //console.log(newProfilePicture)
 
     async function signOut(){
         await firebase.auth().signOut()
+    }
+    async function deleteAccount(){
+        await firebase.auth().currentUser.delete()
+        await firebase.firestore().collection('users').doc(user).delete()
     }
     return(
         <View style={styles.container}>
             <View style = {styles.card}>
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    {userInformation.photoURL && <Image source={{ uri: userInformation.photoURL }} style={{ width: 200, height: 200 }} />}
+                   {newProfilePicture && <Image source={{ uri: newProfilePicture }} style={{ width: 200, height: 200,borderRadius:100 }} />}
                 </View>
                 <Text style = {styles.textStyle}>
-                    Username: {userInformation.displayName}
+                    Username: {newProfileUsername}
                 </Text>
+
                 <TouchableOpacity
                     style={styles.editButton}
                     onPress={() => navigation.navigate('Edit Account')}>
-                    <Text>Edit Account</Text>
+                    <Text>Edit</Text>
                 </TouchableOpacity>
             </View>
 
@@ -53,12 +58,12 @@ export default function Dashboard(){
                     <Text style={styles.textButton}>Generate Code</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
+{/*                <TouchableOpacity
                     onPress={() => navigation.navigate('Friends List')}
                     style = {styles.buttonStyle}
                 >
                     <Text style={styles.textButton}>Friends List</Text>
-                </TouchableOpacity>
+                </TouchableOpacity>*/}
 
                 <TouchableOpacity
                     style={styles.buttonStyle}
@@ -72,10 +77,15 @@ export default function Dashboard(){
                 >
                     <Text style={styles.textButton}>Logout</Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={deleteAccount}
+                    style = {styles.buttonStyle}
+                >
+                    <Text style={styles.textButton}>delete</Text>
+                </TouchableOpacity>
             </View>
         </View>
     )
-
 }
 
 const styles = StyleSheet.create({

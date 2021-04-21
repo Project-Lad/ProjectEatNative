@@ -8,38 +8,42 @@ import * as ImagePicker from "expo-image-picker";
 export default function EditAccount(){
     const navigation = useNavigation()
     const currentUser = firebase.auth().currentUser
-    const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName,})
+    const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName})
     const [newProfilePicture, setNewProfilePicture] = useState({photoURL: currentUser.photoURL})
 
 
     function userName() {
-        if(newProfileUsername !== newProfileUsername.displayName && newProfilePicture !== newProfilePicture.photoURL){
+        //updates users displayName
+        firebase.auth().currentUser.updateProfile({
+            displayName:newProfileUsername.displayName
+        }).then(()=>{
+            //Then we update user profile picture
             firebase.auth().currentUser.updateProfile({
-                displayName: newProfileUsername.displayName,
                 photoURL:newProfilePicture.photoURL
+            }).then(()=>{
+                //then update the users firebase document and fields
+                firebase.firestore().collection('users').doc(currentUser.uid).set({
+                    username: newProfileUsername.displayName,
+                    photoURL:newProfilePicture.photoURL
+                },{merge:true})
+            }).then(()=>{
+                //Then we navigate back to Profile screen
+                navigation.navigate('Profile')
             })
-            firebase.firestore().collection('users').doc(currentUser.uid).set({
-                username: newProfileUsername,
-            },{merge:true}).then(()=>{
-                navigation.goBack('Profile')
-            }).catch(function(error) {
-                console.log(error)
-            });
-        }else if(newProfileUsername === newProfileUsername.displayName){
-            alert('This is your same Username')
-        }else{
-            return
-        }
-    }
+        }).catch(function(error) {
+            //Catch any errors
+            console.log(error)
+            alert(error)
+        })
+    };
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
+            aspect: [1, 1],
+            quality: 0.5,
         });
-
-        console.log(result);
+        /*console.log(result);*/
 
         if (!result.cancelled) {
             setNewProfilePicture({photoURL:result.uri});
@@ -49,12 +53,12 @@ export default function EditAccount(){
         <View style={styles.container}>
             <TextInput
                 style={styles.inputStyle}
-                placeholder={newProfileUsername.displayName}
-                onChangeText={setNewProfileUsername}
+                value={newProfileUsername.displayName}
+                onChangeText={(text)=>setNewProfileUsername({displayName:text})}
             />
             <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
-                 <Image source={{ uri: newProfilePicture.photoURL }} style={{ width: 125, height: 125 }} />
-                 <Button title="Pick a new Profile Picture" onPress={pickImage} />
+                <Image source={{ uri: newProfilePicture.photoURL }} style={{ width: 125, height: 125 }} />
+                <Button title="Pick a new Profile Picture" onPress={pickImage} />
             </View>
             <Button
                 color="#e98477"

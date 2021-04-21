@@ -16,7 +16,6 @@ export default function Connect() {
                 style={styles.inputStyle}
                 placeholder="Put Your Code Here 4Head"
                 value={inputCode}
-                keyboardType={'number-pad'}
                 onChangeText={setCode}
             />
 

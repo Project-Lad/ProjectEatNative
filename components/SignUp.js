@@ -17,7 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 export default function Signup(){
     const navigation = useNavigation()
-    const [userDisplayName, setUserDisplayName] = useState({displayName:''})
+    const [userDisplayName, setUserDisplayName] = useState()
     const [userEmail, setUserEmail] = useState({email:''})
     const [userPassword, setUserPassword] = useState({password:''})
     const [isLoading, setLoading] = useState(false)
@@ -39,8 +39,8 @@ export default function Signup(){
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
+            aspect: [1, 1],
+            quality: 0.5,
         });
 
         console.log(result);
@@ -51,28 +51,31 @@ export default function Signup(){
     };
 
     async function registerUser(){
-        if (userEmail.email === '' && userPassword.password === '') {
+        if (userEmail.email === '' && userPassword.password === '' && image.photoURL === null) {
             Alert.alert('Enter details to Sign Up!')
         } else {
-
             setLoading({
                 isLoading: true,
             })
             await firebase.auth().createUserWithEmailAndPassword(userEmail.email, userPassword.password)
                 .then((cred) => {
+                    //then callback with user info
                     cred.user.updateProfile({
-                        displayName: userDisplayName.displayName,
+                        displayName: userDisplayName,
                         photoURL:image.photoURL
+                    }).then(()=>{
+                        //then store user info in firestore
+                        firebase.firestore().collection('users').doc(cred.user.uid).set({
+                            username: userDisplayName,
+                            email: userEmail.email,
+                            photoURL:image.photoURL
+                        }).then(()=>{
+                            navigation.navigate('Profile')
+                        })
                     })
-                    firebase.firestore().collection('users').doc(cred.user.uid).set({
-                        username: userDisplayName.displayName,
-                        email: userEmail.email
-                    }).then(() => {
-                       navigation.navigate('Profile')
-                    })
-                })
-                .catch(error => setError({errorMessage: error.message}))
+                }).catch(error => setError({errorMessage: error.message}))
         }
+
     }
     if(isLoading){
         return(
@@ -84,14 +87,14 @@ export default function Signup(){
     return(
         <View style={styles.container}>
             <View style={{  alignItems: 'center', justifyContent: 'center' }}>
-                <Button title="Pick an image from camera roll" onPress={pickImage} />
                 {image.photoURL && <Image source={{ uri: image.photoURL }} style={{ width: 200, height: 200 }} />}
+                <Button title="Pick an image from camera roll" onPress={pickImage} />
             </View>
             <TextInput
                 style={styles.inputStyle}
                 placeholder="Username"
-                onChangeText={(username)=>setUserDisplayName({displayName:username})}
-                value={userDisplayName.displayName}
+                onChangeText={(username)=>setUserDisplayName(username)}
+                value={userDisplayName}
             />
             <TextInput
                 style={styles.inputStyle}
