@@ -1,7 +1,7 @@
 //checks for location
 import APIKEY from "../YelpAPIKey.js";
 import React, {useState, useEffect} from 'react';
-import {Button, View, Text, Image, Platform, Linking, StyleSheet, ScrollView} from "react-native";
+import {Button, View, Text, Image, Platform, Linking, StyleSheet, ScrollView, TouchableOpacity} from "react-native";
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
 import androidStar15 from '../assets/android/stars_regular_1_half.png'
@@ -23,6 +23,9 @@ import iosStar35 from '../assets/ios/regular_3_half.png'
 import iosStar4 from '../assets/ios/regular_4.png'
 import iosStar45 from '../assets/ios/regular_4_half.png'
 import iosStar5 from '../assets/ios/regular_5.png'
+import firebase from "../firebase";
+import {useNavigation} from "@react-navigation/native";
+import YelpImage from "../assets/YelpImage.png";
 
 const Decision = ({route}) => {
     let [restaurant, setRestaurant] = useState({
@@ -39,6 +42,7 @@ const Decision = ({route}) => {
     })
     let [isLoading, setIsLoading] = useState(false)
     let [selectedIndex, setSelectedIndex] = useState(0)
+    let navigation = useNavigation()
     let rating = ""
     let address = []
     let name = []
@@ -174,6 +178,12 @@ const Decision = ({route}) => {
         setSelectedIndex(selectedIndex)
     }
 
+    function deleteDocument() {
+        firebase.firestore().collection('sessions').doc(route.params.code).delete()
+            .catch((e) => console.log("Error: ", e))
+        navigation.navigate('Profile');
+    }
+
     if(isLoading === false) {
         return(
             <View>
@@ -202,7 +212,7 @@ const Decision = ({route}) => {
                                 key={image}
                                 style={[
                                     styles.whiteCircle,
-                                    {opacity: i === selectedIndex ? 0.5 : 1}
+                                    {opacity: i === selectedIndex ? 1 : 0.5}
                                 ]}
                             />
                         ))}
@@ -216,7 +226,11 @@ const Decision = ({route}) => {
                     <Text style={styles.yelpText}>{restaurant.location.city}, {restaurant.location.state}</Text>
                     <Image source={rating} />
                     <Text style={styles.yelpText}>Based on {restaurant.review_count} Reviews</Text>
+                    <TouchableOpacity onPress={() => Linking.openURL(restaurant.url)}>
+                        <Image style={styles.yelpImage} source={YelpImage}/>
+                    </TouchableOpacity>
                     <Button style={styles.button} title='Find on Google Maps' className="btn info" onPress={() => Linking.openURL(googleURL)}/>
+                    <Button style={styles.button} title='Finished' className="btn info" onPress={() => deleteDocument()}/>
                 </View>
             </View>
         )
@@ -231,6 +245,10 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderRadius:10,
         borderWidth: 2,
+    },
+    yelpImage: {
+        width: 150,
+        height: 75,
     },
     cardImages: {
         width: 400,

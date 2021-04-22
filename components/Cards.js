@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
-import {Text, View, Button, Linking, Image, Modal, Pressable, StyleSheet, Platform} from "react-native";
+import {Text, View, Image, Linking, Modal, Pressable, StyleSheet, Platform, TouchableOpacity} from "react-native";
 import {useNavigation} from '@react-navigation/native'
-import burger from '../assets/burger.gif';
+import burgerGIF from '../assets/burger.gif';
+import burgerJPG from '../assets/burger.jpg';
+import YelpImage from '../assets/YelpImage.png'
 import Data from './YelpAPI.js'
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
@@ -29,28 +31,53 @@ import SwipeCards from "react-native-swipe-cards-deck";
 import firebase from "../firebase";
 import "firebase/firestore"
 
-
 class Card extends React.Component {
     constructor(props) {
         super(props);
     }
 
     render() {
-        return (
-            <View style={styles.card}>
-                <Image source={{uri: `${this.props.imageURL}`}} style={styles.cardImage}/>
+        if(this.props.imageURL === burgerJPG) {
+            return (
+                <View style={styles.card}>
+                    <Image source={this.props.imageURL} style={styles.cardImage}/>
 
-                <Text style={styles.cardsText}>{this.props.name}</Text>
+                    <Text style={styles.cardsText}>{this.props.name}</Text>
 
-                <View style={styles.yelpStars}>
-                    <Text style={styles.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
-                    <Text style={styles.yelpText}>{this.props.address}</Text>
+                    <View style={styles.yelpStars}>
+                        <Text style={styles.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
+                        <Text style={styles.yelpText}>{this.props.address}</Text>
 
-                    <Image source={this.props.rating} />
-                    <Text style={styles.yelpText}>Based on {this.props.review_count} Reviews</Text>
+                        <Image source={this.props.rating} />
+                        <Text style={styles.yelpText}>Based on {this.props.review_count} Reviews</Text>
+                    </View>
+
+                    {/*<TouchableOpacity onPress={() => Linking.openURL(this.props.businessURL)}>
+                        <Image style={styles.yelpImage} source={YelpImage} />
+                    </TouchableOpacity>*/}
                 </View>
-            </View>
-        )
+            )
+        }else {
+            return (
+                <View style={styles.card}>
+                    <Image source={{uri: `${this.props.imageURL}`}} style={styles.cardImage}/>
+
+                    <Text style={styles.cardsText}>{this.props.name}</Text>
+
+                    <View style={styles.yelpStars}>
+                        <Text style={styles.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
+                        <Text style={styles.yelpText}>{this.props.address}</Text>
+
+                        <Image source={this.props.rating} />
+                        <Text style={styles.yelpText}>Based on {this.props.review_count} Reviews</Text>
+                    </View>
+
+                    <TouchableOpacity onPress={() => Linking.openURL(this.props.businessURL)}>
+                        <Image style={styles.yelpImage} source={YelpImage}/>
+                    </TouchableOpacity>
+                </View>
+            )
+        }
     }
 }
 
@@ -62,7 +89,7 @@ class LoadingCard extends React.Component {
     render() {
         return (
             <View style={styles.card}>
-                <Image source={burger} style={styles.cardImage}/>
+                <Image source={burgerGIF} style={styles.cardImage}/>
 
                 <Text style={styles.cardsText}>Finding Local Restaurants...</Text>
 
@@ -91,7 +118,8 @@ const Cards = (props) => {
         review_count: "0",
         distance: "0",
         phone_numbers: "phone_number",
-        imageURL: "imageURL"
+        imageURL: "imageURL",
+        businessURL: ""
     });
     let address = [];
     let name = [];
@@ -104,18 +132,21 @@ const Cards = (props) => {
         try{
             for (let i = 0; i < restaurantData.length; i++) {
                 const current = restaurantData[i];
-                console.log(current.name)
 
                 const id = current.id;
                 name = current.name;
                 const price_range = current.price;
                 address = current.location.address1;
-                if(current.location.address2 !== '' && current.location.address2 !== 'null') {
+                if(current.location.address2 === '' || current.location.address2 === null) {
+                    //console.log("Address 2: Null")
+                } else {
                     address += ', ';
                     address += current.location.address2;
                 }
 
-                if(current.location.address3 !== '' && current.location.address3 !== 'null') {
+                if(current.location.address3 === '' || current.location.address3 === null) {
+                    //console.log("Address 3: Null")
+                } else {
                     address += ', ';
                     address += current.location.address3;
                 }
@@ -125,7 +156,15 @@ const Cards = (props) => {
                 address += current.location.city + ', ' + current.location.state;
                 const phone_number = current.display_phone;
                 let rating = current.rating;
-                const imageURL = current.image_url;
+                const businessURL = current.url;
+                let imageURL;
+
+                if(current.image_url === '') {
+                    imageURL = burgerJPG;
+                } else {
+                    imageURL = current.image_url;
+                }
+
                 const distance = current.distance;
                 const review_count = current.review_count;
 
@@ -206,7 +245,8 @@ const Cards = (props) => {
                     review_count: review_count,
                     distance: distance,
                     phone_numbers: phone_number,
-                    imageURL: imageURL
+                    imageURL: imageURL,
+                    businessURL: businessURL
                 })
 
                 counter = 0;
@@ -303,8 +343,7 @@ const Cards = (props) => {
                 if((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
-                    //console.log(docSnapshot.id)
-                    navigation.navigate('Final Decision',{id: docSnapshot.id})
+                    navigation.navigate('Final Decision',{id: docSnapshot.id},{code: props.code})
                     console.log("Majority Rule")
                 }
             })
@@ -384,11 +423,11 @@ const Cards = (props) => {
                     cards={data}
                     renderCard={(cardData) => <Card {...cardData} />}
                     keyExtractor={(cardData) => String(cardData.id)}
-                    renderNoMoreCards={() =>
-                    {
-                        data=[]
-                        return (<Data code={props.code} offset={props.offset+50}/>)
-                    }}
+                    renderNoMoreCards={() => {
+                            data=[]
+                            return (<Data code={props.code} offset={props.offset+50}/>)
+                        }
+                    }
                     handleYup={handleYup}
                     handleNope={handleNope}
                 />
@@ -473,6 +512,10 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#bc0402'
     },
+    yelpImage: {
+        width: 150,
+        height: 75,
+    }
 });
 
 export default Cards;
