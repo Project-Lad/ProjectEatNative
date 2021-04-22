@@ -51,8 +51,8 @@ export default function Signup(){
     };
 
     async function registerUser(){
-        if (userEmail.email === '' && userPassword.password === '' && image.photoURL === null) {
-            Alert.alert('Enter details to Sign Up!')
+        if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '') {
+            Alert.alert('Fill in all fields')
         } else {
             setLoading({
                 isLoading: true,

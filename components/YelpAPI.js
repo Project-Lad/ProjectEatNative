@@ -1,5 +1,5 @@
 //checks for location
-import APIKEY from "../YelpAPIKey.js";
+import {YELP_API_KEY} from '@env'
 import Cards from "./Cards.js";
 import React, {useEffect, useState} from 'react';
 import {Button, View, Text} from "react-native";
@@ -28,7 +28,7 @@ const Data = (props) => {
 
     function getData(){
         const myHeaders = new Headers();
-        myHeaders.append("Authorization", `Bearer ${APIKEY}`);
+        myHeaders.append("Authorization", `Bearer ${YELP_API_KEY}`);
 
         const requestOptions = {
             method: 'GET',
@@ -40,7 +40,7 @@ const Data = (props) => {
             .then(response => response.json())
             .then(result => {
                 setRestaurantData(result.businesses);
-                //console.log(result.businesses);
+                console.log(result.businesses);
             })
             .catch(error => console.log('error', error));
     }
