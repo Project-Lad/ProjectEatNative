@@ -52,9 +52,9 @@ class Card extends React.Component {
                         <Text style={styles.yelpText}>Based on {this.props.review_count} Reviews</Text>
                     </View>
 
-                    {/*<TouchableOpacity onPress={() => Linking.openURL(this.props.businessURL)}>
+                    <TouchableOpacity onPress={() => Linking.openURL(this.props.businessURL)}>
                         <Image style={styles.yelpImage} source={YelpImage} />
-                    </TouchableOpacity>*/}
+                    </TouchableOpacity>
                 </View>
             )
         }else {
@@ -277,24 +277,38 @@ const Cards = (props) => {
             console.log(querySnapshot.size)
             querySnapshot.forEach(documentSnapshot => {
                 if (querySnapshot.size === 1) {
+                    //sets card state and shows modal when solo
                     setCardState(card)
                     setModalVisible(true)
-                }
-                if (documentSnapshot.id !== firebase.auth().currentUser.uid) {
-                    for (const restaurant in documentSnapshot.data()) {
-                        if(documentSnapshot.data()[restaurant] === restaurantID){
-                            counter += 1
+                } else {
+                    //if in a group, and match is not true
+                    if (match === false) {
+                        //compare current user to documentID to reduce redundancies
+                        if (documentSnapshot.id !== firebase.auth().currentUser.uid) {
+                            //for each restaurant in firebase data
+                            for (const restaurant in documentSnapshot.data()) {
+                                //check if document data restaurant is equal to this specific restaurant for this card
+                                if (documentSnapshot.data()[restaurant] === restaurantID) {
+                                    //add counter to amount of people
+                                    counter += 1
 
-                            if(querySnapshot.size === counter) {
-                                match = true
-                                setCardState(card)
-                                setModalVisible(true)
-                                console.log("Matched!")
+                                    //if the amount of people in lobby are equal to the counter
+                                    if (querySnapshot.size === counter) {
+                                        //set match to true, set card state, show modal, and console matched
+                                        match = true
+                                        setCardState(card)
+                                        setModalVisible(true)
+                                        console.log("Matched!")
+                                    }
+                                }
                             }
                         }
                     }
                 }
             })
+
+            //reset counter so when snapshot detects changes, it doesn't over count
+            counter = 1;
         })
         return true;
     }
@@ -314,21 +328,27 @@ const Cards = (props) => {
             sessionSize = querySnapshot.size
         })
 
+        //retrieve document
         matchedRef.get().then((doc) => {
+            //if the document data isn't null
             if(doc.data() == null) {
+                //console log that the document doesn't exist
                 console.log("Document Doesn't Exist, Creating Document")
+                //set the document counter to 1 for this user
                 matchedRef.set({
                     counter: 1
                 }).then(() => {
+                    //console log that the restaurant is successful
                     console.log("Matched restaurant successfully created!");
                 }).catch((error) => {
+                    //if there is an issue, console log error
                     console.error("Error creating matched restaurant: ", error);
                 });
-
-
             }
 
+            //if the data isn't null
             if(doc.data() != null) {
+                //update current document
                 matchedRef.update({
                     counter: doc.data().counter + increment
                 }).then(() => {
@@ -340,10 +360,11 @@ const Cards = (props) => {
 
             matchedRef.onSnapshot(docSnapshot => {
                 console.log(docSnapshot.data())
+                //if majority of the group wants this
                 if((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
-                    navigation.navigate('Final Decision',{id: docSnapshot.id},{code: props.code})
+                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code})
                     console.log("Majority Rule")
                 }
             })
@@ -351,6 +372,7 @@ const Cards = (props) => {
     }
 
     function hateIt() {
+        //basically the same as love it minus some features
         let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
             .collection('matched').doc(cardState.id)
 

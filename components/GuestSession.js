@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, FlatList} from 'react-native';
+import {StyleSheet, Text, View, FlatList, Image} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
+import burger from "../assets/burger.jpg";
 
 let TAG = "Console: ";
 
@@ -10,7 +11,9 @@ export default class GuestSession extends Component {
     state = {
         isLoading: true,
         users: [],
-        code: 0
+        code: 0,
+        photoURL: "",
+        photoFound: 0
     }
 
      constructor(props) {
@@ -23,26 +26,33 @@ export default class GuestSession extends Component {
          //obtain a doc reference to the session that was input on the Connect screen
          const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
 
-         docRef.get().then((docSnapshot) => {
-             //if this document exists
-             if (docSnapshot.exists) {
-                 //add the user to the document, merge so that way everyone's lobby updates properly
-                 docRef.collection('users').doc(firebase.auth().currentUser.uid).set({
-                     displayName: displayName
-                 }, {merge: true}).then(() => {
-                     console.log(TAG, "User successfully written!");
-                 }).catch((error) => {
-                     console.error(TAG, "Error writing user: ", error);
-                 });
+         //retrieve image
+         firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL()
+             .then((url) => {
+                 docRef.get().then((docSnapshot) => {
+                     //if this document exists
+                     if (docSnapshot.exists) {
+                         //add the user to the document, merge so that way everyone's lobby updates properly
+                         docRef.collection('users').doc(firebase.auth().currentUser.uid).set({
+                             displayName: displayName,
+                             photoURL: url
+                         }, {merge: true}).then(() => {
+                             console.log(TAG, "User successfully written!");
+                         }).catch((error) => {
+                             console.error(TAG, "Error writing user: ", error);
+                         });
 
-                 this.checkForUsers()
-                 this.checkForSessionStart()
-             } else {
-                 alert("Error: Session could not be found, please re-enter code")
-                 this.props.navigation.navigate('Connect')
-             }
-         })
-
+                         this.checkForUsers()
+                         this.checkForSessionStart()
+                     } else {
+                         alert("Error: Session could not be found, please re-enter code")
+                         this.props.navigation.navigate('Connect')
+                     }
+                 })
+             })
+             .catch((error) => {
+                 console.log("Error on photo retrieval: ", error)
+             })
          this.state.isLoading = false
      }
 
@@ -56,7 +66,8 @@ export default class GuestSession extends Component {
                 //push their id and displayName onto the array
                 usersLocal.push({
                     displayName: documentSnapshot.data().displayName,
-                    id: documentSnapshot.id
+                    id: documentSnapshot.id,
+                    photoURL: documentSnapshot.data().photoURL
                 })
             })
 
@@ -69,16 +80,20 @@ export default class GuestSession extends Component {
     }
 
     checkForSessionStart = () => {
+        let start = false
         //document reference to current session created
         const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
 
         //observer is created that when .start changes to true, it navigates to the swipe feature
         docRef.onSnapshot((documentSnapshot) => {
-            if(documentSnapshot.data().start) {
-                //navigate
-                this.props.navigation.navigate('Swipe Feature',{code:this.state.code})
+            if (start === false) {
+                if(documentSnapshot.data().start) {
+                    start = true
+                    //navigate
+                    this.props.navigation.navigate('Swipe Feature',{code:this.state.code})
+                }
             }
-        }, error => {
+        }, (error) => {
             console.log(`Encountered Error: ${error}`)
         })
     }
@@ -88,7 +103,19 @@ export default class GuestSession extends Component {
             <View style={styles.container}>
                 <FlatList
                     data={this.state.users}
-                    renderItem={({item}) => <Text>{item.displayName}</Text>}
+                    renderItem={({item}) => {
+                        if (item.photoURL === burger) {
+                            return (<View>
+                                <Image source={item.photoURL} style={styles.image}/>
+                                <Text>{item.displayName}</Text>
+                            </View>)
+                        } else {
+                            return (<View>
+                                <Image source={{uri: item.photoURL}} style={styles.image}/>
+                                <Text>{item.displayName}</Text>
+                            </View>)
+                        }
+                    }}
                     keyExtractor={item => item.id}
                 />
 
@@ -129,5 +156,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#fff'
+    },
+    image: {
+        width: 75,
+        height: 75,
+        borderRadius: 50,
     }
 });

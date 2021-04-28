@@ -50,6 +50,14 @@ export default function Signup(){
         }
     };
 
+    const uploadImage = async (uri, imageName) => {
+        const response = await fetch(uri);
+        const blob = await response.blob();
+
+        let ref = firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/`+ imageName);
+        return ref.put(blob)
+    }
+
     async function registerUser(){
         if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '') {
             Alert.alert('Fill in all fields')
@@ -69,6 +77,15 @@ export default function Signup(){
                             username: userDisplayName,
                             email: userEmail.email,
                             photoURL:image.photoURL
+                        }).then(() => {
+                            //upload image to firebase storage
+                            uploadImage(image.photoURL, "profilePicture")
+                                .then(() => {
+                                    console.log("Success")
+                                })
+                                .catch((error) => {
+                                    console.log("Error: ", error)
+                                })
                         }).then(()=>{
                             navigation.navigate('Profile')
                         })

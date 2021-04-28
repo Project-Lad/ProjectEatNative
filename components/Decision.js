@@ -38,7 +38,8 @@ const Decision = ({route}) => {
             state: ""
         },
         review_count: "",
-        photos: []
+        photos: [],
+        code: route.params.code
     })
     let [isLoading, setIsLoading] = useState(false)
     let [selectedIndex, setSelectedIndex] = useState(0)
@@ -51,11 +52,12 @@ const Decision = ({route}) => {
 
     useEffect(() => {
         console.log("Getting Data")
-        getData()
+        getData() //use API fetch only once to reduce amount of API calls
         setIsLoading(true)
     }, []);
 
-    setData() //somehow this works? however whenever any button is pushed or picture is swiped, this is called.
+    setData()   //called everytime an action occurs on the screen
+                //cannot call just one time otherwise googleURL doesn't work
 
     function getData(){
         const myHeaders = new Headers();
@@ -78,6 +80,7 @@ const Decision = ({route}) => {
     function setData() {
         rating = restaurant.rating
 
+        //set image based upon platform
         if(Platform.OS === 'android') {
             switch(rating) {
                 case 0:
@@ -146,23 +149,31 @@ const Decision = ({route}) => {
             }
         }
 
+        //split the first address into array
         address = restaurant.location.address1.split(' ')
+
+        //push city and state to the address array
         address.push(
             restaurant.location.city,
             restaurant.location.state
         )
 
+        //split name into an array
         name = restaurant.name.split(' ');
 
+        //while the name array isn't null
         while (name[counter] != null) {
+            //add to the google URL
             googleURL += name[counter];
             googleURL += "+";
             counter++;
         }
 
-        counter = 0;
+        counter = 0; //reset counter
 
+        //while address array isn't null
         while (address[counter] != null) {
+            //add to the google URL
             googleURL += address[counter];
             googleURL += "+";
             counter++;
@@ -171,6 +182,7 @@ const Decision = ({route}) => {
         console.log(googleURL)
     }
 
+    //for dots under images
     const setIndex = event => {
         const viewSize = event.nativeEvent.layoutMeasurement.width
         const contentOffset = event.nativeEvent.contentOffset.x;
@@ -179,9 +191,10 @@ const Decision = ({route}) => {
     }
 
     function deleteDocument() {
+        //delete the firebase document
         firebase.firestore().collection('sessions').doc(route.params.code).delete()
+            .then(() => {navigation.navigate('Profile')})
             .catch((e) => console.log("Error: ", e))
-        navigation.navigate('Profile');
     }
 
     if(isLoading === false) {
