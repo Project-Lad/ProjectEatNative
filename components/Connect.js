@@ -10,6 +10,10 @@ export default function Connect() {
     const navigation = useNavigation()
     const [inputCode, setCode] = useState()
 
+    let convertUpper = () => {
+        return inputCode.toString().toUpperCase()
+    }
+
     return (
         <View style={styles.container}>
             <TextInput
@@ -22,7 +26,9 @@ export default function Connect() {
             <Button
                 color="#e98477"
                 title="Connect to Friends"
-                onPress={() => navigation.navigate('Guest Session', {code:inputCode})}
+                onPress={() => {
+                    navigation.navigate('Guest Session', {code: convertUpper()})
+                }}
                 /*onPress={() => console.log({code:inputCode})}*/
             />
         </View>

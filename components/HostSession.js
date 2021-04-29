@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Button, FlatList, Image} from 'react-native';
+import {StyleSheet, Text, View, Button, FlatList, Image, Alert} from 'react-native';
 import burger from '../assets/burger.jpg'
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -111,6 +111,28 @@ export default class HostSession extends Component {
         })
     }
 
+    endLobby = () => {
+        Alert.alert("End Lobby",
+            "Are you sure you want to end this lobby?",
+            [
+                {
+                    text:"No",
+                    onPress:() => {}
+                },
+                {
+                    text:"Yes",
+                    onPress:() => {
+                        firebase.firestore().collection('sessions').doc(this.state.code).delete()
+                            .then(this.props.navigation.navigate('Profile'))
+                            .catch((error) => {
+                                console.log("End Lobby Error: ", error)
+                                this.props.navigation.navigate('Profile')})
+                    }
+                }
+            ]
+        )
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -150,6 +172,14 @@ export default class HostSession extends Component {
 
                         //navigate to the swipe page manually
                         this.props.navigation.navigate('Swipe Feature', {code: this.state.code})
+                    }}
+                />
+
+                <Button
+                    color="#e98477"
+                    title="Close Lobby"
+                    onPress={() => {
+                        this.endLobby()
                     }}
                 />
             </View>

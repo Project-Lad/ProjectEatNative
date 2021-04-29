@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, View, FlatList, Image} from 'react-native';
+import {StyleSheet, Text, View, FlatList, Image, Button, Alert} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import burger from "../assets/burger.jpg";
@@ -86,16 +86,44 @@ export default class GuestSession extends Component {
 
         //observer is created that when .start changes to true, it navigates to the swipe feature
         docRef.onSnapshot((documentSnapshot) => {
-            if (start === false) {
-                if(documentSnapshot.data().start) {
-                    start = true
-                    //navigate
-                    this.props.navigation.navigate('Swipe Feature',{code:this.state.code})
+            if (documentSnapshot.exists) {
+                if (start === false) {
+                    if(documentSnapshot.data().start) {
+                        start = true
+                        //navigate
+                        this.props.navigation.navigate('Swipe Feature',{code:this.state.code})
+                    }
                 }
+            } else {
+                Alert.alert('Lobby Closed', 'The lobby you are in has ended, returning to home')
+                this.props.navigation.navigate('Profile')
             }
         }, (error) => {
             console.log(`Encountered Error: ${error}`)
         })
+    }
+
+    leaveLobby = () => {
+        Alert.alert("Leaving Lobby",
+            "Are you sure you want to leave this lobby?",
+            [
+                {
+                    text:"No",
+                    onPress:() => {}
+                },
+                {
+                    text:"Yes",
+                    onPress:() => {
+                        firebase.firestore().collection('sessions').doc(this.state.code)
+                            .collection('users').doc(firebase.auth().currentUser.uid).delete()
+                            .then(this.props.navigation.navigate('Connect'))
+                            .catch((error) => {
+                                console.log("User Delete Error: ", error)
+                                this.props.navigation.navigate('Connect')})
+                    }
+                }
+            ]
+        )
     }
 
     render() {
@@ -120,6 +148,12 @@ export default class GuestSession extends Component {
                 />
 
                 <Text>{this.state.code}</Text>
+                <Button
+                    color="#e98477"
+                    title="Leave Lobby"
+                    onPress={() => {
+                        this.leaveLobby()
+                    }} />
             </View>
         );
     }
