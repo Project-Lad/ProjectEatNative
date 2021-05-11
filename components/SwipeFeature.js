@@ -7,7 +7,7 @@ export default function SwipeFeature({route}) {
 
     return (
         <View style={styles.container}>
-            <Data code={route.params.code} offset={0}/>
+            <Data code={route.params.code} zip={route.params.zip} offset={0}/>
             <StatusBar style="auto" />
         </View>
     );

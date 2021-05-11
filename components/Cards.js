@@ -447,7 +447,7 @@ const Cards = (props) => {
                     keyExtractor={(cardData) => String(cardData.id)}
                     renderNoMoreCards={() => {
                             data=[]
-                            return (<Data code={props.code} offset={props.offset+50}/>)
+                            return (<Data code={props.code} zip={props.zip} offset={props.offset+50}/>)
                         }
                     }
                     handleYup={handleYup}

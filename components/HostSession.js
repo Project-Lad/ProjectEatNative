@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {StyleSheet, Text, View, Button, FlatList, Image, Alert} from 'react-native';
+import React, {Component, useState} from 'react';
+import {StyleSheet, Text, View, Button, FlatList, Image, Alert, TextInput} from 'react-native';
 import burger from '../assets/burger.jpg'
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -13,7 +13,8 @@ export default class HostSession extends Component {
         users: [],
         code:0,
         photoURL: "",
-        photoFound: 0
+        photoFound: 0,
+        zip: null
     }
 
     constructor(props) {
@@ -36,7 +37,7 @@ export default class HostSession extends Component {
         firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL()
             .then((url) => {
                 //creates session using the newly generated code
-                firebase.firestore().collection('sessions').doc(this.state.code).set({match: false, start: false})
+                firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false})
                     .then(() => {
                         //adds the current host user to the document
                         firebase.firestore().collection('sessions').doc(this.state.code)
@@ -134,8 +135,16 @@ export default class HostSession extends Component {
     }
 
     render() {
+        //host changes distance and zipcode (possible change in future for users to change themselves)
         return (
             <View style={styles.container}>
+                <TextInput
+                    onChangeText={(text) => {
+                        this.setState({zip: text})
+                    }}
+                    value={this.state.zip}
+                    placeholder="Enter Zipcode or Leave Blank for Current Location"
+                />
 
                 <FlatList
                     data={this.state.users}
@@ -161,17 +170,38 @@ export default class HostSession extends Component {
                     color="#e98477"
                     title="Start"
                     onPress={() => {
-                        //updates the start field in the current session to true to send everyone to the swipe feature
-                        firebase.firestore().collection('sessions')
-                            .doc(this.state.code).update({start: true})
-                            .then(() => {
-                                console.log("Session start updated to true")
-                            }).catch(error => {
-                            console.log(`Encountered Update Error: ${error}`)
-                        })
+                        if(this.state.zip !== null) {
+                            let zipCodePattern = /^\d{5}$|^\d{5}-\d{4}$/;
 
-                        //navigate to the swipe page manually
-                        this.props.navigation.navigate('Swipe Feature', {code: this.state.code})
+                            if(zipCodePattern.test(this.state.zip)) {
+                                //updates the start field in the current session to true to send everyone to the swipe feature
+                                firebase.firestore().collection('sessions')
+                                    .doc(this.state.code).update({zip: this.state.zip, start: true})
+                                    .then(() => {
+                                        console.log("Session start updated to true, zipcode updated")
+                                    }).catch(error => {
+                                    console.log(`Encountered Update Error: ${error}`)
+                                })
+
+                                //navigate to the swipe page manually
+                                this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip})
+                            } else {
+                                Alert.alert("That zip dont work bucko")
+                            }
+
+                        } else {
+                            //updates the start field in the current session to true to send everyone to the swipe feature
+                            firebase.firestore().collection('sessions')
+                                .doc(this.state.code).update({start: true})
+                                .then(() => {
+                                    console.log("Session start updated to true")
+                                }).catch(error => {
+                                console.log(`Encountered Update Error: ${error}`)
+                            })
+
+                            //navigate to the swipe page manually
+                            this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null})
+                        }
                     }}
                 />
 

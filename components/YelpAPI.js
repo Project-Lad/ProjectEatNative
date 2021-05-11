@@ -36,18 +36,28 @@ const Data = (props) => {
             redirect: 'follow'
         };
 
-        fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=5000&sort_by=distance`, requestOptions)
-            .then(response => response.json())
-            .then(result => {
-                setRestaurantData(result.businesses);
-                console.log(result.businesses);
-            })
-            .catch(error => console.log('error', error));
+        if (props.zip === null) {
+            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=5000&sort_by=distance`, requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    setRestaurantData(result.businesses);
+                    console.log(result.businesses);
+                })
+                .catch(error => console.log('error', error));
+        } else {
+            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&location=${props.zip}&limit=50&offset=${props.offset}&radius=5000&sort_by=distance`, requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    setRestaurantData(result.businesses);
+                    console.log(result.businesses);
+                })
+                .catch(error => console.log('error', error));
+        }
     }
 
     return(
         <View className='container'>
-            <Cards restaurantData={restaurantData} code={props.code} lat={latitude} lon={longitude} offset={props.offset}/>
+            <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset}/>
         </View>
     )
 }

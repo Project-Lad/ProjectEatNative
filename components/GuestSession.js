@@ -94,7 +94,7 @@ export default class GuestSession extends Component {
                     if(documentSnapshot.data().start) {
                         //set start to true and navigate
                         start = true
-                        this.props.navigation.navigate('Swipe Feature',{code:this.state.code})
+                        this.props.navigation.navigate('Swipe Feature',{code:this.state.code, zip:documentSnapshot.data().zip})
                     }
                 }
             } else {
