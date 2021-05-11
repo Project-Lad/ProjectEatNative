@@ -86,15 +86,19 @@ export default class GuestSession extends Component {
 
         //observer is created that when .start changes to true, it navigates to the swipe feature
         docRef.onSnapshot((documentSnapshot) => {
+            //if document exists
             if (documentSnapshot.exists) {
+                //and lobby has not started
                 if (start === false) {
+                    //if start is true on firebase, then
                     if(documentSnapshot.data().start) {
+                        //set start to true and navigate
                         start = true
-                        //navigate
                         this.props.navigation.navigate('Swipe Feature',{code:this.state.code})
                     }
                 }
             } else {
+                //if lobby no longer exists, display lobby closed alert and return to main page
                 Alert.alert('Lobby Closed', 'The lobby you are in has ended, returning to home')
                 this.props.navigation.navigate('Profile')
             }
@@ -114,10 +118,12 @@ export default class GuestSession extends Component {
                 {
                     text:"Yes",
                     onPress:() => {
+                        //if yes, delete the user and navigate back to connection page
                         firebase.firestore().collection('sessions').doc(this.state.code)
                             .collection('users').doc(firebase.auth().currentUser.uid).delete()
                             .then(this.props.navigation.navigate('Connect'))
                             .catch((error) => {
+                                //if an error occurs, display console log and navigate back to connect
                                 console.log("User Delete Error: ", error)
                                 this.props.navigation.navigate('Connect')})
                     }
@@ -153,7 +159,8 @@ export default class GuestSession extends Component {
                     title="Leave Lobby"
                     onPress={() => {
                         this.leaveLobby()
-                    }} />
+                    }}
+                />
             </View>
         );
     }

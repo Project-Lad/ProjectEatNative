@@ -36,7 +36,7 @@ const Data = (props) => {
             redirect: 'follow'
         };
 
-        fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=2000&sort_by=distance`, requestOptions)
+        fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=5000&sort_by=distance`, requestOptions)
             .then(response => response.json())
             .then(result => {
                 setRestaurantData(result.businesses);

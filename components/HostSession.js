@@ -164,7 +164,7 @@ export default class HostSession extends Component {
                         //updates the start field in the current session to true to send everyone to the swipe feature
                         firebase.firestore().collection('sessions')
                             .doc(this.state.code).update({start: true})
-                            .then(r => {
+                            .then(() => {
                                 console.log("Session start updated to true")
                             }).catch(error => {
                             console.log(`Encountered Update Error: ${error}`)

@@ -1,10 +1,7 @@
-import React, {Component, useState} from 'react';
-import { StyleSheet, View, Button, TextInput,Alert} from 'react-native';
-import firebase from "../firebase";
+import React, {useState} from 'react';
+import { StyleSheet, View, Button, TextInput} from 'react-native';
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
-
-let TAG = "Console: ";
 
 export default function Connect() {
     const navigation = useNavigation()
@@ -29,7 +26,6 @@ export default function Connect() {
                 onPress={() => {
                     navigation.navigate('Guest Session', {code: convertUpper()})
                 }}
-                /*onPress={() => console.log({code:inputCode})}*/
             />
         </View>
     );
