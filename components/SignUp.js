@@ -8,12 +8,14 @@ import {
     Alert,
     ActivityIndicator,
     Platform,
-    Image,
+    Image, TouchableOpacity,
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import { useNavigation} from '@react-navigation/native'
 import * as ImagePicker from 'expo-image-picker';
+import {InputStyles,IconStyles} from "./InputStyles";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Signup(){
     const navigation = useNavigation()
@@ -85,77 +87,43 @@ export default function Signup(){
         )
     }
     return(
-        <View style={styles.container}>
+        <View style={InputStyles.container}>
             <View style={{  alignItems: 'center', justifyContent: 'center' }}>
-                {image.photoURL && <Image source={{ uri: image.photoURL }} style={{ width: 200, height: 200 }} />}
-                <Button title="Pick an image from camera roll" onPress={pickImage} />
+                {image.photoURL && <Image source={{ uri: image.photoURL }} style={IconStyles.profilePicture} />}
+                <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
+                    <Ionicons style={IconStyles.addProfilePic} name="person-add-outline"/>
+                </TouchableOpacity>
             </View>
             <TextInput
-                style={styles.inputStyle}
+                style={InputStyles.inputStyle}
                 placeholder="Username"
                 onChangeText={(username)=>setUserDisplayName(username)}
                 value={userDisplayName}
             />
             <TextInput
-                style={styles.inputStyle}
+                style={InputStyles.inputStyle}
                 placeholder="Email"
                 keyboardType={'email-address'}
                 onChangeText={email => setUserEmail({email:email})}
                 value={userEmail.email}
             />
             <TextInput
-                style={styles.inputStyle}
+                style={InputStyles.inputStyle}
                 placeholder="Password"
                 onChangeText={password => setUserPassword({password:password})}
                 maxLength={15}
                 secureTextEntry={true}
                 value={userPassword.password}
             />
-            <Button
-                color="#e98477"
-                title="Sign Up"
-                onPress={registerUser}
-            />
+            <TouchableOpacity style={InputStyles.buttons} onPress={registerUser}>
+                <Text style={InputStyles.buttonText}>Sign Up</Text>
+                <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+            </TouchableOpacity>
             <Text
-                style={styles.loginText}
+                style={InputStyles.loginText}
                 onPress={() => navigation.navigate('Login')}>
-                Already Registered? Click here to login
+                Already Registered? Login
             </Text>
         </View>
     )
 }
-
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        padding: 35,
-        backgroundColor: '#fff'
-    },
-    inputStyle: {
-        width: '100%',
-        marginBottom: 15,
-        paddingBottom: 15,
-        alignSelf: "center",
-        borderColor: "#ccc",
-        borderBottomWidth: 1
-    },
-    loginText: {
-        color: '#000',
-        marginTop: 25,
-        textAlign: 'center'
-    },
-    preloader: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        position: 'absolute',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#fff'
-    }
-});

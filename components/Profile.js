@@ -3,6 +3,8 @@ import {Button, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-nat
 import firebase from "../firebase";
 import "firebase/firestore";
 import {useIsFocused, useNavigation} from '@react-navigation/native'
+import {InputStyles,IconStyles,ProfileStyles} from "./InputStyles";
+import { Ionicons } from '@expo/vector-icons';
 
 
 export default function Dashboard(){
@@ -34,28 +36,30 @@ export default function Dashboard(){
         await firebase.firestore().collection('users').doc(user).delete()
     }
     return(
-        <View style={styles.container}>
-            <View style = {styles.card}>
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                   {newProfilePicture && <Image source={{ uri: newProfilePicture }} style={{ width: 200, height: 200,borderRadius:100 }} />}
+        <View style={ProfileStyles.container}>
+            {/*Profile Card View*/}
+            <View style = {ProfileStyles.card}>
+                <View>
+                   {newProfilePicture && <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />}
                 </View>
-                <Text style = {styles.textStyle}>
-                    Username: {newProfileUsername}
-                </Text>
-
+                <View style={{paddingTop:10}}>
+                    <Text style={InputStyles.buttonText}>
+                        {newProfileUsername}
+                    </Text>
+                </View>
                 <TouchableOpacity
-                    style={styles.editButton}
+                    style={ProfileStyles.editButton}
                     onPress={() => navigation.navigate('Edit Account')}>
-                    <Text>Edit</Text>
+                    <Ionicons style={IconStyles.iconLeft} name="create-outline"/>
                 </TouchableOpacity>
             </View>
 
-            <View styles={styles.buttonView}>
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('HostSession')}
-                    style = {styles.buttonStyle}
-                >
-                    <Text style={styles.textButton}>Generate Code</Text>
+            {/*Button View*/}
+            <View styles={InputStyles.container}>
+                <TouchableOpacity onPress={() => navigation.navigate('HostSession')} style = {InputStyles.buttons}>
+                    <Ionicons style={IconStyles.iconLeft} name="fast-food-outline"/>
+                    <Text style={InputStyles.buttonText}>Create Lobby</Text>
+                    <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                 </TouchableOpacity>
 
 {/*                <TouchableOpacity
@@ -65,77 +69,25 @@ export default function Dashboard(){
                     <Text style={styles.textButton}>Friends List</Text>
                 </TouchableOpacity>*/}
 
-                <TouchableOpacity
-                    style={styles.buttonStyle}
-                    onPress={() => navigation.navigate('Connect')}>
-                    <Text style={styles.textButton}>Connect to a Session</Text>
+                <TouchableOpacity style={InputStyles.buttons} onPress={() => navigation.navigate('Connect')}>
+                    <Ionicons style={IconStyles.iconLeft} name="people"/>
+                    <Text style={InputStyles.buttonText}>Join Lobby</Text>
+                    <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={signOut} style = {InputStyles.buttons}>
+                    <Ionicons style={IconStyles.iconLeft} name="log-out-outline"/>
+                    <Text style={InputStyles.buttonText}>Logout</Text>
+                    <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={signOut}
-                    style = {styles.buttonStyle}
-                >
-                    <Text style={styles.textButton}>Logout</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
                     onPress={deleteAccount}
-                    style = {styles.buttonStyle}
+                    style = {InputStyles.buttons}
                 >
-                    <Text style={styles.textButton}>delete</Text>
+                    <Text style={InputStyles.buttonText}>delete</Text>
                 </TouchableOpacity>
             </View>
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        display: "flex",
-        padding: 25,
-        backgroundColor: '#fff'
-    },
-    textStyle: {
-        fontSize: 15,
-        marginBottom: 10,
-    },
-    card:{
-        backgroundColor: '#fff',
-        justifyContent:'center',
-        alignItems: 'center',
-        width:'100%',
-        height:'50%',
-        borderRadius:10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.8,
-        shadowRadius: 2,
-        elevation: 6,
-        marginBottom:10
-    },
-    editButton:{
-        position:'absolute',
-        bottom:20,
-        right:10,
-    },
-    buttonView:{
-        flex: 1,
-        alignSelf: "center",
-    },
-    textButton:{
-        color:'#fff',
-        textAlign:'center'
-    },
-    buttonStyle:{
-        marginBottom: 10,
-        width:"100%",
-        backgroundColor:"#e98477",
-        padding:10,
-        borderRadius:5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.8,
-        shadowRadius: 2,
-        elevation: 4,
-    }
-});

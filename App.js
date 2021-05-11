@@ -24,9 +24,9 @@ function AuthStack() {
             screenOptions={{
                 headerTitleAlign: 'center',
                 headerStyle: {
-                    backgroundColor: '#37edfe',
+                    backgroundColor: '#EBBB5C',
                 },
-                headerTintColor: '#333',
+                headerTintColor: '#2A232D',
                 headerTitleStyle: {
                     fontWeight: 'bold',
                 },
@@ -99,9 +99,9 @@ function LoginSignup(){
         screenOptions={{
             headerTitleAlign: 'center',
             headerStyle: {
-                backgroundColor: '#37edfe',
+                backgroundColor: '#EBBB5C',
             },
-            headerTintColor: '#333',
+            headerTintColor: '#2A232D',
             headerTitleStyle: {
                 fontWeight: 'bold',
             },
