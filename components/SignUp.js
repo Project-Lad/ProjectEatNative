@@ -1,10 +1,8 @@
-import React, { Component,useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    StyleSheet,
     Text,
     View,
     TextInput,
-    Button,
     Alert,
     ActivityIndicator,
     Platform,
@@ -23,7 +21,6 @@ export default function Signup(){
     const [userEmail, setUserEmail] = useState({email:''})
     const [userPassword, setUserPassword] = useState({password:''})
     const [isLoading, setLoading] = useState(false)
-    const [isError, setError] = useState('')
     const [image, setImage] = useState({photoURL:null});
 
     useEffect(() => {
@@ -75,13 +72,15 @@ export default function Signup(){
                             navigation.navigate('Profile')
                         })
                     })
-                }).catch(error => setError({errorMessage: error.message}))
+                }).catch(error => {
+                    console.log(error.message)
+                })
         }
 
     }
     if(isLoading){
         return(
-            <View style={styles.preloader}>
+            <View style={InputStyles.preloader}>
                 <ActivityIndicator size="large" color="#9E9E9E"/>
             </View>
         )

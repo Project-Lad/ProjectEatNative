@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {useIsFocused, useNavigation} from '@react-navigation/native'
@@ -25,7 +25,7 @@ export default function Dashboard(){
         },[isFocused])
 
     /*console.log(user.displayName)*/
-    console.log(user)
+    //console.log(user)
     //console.log(newProfilePicture)
 
     async function signOut(){

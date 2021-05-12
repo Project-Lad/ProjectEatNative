@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import {StyleSheet, Text, View, TextInput, Button, Alert, TouchableOpacity, Image} from 'react-native';
+import {Text, View, TextInput, TouchableOpacity, Image} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
+import {InputStyles,IconStyles} from "./InputStyles";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function EditAccount(){
     const navigation = useNavigation()
@@ -35,7 +37,7 @@ export default function EditAccount(){
             console.log(error)
             alert(error)
         })
-    };
+    }
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -50,54 +52,22 @@ export default function EditAccount(){
         }
     };
     return(
-        <View style={styles.container}>
+        <View style={InputStyles.container}>
+            <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
+                <Image source={{ uri: newProfilePicture.photoURL }} style={IconStyles.profilePicture} />
+                <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
+                    <Ionicons style={IconStyles.addProfilePic} name="camera-outline"/>
+                </TouchableOpacity>
+            </View>
             <TextInput
-                style={styles.inputStyle}
+                style={InputStyles.inputStyle}
                 value={newProfileUsername.displayName}
                 onChangeText={(text)=>setNewProfileUsername({displayName:text})}
             />
-            <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
-                <Image source={{ uri: newProfilePicture.photoURL }} style={{ width: 125, height: 125 }} />
-                <Button title="Pick a new Profile Picture" onPress={pickImage} />
-            </View>
-            <Button
-                color="#e98477"
-                title="Update"
-                onPress={userName}
-            />
+            <TouchableOpacity style={InputStyles.buttons} onPress={userName}>
+                <Text style={InputStyles.buttonText}>Update</Text>
+                <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+            </TouchableOpacity>
         </View>
     )
 }
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        padding: 35,
-        backgroundColor: '#fff'
-    },
-    inputStyle: {
-        width: '100%',
-        marginBottom: 15,
-        paddingBottom: 15,
-        alignSelf: "center",
-        borderColor: "#ccc",
-        borderBottomWidth: 1
-    },
-    loginText: {
-        color: '#000',
-        marginTop: 25,
-        textAlign: 'center'
-    },
-    preloader: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        position: 'absolute',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#fff'
-    }
-});
