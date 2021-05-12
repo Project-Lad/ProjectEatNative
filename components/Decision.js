@@ -1,7 +1,7 @@
 //checks for location
 import {YELP_API_KEY} from '@env'
 import React, {useState, useEffect} from 'react';
-import {Button, View, Text, Image, Platform, Linking, StyleSheet, ScrollView} from "react-native";
+import {Button, View, Text, Image, Platform, Linking, StyleSheet, ScrollView, TouchableOpacity} from "react-native";
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
 import androidStar15 from '../assets/android/stars_regular_1_half.png'
@@ -23,6 +23,9 @@ import iosStar35 from '../assets/ios/regular_3_half.png'
 import iosStar4 from '../assets/ios/regular_4.png'
 import iosStar45 from '../assets/ios/regular_4_half.png'
 import iosStar5 from '../assets/ios/regular_5.png'
+import firebase from "../firebase";
+import {useNavigation} from "@react-navigation/native";
+import YelpImage from "../assets/YelpImage.png";
 
 const Decision = ({route}) => {
     let [restaurant, setRestaurant] = useState({
@@ -35,10 +38,12 @@ const Decision = ({route}) => {
             state: ""
         },
         review_count: "",
-        photos: []
+        photos: [],
+        code: route.params.code
     })
     let [isLoading, setIsLoading] = useState(false)
     let [selectedIndex, setSelectedIndex] = useState(0)
+    let navigation = useNavigation()
     let rating = ""
     let address = []
     let name = []
@@ -47,11 +52,12 @@ const Decision = ({route}) => {
 
     useEffect(() => {
         console.log("Getting Data")
-        getData()
+        getData() //use API fetch only once to reduce amount of API calls
         setIsLoading(true)
     }, []);
 
-    setData() //somehow this works? however whenever any button is pushed or picture is swiped, this is called.
+    setData()   //called everytime an action occurs on the screen
+                //cannot call just one time otherwise googleURL doesn't work
 
     function getData(){
         const myHeaders = new Headers();
@@ -74,6 +80,7 @@ const Decision = ({route}) => {
     function setData() {
         rating = restaurant.rating
 
+        //set image based upon platform
         if(Platform.OS === 'android') {
             switch(rating) {
                 case 0:
@@ -142,23 +149,31 @@ const Decision = ({route}) => {
             }
         }
 
+        //split the first address into array
         address = restaurant.location.address1.split(' ')
+
+        //push city and state to the address array
         address.push(
             restaurant.location.city,
             restaurant.location.state
         )
 
+        //split name into an array
         name = restaurant.name.split(' ');
 
+        //while the name array isn't null
         while (name[counter] != null) {
+            //add to the google URL
             googleURL += name[counter];
             googleURL += "+";
             counter++;
         }
 
-        counter = 0;
+        counter = 0; //reset counter
 
+        //while address array isn't null
         while (address[counter] != null) {
+            //add to the google URL
             googleURL += address[counter];
             googleURL += "+";
             counter++;
@@ -167,11 +182,19 @@ const Decision = ({route}) => {
         console.log(googleURL)
     }
 
+    //for dots under images
     const setIndex = event => {
         const viewSize = event.nativeEvent.layoutMeasurement.width
         const contentOffset = event.nativeEvent.contentOffset.x;
         const selectedIndex = Math.floor(contentOffset / viewSize)
         setSelectedIndex(selectedIndex)
+    }
+
+    function deleteDocument() {
+        //delete the firebase document
+        firebase.firestore().collection('sessions').doc(route.params.code).delete()
+            .then(() => {navigation.navigate('Profile')})
+            .catch((e) => console.log("Error: ", e))
     }
 
     if(isLoading === false) {
@@ -202,7 +225,7 @@ const Decision = ({route}) => {
                                 key={image}
                                 style={[
                                     styles.whiteCircle,
-                                    {opacity: i === selectedIndex ? 0.5 : 1}
+                                    {opacity: i === selectedIndex ? 1 : 0.5}
                                 ]}
                             />
                         ))}
@@ -216,7 +239,11 @@ const Decision = ({route}) => {
                     <Text style={styles.yelpText}>{restaurant.location.city}, {restaurant.location.state}</Text>
                     <Image source={rating} />
                     <Text style={styles.yelpText}>Based on {restaurant.review_count} Reviews</Text>
+                    <TouchableOpacity onPress={() => Linking.openURL(restaurant.url)}>
+                        <Image style={styles.yelpImage} source={YelpImage}/>
+                    </TouchableOpacity>
                     <Button style={styles.button} title='Find on Google Maps' className="btn info" onPress={() => Linking.openURL(googleURL)}/>
+                    <Button style={styles.button} title='Finished' className="btn info" onPress={() => deleteDocument()}/>
                 </View>
             </View>
         )
@@ -231,6 +258,10 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderRadius:10,
         borderWidth: 2,
+    },
+    yelpImage: {
+        width: 150,
+        height: 75,
     },
     cardImages: {
         width: 400,

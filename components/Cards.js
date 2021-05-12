@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
-import {Text, View, Button, Linking, Image, Modal, Pressable, StyleSheet, Platform} from "react-native";
+import {Text, View, Image, Linking, Modal, Pressable, StyleSheet, Platform, TouchableOpacity} from "react-native";
 import {useNavigation} from '@react-navigation/native'
-import burger from '../assets/burger.gif';
+import burgerGIF from '../assets/burger.gif';
+import burgerJPG from '../assets/burger.jpg';
+import YelpImage from '../assets/YelpImage.png'
 import Data from './YelpAPI.js'
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
@@ -29,28 +31,53 @@ import SwipeCards from "react-native-swipe-cards-deck";
 import firebase from "../firebase";
 import "firebase/firestore"
 
-
 class Card extends React.Component {
     constructor(props) {
         super(props);
     }
 
     render() {
-        return (
-            <View style={styles.card}>
-                <Image source={{uri: `${this.props.imageURL}`}} style={styles.cardImage}/>
+        if(this.props.imageURL === burgerJPG) {
+            return (
+                <View style={styles.card}>
+                    <Image source={this.props.imageURL} style={styles.cardImage}/>
 
-                <Text style={styles.cardsText}>{this.props.name}</Text>
+                    <Text style={styles.cardsText}>{this.props.name}</Text>
 
-                <View style={styles.yelpStars}>
-                    <Text style={styles.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
-                    <Text style={styles.yelpText}>{this.props.address}</Text>
+                    <View style={styles.yelpStars}>
+                        <Text style={styles.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
+                        <Text style={styles.yelpText}>{this.props.address}</Text>
 
-                    <Image source={this.props.rating} />
-                    <Text style={styles.yelpText}>Based on {this.props.review_count} Reviews</Text>
+                        <Image source={this.props.rating} />
+                        <Text style={styles.yelpText}>Based on {this.props.review_count} Reviews</Text>
+                    </View>
+
+                    <TouchableOpacity onPress={() => Linking.openURL(this.props.businessURL)}>
+                        <Image style={styles.yelpImage} source={YelpImage} />
+                    </TouchableOpacity>
                 </View>
-            </View>
-        )
+            )
+        }else {
+            return (
+                <View style={styles.card}>
+                    <Image source={{uri: `${this.props.imageURL}`}} style={styles.cardImage}/>
+
+                    <Text style={styles.cardsText}>{this.props.name}</Text>
+
+                    <View style={styles.yelpStars}>
+                        <Text style={styles.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
+                        <Text style={styles.yelpText}>{this.props.address}</Text>
+
+                        <Image source={this.props.rating} />
+                        <Text style={styles.yelpText}>Based on {this.props.review_count} Reviews</Text>
+                    </View>
+
+                    <TouchableOpacity onPress={() => Linking.openURL(this.props.businessURL)}>
+                        <Image style={styles.yelpImage} source={YelpImage}/>
+                    </TouchableOpacity>
+                </View>
+            )
+        }
     }
 }
 
@@ -62,7 +89,7 @@ class LoadingCard extends React.Component {
     render() {
         return (
             <View style={styles.card}>
-                <Image source={burger} style={styles.cardImage}/>
+                <Image source={burgerGIF} style={styles.cardImage}/>
 
                 <Text style={styles.cardsText}>Finding Local Restaurants...</Text>
 
@@ -91,7 +118,8 @@ const Cards = (props) => {
         review_count: "0",
         distance: "0",
         phone_numbers: "phone_number",
-        imageURL: "imageURL"
+        imageURL: "imageURL",
+        businessURL: ""
     });
     let address = [];
     let name = [];
@@ -104,18 +132,21 @@ const Cards = (props) => {
         try{
             for (let i = 0; i < restaurantData.length; i++) {
                 const current = restaurantData[i];
-                console.log(current.name)
 
                 const id = current.id;
                 name = current.name;
                 const price_range = current.price;
                 address = current.location.address1;
-                if(current.location.address2 !== '' && current.location.address2 !== 'null') {
+                if(current.location.address2 === '' || current.location.address2 === null) {
+                    //console.log("Address 2: Null")
+                } else {
                     address += ', ';
                     address += current.location.address2;
                 }
 
-                if(current.location.address3 !== '' && current.location.address3 !== 'null') {
+                if(current.location.address3 === '' || current.location.address3 === null) {
+                    //console.log("Address 3: Null")
+                } else {
                     address += ', ';
                     address += current.location.address3;
                 }
@@ -125,7 +156,15 @@ const Cards = (props) => {
                 address += current.location.city + ', ' + current.location.state;
                 const phone_number = current.display_phone;
                 let rating = current.rating;
-                const imageURL = current.image_url;
+                const businessURL = current.url;
+                let imageURL;
+
+                if(current.image_url === '') {
+                    imageURL = burgerJPG;
+                } else {
+                    imageURL = current.image_url;
+                }
+
                 const distance = current.distance;
                 const review_count = current.review_count;
 
@@ -196,7 +235,6 @@ const Cards = (props) => {
                             break;
                     }
                 }
-
                 data.push({
                     id: id,
                     name: name,
@@ -206,7 +244,8 @@ const Cards = (props) => {
                     review_count: review_count,
                     distance: distance,
                     phone_numbers: phone_number,
-                    imageURL: imageURL
+                    imageURL: imageURL,
+                    businessURL: businessURL
                 })
 
                 counter = 0;
@@ -237,24 +276,38 @@ const Cards = (props) => {
             console.log(querySnapshot.size)
             querySnapshot.forEach(documentSnapshot => {
                 if (querySnapshot.size === 1) {
+                    //sets card state and shows modal when solo
                     setCardState(card)
                     setModalVisible(true)
-                }
-                if (documentSnapshot.id !== firebase.auth().currentUser.uid) {
-                    for (const restaurant in documentSnapshot.data()) {
-                        if(documentSnapshot.data()[restaurant] === restaurantID){
-                            counter += 1
+                } else {
+                    //if in a group, and match is not true
+                    if (match === false) {
+                        //compare current user to documentID to reduce redundancies
+                        if (documentSnapshot.id !== firebase.auth().currentUser.uid) {
+                            //for each restaurant in firebase data
+                            for (const restaurant in documentSnapshot.data()) {
+                                //check if document data restaurant is equal to this specific restaurant for this card
+                                if (documentSnapshot.data()[restaurant] === restaurantID) {
+                                    //add counter to amount of people
+                                    counter += 1
 
-                            if(querySnapshot.size === counter) {
-                                match = true
-                                setCardState(card)
-                                setModalVisible(true)
-                                console.log("Matched!")
+                                    //if the amount of people in lobby are equal to the counter
+                                    if (querySnapshot.size === counter) {
+                                        //set match to true, set card state, show modal, and console matched
+                                        match = true
+                                        setCardState(card)
+                                        setModalVisible(true)
+                                        console.log("Matched!")
+                                    }
+                                }
                             }
                         }
                     }
                 }
             })
+
+            //reset counter so when snapshot detects changes, it doesn't over count
+            counter = 1;
         })
         return true;
     }
@@ -274,21 +327,27 @@ const Cards = (props) => {
             sessionSize = querySnapshot.size
         })
 
+        //retrieve document
         matchedRef.get().then((doc) => {
+            //if the document data isn't null
             if(doc.data() == null) {
+                //console log that the document doesn't exist
                 console.log("Document Doesn't Exist, Creating Document")
+                //set the document counter to 1 for this user
                 matchedRef.set({
                     counter: 1
                 }).then(() => {
+                    //console log that the restaurant is successful
                     console.log("Matched restaurant successfully created!");
                 }).catch((error) => {
+                    //if there is an issue, console log error
                     console.error("Error creating matched restaurant: ", error);
                 });
-
-
             }
 
+            //if the data isn't null
             if(doc.data() != null) {
+                //update current document
                 matchedRef.update({
                     counter: doc.data().counter + increment
                 }).then(() => {
@@ -300,11 +359,11 @@ const Cards = (props) => {
 
             matchedRef.onSnapshot(docSnapshot => {
                 console.log(docSnapshot.data())
+                //if majority of the group wants this
                 if((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
-                    //console.log(docSnapshot.id)
-                    navigation.navigate('Final Decision',{id: docSnapshot.id})
+                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code})
                     console.log("Majority Rule")
                 }
             })
@@ -312,6 +371,7 @@ const Cards = (props) => {
     }
 
     function hateIt() {
+        //basically the same as love it minus some features
         let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
             .collection('matched').doc(cardState.id)
 
@@ -384,11 +444,11 @@ const Cards = (props) => {
                     cards={data}
                     renderCard={(cardData) => <Card {...cardData} />}
                     keyExtractor={(cardData) => String(cardData.id)}
-                    renderNoMoreCards={() =>
-                    {
-                        data=[]
-                        return (<Data code={props.code} offset={props.offset+50}/>)
-                    }}
+                    renderNoMoreCards={() => {
+                            data=[]
+                            return (<Data code={props.code} offset={props.offset+50}/>)
+                        }
+                    }
                     handleYup={handleYup}
                     handleNope={handleNope}
                 />
@@ -473,6 +533,10 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#bc0402'
     },
+    yelpImage: {
+        width: 150,
+        height: 75,
+    }
 });
 
 export default Cards;

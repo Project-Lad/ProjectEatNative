@@ -40,7 +40,7 @@ const Data = (props) => {
             .then(response => response.json())
             .then(result => {
                 setRestaurantData(result.businesses);
-                //console.log(result.businesses);
+                console.log(result.businesses);
             })
             .catch(error => console.log('error', error));
     }

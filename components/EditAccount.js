@@ -45,12 +45,27 @@ export default function EditAccount(){
             aspect: [1, 1],
             quality: 0.5,
         });
-        /*console.log(result);*/
 
         if (!result.cancelled) {
-            setNewProfilePicture({photoURL:result.uri});
+            //uploads the image to firebase storage
+            uploadImage(result.uri, "profilePicture")
+                .then(() => {
+                    setNewProfilePicture({photoURL:result.uri})
+                })
+                .catch((error) => {
+                    Alert.alert("Error: ", error)
+                })
         }
     };
+
+    const uploadImage = async (uri, imageName) => {
+        const response = await fetch(uri);
+        const blob = await response.blob();
+
+        let ref = firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/`+ imageName);
+        return ref.put(blob)
+    }
+
     return(
         <View style={InputStyles.container}>
             <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>

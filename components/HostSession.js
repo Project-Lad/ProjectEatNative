@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Button, FlatList} from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, Image} from 'react-native';
+import burger from '../assets/burger.jpg'
 import firebase from "../firebase";
 import "firebase/firestore";
 
@@ -10,7 +11,9 @@ export default class HostSession extends Component {
     state = {
         isLoading: true,
         users: [],
-        code:0
+        code:0,
+        photoURL: "",
+        photoFound: 0
     }
 
     constructor(props) {
@@ -29,27 +32,33 @@ export default class HostSession extends Component {
 
         let displayName = firebase.auth().currentUser.displayName
 
-        //creates session using the newly generated code
-        firebase.firestore().collection('sessions').doc(this.state.code).set({match: false, start: false})
-            .then(() => {
-                //adds the current host user to the document
-                firebase.firestore().collection('sessions').doc(this.state.code)
-                    .collection('users').doc(firebase.auth().currentUser.uid).set({
-                    displayName: displayName
-                }).then(() => {
-                    console.log(TAG, "User successfully written")
-                }).catch((error) => {
-                    console.error(TAG, "Error writing user: ", error);
+        //retrieve image
+        firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL()
+            .then((url) => {
+                //creates session using the newly generated code
+                firebase.firestore().collection('sessions').doc(this.state.code).set({match: false, start: false})
+                    .then(() => {
+                        //adds the current host user to the document
+                        firebase.firestore().collection('sessions').doc(this.state.code)
+                            .collection('users').doc(firebase.auth().currentUser.uid).set({
+                            displayName: displayName,
+                            photoURL: url
+                        }).then(() => {
+                            console.log(TAG, "User successfully written")
+                        }).catch((error) => {
+                            console.error(TAG, "Error writing user: ", error);
+                        })
+                    }).catch((error) => {
+                    console.log("Error creating session: ", error)
                 })
-        }).catch((error) => {
-            console.log("Error creating session: ", error)
-        })
+            })
+            .catch((error) => {
+                console.log("Error on photo retrieval: ", error)
+            })
 
         this.checkForUsers()
 
         this.state.isLoading = false
-
-
     }
 
     createCode = () => {
@@ -88,7 +97,8 @@ export default class HostSession extends Component {
             querySnapshot.forEach(documentSnapshot => {
                 usersLocal.push({
                     displayName: documentSnapshot.data().displayName,
-                    id: documentSnapshot.id
+                    id: documentSnapshot.id,
+                    photoURL: documentSnapshot.data().photoURL
                 })
             })
 
@@ -107,7 +117,19 @@ export default class HostSession extends Component {
 
                 <FlatList
                     data={this.state.users}
-                    renderItem={({item}) => <Text>{item.displayName}</Text>}
+                    renderItem={({item}) => {
+                        if (item.photoURL === burger) {
+                            return (<View>
+                                <Image source={item.photoURL} style={styles.image}/>
+                                <Text>{item.displayName}</Text>
+                            </View>)
+                        } else {
+                            return (<View>
+                                <Image source={{uri: item.photoURL}} style={styles.image}/>
+                                <Text>{item.displayName}</Text>
+                            </View>)
+                        }
+                    }}
                     keyExtractor={item => item.id}
                 />
 
@@ -123,15 +145,15 @@ export default class HostSession extends Component {
                             .then(r => {
                                 console.log("Session start updated to true")
                             }).catch(error => {
-                                console.log(`Encountered Update Error: ${error}`)
-                            })
+                            console.log(`Encountered Update Error: ${error}`)
+                        })
 
                         //navigate to the swipe page manually
-                        this.props.navigation.navigate('Swipe Feature',{code:this.state.code})
+                        this.props.navigation.navigate('Swipe Feature', {code: this.state.code})
                     }}
                 />
             </View>
-        );
+        )
     }
 }
 
@@ -166,5 +188,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#fff'
+    },
+    image: {
+        width: 75,
+        height: 75,
+        borderRadius: 50,
     }
 });
