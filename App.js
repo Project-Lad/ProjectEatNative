@@ -59,7 +59,7 @@ function AuthStack() {
             <Stack.Screen
                 name="HostSession"
                 component={HostSession}
-                options={{ title: 'Session',}}
+                options={{ title: 'Lobby',}}
             />
             <Stack.Screen
                 name="Friends List"
@@ -76,7 +76,7 @@ function AuthStack() {
             <Stack.Screen
                 name="Guest Session"
                 component={GuestSession}
-                options={{title:'Session',}}
+                options={{title:'Lobby',}}
             />
             <Stack.Screen
                 name="Connect"

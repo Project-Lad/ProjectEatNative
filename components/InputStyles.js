@@ -97,4 +97,55 @@ const ProfileStyles = StyleSheet.create({
         fontSize:24
     }
 })
-export {InputStyles, IconStyles,ProfileStyles}
+
+const LobbyStyles = StyleSheet.create({
+    container:{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        margin: 20,
+
+    },
+    listContainer:{
+        display:'flex',
+        flexDirection:'row',
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        width:'100%',
+        height:'75%',
+        borderRadius:4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 10,
+        elevation: 2,
+        marginBottom:10,
+        padding:20
+    },
+    userName:{
+        alignSelf:'center',
+        fontSize:18,
+        paddingLeft:25
+    },
+    image: {
+        width: 50,
+        height: 50,
+        borderRadius: 50,
+    },
+    shareCodeContainer:{
+        borderStyle:'dashed',
+        borderWidth:2,
+        borderColor:'#BC0B02',
+        borderRadius:1,
+        alignItems:'center',
+        backgroundColor:'rgba(188, 11, 2, 0.25)',
+        paddingTop:10,
+        paddingBottom: 10,
+        flex:0,
+        marginBottom:25,
+    },
+    shareCodeText:{fontSize:18,textAlign:'center'}
+
+})
+export {InputStyles, IconStyles,ProfileStyles,LobbyStyles}

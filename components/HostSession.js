@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Button, FlatList, Image} from 'react-native';
+import {StyleSheet, Text, View, Button, FlatList, Image, TouchableOpacity} from 'react-native';
 import burger from '../assets/burger.jpg'
 import firebase from "../firebase";
 import "firebase/firestore";
-
+import {InputStyles,IconStyles,ProfileStyles,LobbyStyles} from "./InputStyles";
+import { Ionicons } from '@expo/vector-icons';
+import Clipboard from '@react-native-clipboard/clipboard';
 let TAG = "Console: ";
 
 export default class HostSession extends Component {
@@ -111,87 +113,58 @@ export default class HostSession extends Component {
         })
     }
 
+    startSession = () =>{
+        //updates the start field in the current session to true to send everyone to the swipe feature
+        firebase.firestore().collection('sessions')
+            .doc(this.state.code).update({start: true})
+            .then(r => {
+                console.log("Session start updated to true")
+            }).catch(error => {
+            console.log(`Encountered Update Error: ${error}`)
+        })
+
+        //navigate to the swipe page manually
+        this.props.navigation.navigate('Swipe Feature', {code: this.state.code})
+    }
+
     render() {
         return (
-            <View style={styles.container}>
+            <View style={LobbyStyles.container}>
 
                 <FlatList
                     data={this.state.users}
                     renderItem={({item}) => {
                         if (item.photoURL === burger) {
-                            return (<View>
-                                <Image source={item.photoURL} style={styles.image}/>
-                                <Text>{item.displayName}</Text>
-                            </View>)
+                            return (
+                                <View style={LobbyStyles.listContainer}>
+                                    <Image source={item.photoURL} style={LobbyStyles.image}/>
+                                    <Text style={LobbyStyles.userName}>{item.displayName}</Text>
+                                </View>
+                            )
                         } else {
-                            return (<View>
-                                <Image source={{uri: item.photoURL}} style={styles.image}/>
-                                <Text>{item.displayName}</Text>
-                            </View>)
+                            return (
+                                <View style={LobbyStyles.listContainer}>
+                                    <Image source={{uri: item.photoURL}} style={LobbyStyles.image}/>
+                                    <Text style={LobbyStyles.userName}>{item.displayName}</Text>
+                                </View>
+                            )
                         }
                     }}
                     keyExtractor={item => item.id}
                 />
+                <Text style={LobbyStyles.shareCodeText}>Share Code</Text>
+                <View>
+                    <TouchableOpacity style={LobbyStyles.shareCodeContainer}>
+                        <Text>{this.state.code}</Text>
+                    </TouchableOpacity>
+                </View>
 
-                <Text>{this.state.code}</Text>
-
-                <Button
-                    color="#e98477"
-                    title="Start"
-                    onPress={() => {
-                        //updates the start field in the current session to true to send everyone to the swipe feature
-                        firebase.firestore().collection('sessions')
-                            .doc(this.state.code).update({start: true})
-                            .then(r => {
-                                console.log("Session start updated to true")
-                            }).catch(error => {
-                            console.log(`Encountered Update Error: ${error}`)
-                        })
-
-                        //navigate to the swipe page manually
-                        this.props.navigation.navigate('Swipe Feature', {code: this.state.code})
-                    }}
-                />
+                <TouchableOpacity onPress={this.startSession} style={InputStyles.buttons}>
+                    <Ionicons style={IconStyles.iconLeft} name="play-circle-outline"/>
+                    <Text>Start</Text>
+                    <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                </TouchableOpacity>
             </View>
         )
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        padding: 35,
-        backgroundColor: '#fff'
-    },
-    inputStyle: {
-        width: '100%',
-        marginBottom: 15,
-        paddingBottom: 15,
-        alignSelf: "center",
-        borderColor: "#ccc",
-        borderBottomWidth: 1
-    },
-    loginText: {
-        color: '#000',
-        marginTop: 25,
-        textAlign: 'center'
-    },
-    preloader: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        position: 'absolute',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#fff'
-    },
-    image: {
-        width: 75,
-        height: 75,
-        borderRadius: 50,
-    }
-});
