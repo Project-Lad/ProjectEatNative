@@ -445,8 +445,9 @@ const Cards = (props) => {
                     renderCard={(cardData) => <Card {...cardData} />}
                     keyExtractor={(cardData) => String(cardData.id)}
                     renderNoMoreCards={() => {
+                            let size = data.length
                             data=[]
-                            return (<Data code={props.code} offset={props.offset+50}/>)
+                            return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance}/>)
                         }
                     }
                     handleYup={handleYup}

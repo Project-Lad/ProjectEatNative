@@ -81,7 +81,7 @@ function AuthStack() {
             <Stack.Screen
                 name="Connect"
                 component={Connect}
-                options={{title:'Connect to a Session',}}
+                options={{title:'Connect to Lobby',}}
             />
             <Stack.Screen
                 name="Add Friends"

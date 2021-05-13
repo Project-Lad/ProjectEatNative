@@ -1,9 +1,21 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, View, FlatList, Image} from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    FlatList,
+    Image,
+    Button,
+    Alert,
+    TouchableOpacity,
+    Platform,
+    ToastAndroid, AlertIOS
+} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import burger from "../assets/burger.jpg";
-
+import {InputStyles,LobbyStyles} from "./InputStyles";
+import Clipboard from "expo-clipboard";
 let TAG = "Console: ";
 
 export default class GuestSession extends Component {
@@ -86,40 +98,95 @@ export default class GuestSession extends Component {
 
         //observer is created that when .start changes to true, it navigates to the swipe feature
         docRef.onSnapshot((documentSnapshot) => {
-            if (start === false) {
-                if(documentSnapshot.data().start) {
-                    start = true
-                    //navigate
-                    this.props.navigation.navigate('Swipe Feature',{code:this.state.code})
+            //if document exists
+            if (documentSnapshot.exists) {
+                //and lobby has not started
+                if (start === false) {
+                    //if start is true on firebase, then
+                    if(documentSnapshot.data().start) {
+                        //set start to true and navigate
+                        start = true
+                        this.props.navigation.navigate('Swipe Feature',{code:this.state.code, zip:documentSnapshot.data().zip, distance: documentSnapshot.data().distance})
+                    }
                 }
+            } else {
+                //if lobby no longer exists, display lobby closed alert and return to main page
+                Alert.alert('Lobby Closed', 'The lobby you are in has ended, returning to home')
+                this.props.navigation.navigate('Profile')
             }
         }, (error) => {
             console.log(`Encountered Error: ${error}`)
         })
     }
 
+    leaveLobby = () => {
+        Alert.alert("Leaving Lobby",
+            "Are you sure you want to leave this lobby?",
+            [
+                {
+                    text:"No",
+                    onPress:() => {}
+                },
+                {
+                    text:"Yes",
+                    onPress:() => {
+                        //if yes, delete the user and navigate back to connection page
+                        firebase.firestore().collection('sessions').doc(this.state.code)
+                            .collection('users').doc(firebase.auth().currentUser.uid).delete()
+                            .then(this.props.navigation.navigate('Connect'))
+                            .catch((error) => {
+                                //if an error occurs, display console log and navigate back to connect
+                                console.log("User Delete Error: ", error)
+                                this.props.navigation.navigate('Connect')})
+                    }
+                }
+            ]
+        )
+    }
+    copyToClipboard = () => {
+        Clipboard.setString(this.state.code);
+        if(Platform.OS === 'android'){
+            ToastAndroid.show('Copies to Clipboard', ToastAndroid.SHORT)
+        }else{
+            AlertIOS.Alert.alert('Copied to Clipboard');
+        }
+    };
+
     render() {
         return (
-            <View style={styles.container}>
+            <View style={LobbyStyles.container}>
                 <FlatList
                     data={this.state.users}
                     renderItem={({item}) => {
                         if (item.photoURL === burger) {
-                            return (<View>
-                                <Image source={item.photoURL} style={styles.image}/>
-                                <Text>{item.displayName}</Text>
-                            </View>)
+                            return (
+                                <View style={LobbyStyles.listContainer}>
+                                    <Image source={item.photoURL} style={LobbyStyles.image}/>
+                                    <Text style={LobbyStyles.userName}>{item.displayName}</Text>
+                                </View>
+                            )
                         } else {
-                            return (<View>
-                                <Image source={{uri: item.photoURL}} style={styles.image}/>
-                                <Text>{item.displayName}</Text>
-                            </View>)
+                            return (
+                                <View style={LobbyStyles.listContainer}>
+                                    <Image source={{uri: item.photoURL}} style={LobbyStyles.image}/>
+                                    <Text style={LobbyStyles.userName}>{item.displayName}</Text>
+                                </View>
+                            )
                         }
                     }}
                     keyExtractor={item => item.id}
                 />
 
-                <Text>{this.state.code}</Text>
+                <Text style={InputStyles.buttonText}>Share Code</Text>
+                <View>
+                    <TouchableOpacity style={LobbyStyles.shareCodeContainer} onPress={this.copyToClipboard}>
+                        <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity onPress={()=>{this.leaveLobby()}}>
+                    <Text style={{marginTop:15}}>Leave Lobby</Text>
+                </TouchableOpacity>
             </View>
         );
     }

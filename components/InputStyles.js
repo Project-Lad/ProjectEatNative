@@ -45,7 +45,6 @@ const InputStyles = StyleSheet.create({
         backgroundColor: '#fff'
     }
 });
-
 const IconStyles = StyleSheet.create({
     arrowRight:{
         fontSize:18,
@@ -97,7 +96,6 @@ const ProfileStyles = StyleSheet.create({
         fontSize:24
     }
 })
-
 const LobbyStyles = StyleSheet.create({
     container:{
         flex: 1,
@@ -145,7 +143,30 @@ const LobbyStyles = StyleSheet.create({
         flex:0,
         marginBottom:25,
     },
-    shareCodeText:{fontSize:18,textAlign:'center'}
+    shareCodeText:{
+        fontSize:18,
+        textAlign:'center',
+        letterSpacing:5
+    },
+    sliderContainer:{
+        flex: 1,
+        marginLeft: 10,
+        marginRight: 10,
+        alignItems: "stretch",
+        justifyContent: "center",
+        color:'red'
+    },
+    sliderTrack:{
+        height: 15,
+        borderRadius: 25,
+        backgroundColor:'rgba(188, 11, 2, 0.25)'
+    },
+    sliderThumb:{
+        height: 25,
+        width:25,
+        borderRadius: 20,
+        backgroundColor:'rgb(188, 11, 2)'
+    }
 
 })
 export {InputStyles, IconStyles,ProfileStyles,LobbyStyles}

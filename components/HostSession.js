@@ -1,11 +1,23 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, Button, FlatList, Image, TouchableOpacity} from 'react-native';
-import burger from '../assets/burger.jpg'
+import {
+    Text,
+    View,
+    FlatList,
+    Image,
+    Alert,
+    TextInput,
+    TouchableOpacity,
+    ToastAndroid,
+    Platform,
+    AlertIOS,
+} from 'react-native';
+import Slider from 'react-native-smooth-slider';
+import burger from '../assets/burger.jpg';
 import firebase from "../firebase";
 import "firebase/firestore";
-import {InputStyles,IconStyles,ProfileStyles,LobbyStyles} from "./InputStyles";
+import {InputStyles,IconStyles,LobbyStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
-import Clipboard from '@react-native-clipboard/clipboard';
+import Clipboard from 'expo-clipboard';
 let TAG = "Console: ";
 
 export default class HostSession extends Component {
@@ -15,7 +27,10 @@ export default class HostSession extends Component {
         users: [],
         code:0,
         photoURL: "",
-        photoFound: 0
+        photoFound: 0,
+        zip: null,
+        distance: 1,
+        copyClipboard:''
     }
 
     constructor(props) {
@@ -38,7 +53,7 @@ export default class HostSession extends Component {
         firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL()
             .then((url) => {
                 //creates session using the newly generated code
-                firebase.firestore().collection('sessions').doc(this.state.code).set({match: false, start: false})
+                firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false})
                     .then(() => {
                         //adds the current host user to the document
                         firebase.firestore().collection('sessions').doc(this.state.code)
@@ -113,23 +128,85 @@ export default class HostSession extends Component {
         })
     }
 
-    startSession = () =>{
-        //updates the start field in the current session to true to send everyone to the swipe feature
-        firebase.firestore().collection('sessions')
-            .doc(this.state.code).update({start: true})
-            .then(r => {
-                console.log("Session start updated to true")
-            }).catch(error => {
-            console.log(`Encountered Update Error: ${error}`)
-        })
-
-        //navigate to the swipe page manually
-        this.props.navigation.navigate('Swipe Feature', {code: this.state.code})
+    endLobby = () => {
+        Alert.alert("End Lobby",
+            "Are you sure you want to end this lobby?",
+            [
+                {
+                    text:"No",
+                    onPress:() => {}
+                },
+                {
+                    text:"Yes",
+                    onPress:() => {
+                        firebase.firestore().collection('sessions').doc(this.state.code).delete()
+                            .then(this.props.navigation.navigate('Profile'))
+                            .catch((error) => {
+                                console.log("End Lobby Error: ", error)
+                                this.props.navigation.navigate('Profile')})
+                    }
+                }
+            ]
+        )
     }
 
+    changeScreens = () => {
+        if(this.state.zip !== null) {
+            let zipCodePattern = /^\d{5}$|^\d{5}-\d{4}$/;
+
+            if(zipCodePattern.test(this.state.zip)) {
+                //updates the start field in the current session to true to send everyone to the swipe feature
+                firebase.firestore().collection('sessions')
+                    .doc(this.state.code).update({zip: this.state.zip, start: true, distance: this.state.distance})
+                    .then(() => {
+                        console.log("Session start updated to true, zipcode updated")
+                    }).catch(error => {
+                    console.log(`Encountered Update Error: ${error}`)
+                })
+
+                //navigate to the swipe page manually
+                this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance})
+            } else {
+                Alert.alert("That zip dont work bucko")
+            }
+        } else {
+            //updates the start field in the current session to true to send everyone to the swipe feature
+            firebase.firestore().collection('sessions')
+                .doc(this.state.code).update({start: true, distance: this.state.distance})
+                .then(() => {
+                    console.log("Session start updated to true")
+                }).catch(error => {
+                console.log(`Encountered Update Error: ${error}`)
+            })
+
+            //navigate to the swipe page manually
+            this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance})
+        }
+    }
+
+    copyToClipboard = () => {
+        Clipboard.setString(this.state.code);
+        if(Platform.OS === 'android'){
+            ToastAndroid.show('Copies to Clipboard', ToastAndroid.SHORT)
+        }else{
+            AlertIOS.Alert.alert('Copied to Clipboard');
+        }
+    };
+
     render() {
+        //host changes distance and zipcode (possible change in future for users to change themselves)
         return (
             <View style={LobbyStyles.container}>
+
+                <TextInput
+                    onChangeText={(text) => {
+                        this.setState({zip: text})
+                    }}
+                    value={this.state.zip}
+                    placeholder="Enter Zipcode or Leave Blank for Current Location"
+                    style={InputStyles.inputStyle}
+                />
+
 
                 <FlatList
                     data={this.state.users}
@@ -152,17 +229,37 @@ export default class HostSession extends Component {
                     }}
                     keyExtractor={item => item.id}
                 />
-                <Text style={LobbyStyles.shareCodeText}>Share Code</Text>
+                <View style={LobbyStyles.sliderContainer}>
+                    <Slider
+                        value={this.state.distance}
+                        useNativeDriver={true}
+                        minimumValue={1}
+                        maximumValue={25}
+                        step={0.5}
+                        onValueChange={value => this.setState({distance: value})}
+                        minimumTrackTintColor='#BC0B02'
+                        thumbStyle={LobbyStyles.sliderThumb}
+                        trackStyle={LobbyStyles.sliderTrack}
+                        />
+                    <Text>Distance: {this.state.distance} mi</Text>
+                </View>
+
+
+                <Text style={InputStyles.buttonText}>Share Code</Text>
                 <View>
-                    <TouchableOpacity style={LobbyStyles.shareCodeContainer}>
-                        <Text>{this.state.code}</Text>
+                    <TouchableOpacity style={LobbyStyles.shareCodeContainer} onPress={this.copyToClipboard}>
+                        <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
                     </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity onPress={this.startSession} style={InputStyles.buttons}>
+                <TouchableOpacity onPress={this.changeScreens} style={InputStyles.buttons}>
                     <Ionicons style={IconStyles.iconLeft} name="play-circle-outline"/>
-                    <Text>Start</Text>
+                    <Text style={InputStyles.buttonText}>Start</Text>
                     <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={()=>{this.endLobby()}}>
+                    <Text style={{marginTop:15}}>Close Lobby</Text>
                 </TouchableOpacity>
             </View>
         )
