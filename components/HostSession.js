@@ -9,7 +9,7 @@ import {
     TouchableOpacity,
     ToastAndroid,
     Platform,
-    AlertIOS,
+    AlertIOS, ScrollView,
 } from 'react-native';
 import Slider from 'react-native-smooth-slider';
 import burger from '../assets/burger.jpg';
@@ -207,8 +207,17 @@ export default class HostSession extends Component {
                     style={InputStyles.inputStyle}
                 />
 
-
-                <FlatList
+                <ScrollView>
+                    {this.state.users.map(user=>{
+                        return(
+                            <View style={LobbyStyles.listContainer} key={user.id}>
+                                <Image source={{uri:user.photoURL}} style={LobbyStyles.image}/>
+                                <Text style={LobbyStyles.userName}>{user.displayName}</Text>
+                            </View>
+                        )
+                    })}
+                </ScrollView>
+{/*                <FlatList
                     data={this.state.users}
                     renderItem={({item}) => {
                         if (item.photoURL === burger) {
@@ -228,7 +237,8 @@ export default class HostSession extends Component {
                         }
                     }}
                     keyExtractor={item => item.id}
-                />
+                    nestedScrollEnabled={true}
+                />*/}
                 <View style={LobbyStyles.sliderContainer}>
                     <Slider
                         value={this.state.distance}

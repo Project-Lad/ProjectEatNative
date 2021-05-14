@@ -5,11 +5,10 @@ import {
     View,
     FlatList,
     Image,
-    Button,
     Alert,
     TouchableOpacity,
     Platform,
-    ToastAndroid, AlertIOS
+    ToastAndroid, AlertIOS, ScrollView
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -154,8 +153,20 @@ export default class GuestSession extends Component {
 
     render() {
         return (
+
             <View style={LobbyStyles.container}>
-                <FlatList
+
+                <ScrollView>
+                    {this.state.users.map(user=>{
+                        return(
+                            <View style={LobbyStyles.listContainer} key={user.id}>
+                                <Image source={{uri:user.photoURL}} style={LobbyStyles.image}/>
+                                <Text style={LobbyStyles.userName}>{user.displayName}</Text>
+                            </View>
+                        )
+                    })}
+                </ScrollView>
+{/*                <FlatList
                     data={this.state.users}
                     renderItem={({item}) => {
                         if (item.photoURL === burger) {
@@ -175,18 +186,20 @@ export default class GuestSession extends Component {
                         }
                     }}
                     keyExtractor={item => item.id}
-                />
+                    nestedScrollEnabled
+                />*/}
+                <View style={LobbyStyles.bottomContainer}>
+                    <Text style={InputStyles.buttonText}>Share Code</Text>
+                    <View>
+                        <TouchableOpacity style={LobbyStyles.shareCodeContainer} onPress={this.copyToClipboard}>
+                            <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
+                        </TouchableOpacity>
+                    </View>
 
-                <Text style={InputStyles.buttonText}>Share Code</Text>
-                <View>
-                    <TouchableOpacity style={LobbyStyles.shareCodeContainer} onPress={this.copyToClipboard}>
-                        <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
+                    <TouchableOpacity onPress={()=>{this.leaveLobby()}}>
+                        <Text style={{marginTop:15}}>Leave Lobby</Text>
                     </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity onPress={()=>{this.leaveLobby()}}>
-                    <Text style={{marginTop:15}}>Leave Lobby</Text>
-                </TouchableOpacity>
             </View>
         );
     }

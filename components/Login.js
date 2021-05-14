@@ -5,6 +5,7 @@ import "firebase/firestore";
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 export default class Login extends Component {
+
     constructor() {
         super();
         this.state = {

@@ -98,12 +98,12 @@ const ProfileStyles = StyleSheet.create({
 })
 const LobbyStyles = StyleSheet.create({
     container:{
-        flex: 1,
+        flex:1,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
+        justifyContent: "space-between",
         margin: 20,
-
+        height:'50%',
     },
     listContainer:{
         display:'flex',
@@ -119,7 +119,11 @@ const LobbyStyles = StyleSheet.create({
         shadowRadius: 10,
         elevation: 2,
         marginBottom:10,
-        padding:20
+        padding:10,
+        flex: 5,
+    },
+    bottomContainer:{
+      flex:0
     },
     userName:{
         alignSelf:'center',
@@ -140,7 +144,7 @@ const LobbyStyles = StyleSheet.create({
         backgroundColor:'rgba(188, 11, 2, 0.25)',
         paddingTop:10,
         paddingBottom: 10,
-        flex:0,
+
         marginBottom:25,
     },
     shareCodeText:{

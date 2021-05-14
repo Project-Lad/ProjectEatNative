@@ -2,7 +2,7 @@
 import {YELP_API_KEY} from '@env'
 import Cards from "./Cards.js";
 import React, {useEffect, useState} from 'react';
-import {Button, View, Text, Alert} from "react-native";
+import { View, Alert} from "react-native";
 import * as Location from 'expo-location';
 
 //Declares lat and long vars
@@ -22,7 +22,7 @@ function getPosition(position) {
 }*/
 
 (async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+    let { status } = await Location.requestPermissionsAsync();
     if (status !== 'granted') {
         Alert.alert('Please enable Location Services in your Settings');
     } else {
