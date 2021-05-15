@@ -34,7 +34,7 @@ function AuthStack() {
             <Stack.Screen
                 name="Swipe Feature"
                 component={SwipeFeature}
-                options={{ title: 'Swipe Feature', headerLeft: null}}
+                options={{ headerShown: false}}
             />
             <Stack.Screen
                 name="Final Decision"
