@@ -58,7 +58,7 @@ export default function Signup(){
     }
 
     async function registerUser(){
-        if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '') {
+        if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '' || image.photoURL === null) {
             Alert.alert('Fill in all fields')
         }else if(userPassword.password.length < 8){
             alert('Password not long enough')
