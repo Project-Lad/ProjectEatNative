@@ -23,7 +23,7 @@ function getPosition(position) {
 
 (async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
+    if (status === 'denied') {
         Alert.alert('Please enable Location Services in your Settings');
     } else {
         await Location.getCurrentPositionAsync({})
@@ -32,7 +32,8 @@ function getPosition(position) {
                 longitude = location.coords.longitude
             })
         console.log(latitude, ", ", longitude)
-    }})()
+    }}
+)()
 
 const Data = (props) => {
     let [restaurantData, setRestaurantData] = useState([]);
