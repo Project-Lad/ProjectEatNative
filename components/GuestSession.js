@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-    StyleSheet,
     Text,
     View,
     FlatList,
@@ -153,9 +152,7 @@ export default class GuestSession extends Component {
 
     render() {
         return (
-
             <View style={LobbyStyles.container}>
-
                 <ScrollView>
                     {this.state.users.map(user=>{
                         return(
@@ -204,42 +201,3 @@ export default class GuestSession extends Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        padding: 35,
-        backgroundColor: '#fff'
-    },
-    inputStyle: {
-        width: '100%',
-        marginBottom: 15,
-        paddingBottom: 15,
-        alignSelf: "center",
-        borderColor: "#ccc",
-        borderBottomWidth: 1
-    },
-    loginText: {
-        color: '#000',
-        marginTop: 25,
-        textAlign: 'center'
-    },
-    preloader: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        position: 'absolute',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#fff'
-    },
-    image: {
-        width: 75,
-        height: 75,
-        borderRadius: 50,
-    }
-});

@@ -171,6 +171,9 @@ const LobbyStyles = StyleSheet.create({
         borderRadius: 20,
         backgroundColor:'rgb(188, 11, 2)'
     }
+})
+const CardStyle = StyleSheet.create({
+    container:{},
 
 })
-export {InputStyles, IconStyles,ProfileStyles,LobbyStyles}
+export {InputStyles, IconStyles,ProfileStyles,LobbyStyles, CardStyle}

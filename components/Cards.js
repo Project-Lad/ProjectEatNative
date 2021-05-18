@@ -59,22 +59,27 @@ class Card extends React.Component {
             )
         }else {
             return (
-                <View style={styles.card}>
-                    <Image source={{uri: `${this.props.imageURL}`}} style={styles.cardImage}/>
+                <View style={styles.container}>
+                    <View style={styles.card}>
+                        <Image source={{uri: `${this.props.imageURL}`}} style={styles.cardImage}/>
 
-                    <Text style={styles.cardsText}>{this.props.name}</Text>
+                        <Text style={styles.cardsText}>{this.props.name}</Text>
 
-                    <View style={styles.yelpStars}>
-                        <Text style={styles.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
-                        <Text style={styles.yelpText}>{this.props.address}</Text>
+                        <View style={styles.yelpLocation}>
+                            <Text style={styles.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
+                            <Text style={styles.yelpText}>{this.props.address}</Text>
+                        </View>
 
-                        <Image source={this.props.rating} />
-                        <Text style={styles.yelpText}>Based on {this.props.review_count} Reviews</Text>
+                        <View style={styles.yelpStars}>
+                            <View style={styles.yelpReview}>
+                                <Image source={this.props.rating} />
+                                <Text style={styles.yelpText}>Based on {this.props.review_count} Reviews</Text>
+                            </View>
+                            <TouchableOpacity onPress={() => Linking.openURL(this.props.businessURL)}>
+                                <Image style={styles.yelpImage} source={YelpImage}/>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-
-                    <TouchableOpacity onPress={() => Linking.openURL(this.props.businessURL)}>
-                        <Image style={styles.yelpImage} source={YelpImage}/>
-                    </TouchableOpacity>
                 </View>
             )
         }
@@ -88,6 +93,7 @@ class LoadingCard extends React.Component {
 
     render() {
         return (
+
             <View style={styles.card}>
                 <Image source={burgerGIF} style={styles.cardImage}/>
 
@@ -413,90 +419,107 @@ const Cards = (props) => {
     } else {
         return (
             <View style={styles.container}>
-                <Modal
-                    animationType="slide"
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                        setModalVisible(!modalVisible);
-                    }}>
-                    <View style={styles.modalView}>
-                        <Text style={styles.modalText}>Let's Eat!</Text>
-                        <Image source={{uri: `${cardState.imageURL}`}} style={styles.cardImageModal}/>
-                        <Text style={styles.modalText}>The group chose {'\n' + cardState.name}</Text>
-                        <Pressable style={styles.button}
-                                   onPress={() => {
-                                       loveIt(cardState)
-                                       setModalVisible(!modalVisible)
-                                   }}>
-                            <Text style={styles.modalText}>Love It!</Text>
-                        </Pressable>
-                        <Pressable style={styles.button}
-                                   onPress={() => {
-                                       hateIt(cardState)
-                                       setModalVisible(!modalVisible)
-                                   }}>
-                            <Text style={styles.modalText}>Keep Swiping</Text>
-                        </Pressable>
-                    </View>
-                </Modal>
+                <View style={styles.container}>
+                    <Modal
+                        animationType="slide"
+                        visible={modalVisible}
+                        onRequestClose={() => {
+                            setModalVisible(!modalVisible);
+                        }}>
+                        <View style={styles.modalView}>
+                            <Text style={styles.modalText}>Let's Eat!</Text>
+                            <Image source={{uri: `${cardState.imageURL}`}} style={styles.cardImageModal}/>
+                            <Text style={styles.modalText}>The group chose {'\n' + cardState.name}</Text>
+                            <Pressable style={styles.button}
+                                       onPress={() => {
+                                           loveIt(cardState)
+                                           setModalVisible(!modalVisible)
+                                       }}>
+                                <Text style={styles.modalText}>Love It!</Text>
+                            </Pressable>
+                            <Pressable style={styles.button}
+                                       onPress={() => {
+                                           hateIt(cardState)
+                                           setModalVisible(!modalVisible)
+                                       }}>
+                                <Text style={styles.modalText}>Keep Swiping</Text>
+                            </Pressable>
+                        </View>
+                    </Modal>
+                </View>
 
-                <SwipeCards
-                    cards={data}
-                    renderCard={(cardData) => <Card {...cardData} />}
-                    keyExtractor={(cardData) => String(cardData.id)}
-                    renderNoMoreCards={() => {
-                            let size = data.length
-                            data=[]
-                            return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance}/>)
+                <View style={styles.cardContainer}>
+                    <SwipeCards
+                        cards={data}
+                        renderCard={(cardData) => <Card {...cardData} />}
+                        keyExtractor={(cardData) => String(cardData.id)}
+                        renderNoMoreCards={() => {
+                                let size = data.length
+                                data=[]
+                                return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance}/>)
+                            }
                         }
-                    }
-                    handleYup={handleYup}
-                    handleNope={handleNope}
-                />
+                        handleYup={handleYup}
+                        handleNope={handleNope}
+                    />
+                </View>
             </View>
         )
     }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#2a222d",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius:10,
-        borderWidth: 2,
+    container:{
+        flex: 0,
+        backgroundColor:'#EBBB5C',
+        height:'100%',
+        width:'100%'
+    },
+    cardContainer:{
+        position:'absolute',
+        backgroundColor:'#EBBB5C',
+        top:75,
+        bottom:0,
+        height:'100%',
+        width:'100%'
     },
     card: {
-        flex: 1,
-        backgroundColor: "#bc0402",
-        borderRadius:10,
-        borderWidth: 2,
-        borderColor: '#20232a'
+        height:'100%',
+        width:'100%'
     },
     cardsText: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: "bold",
-        alignSelf: 'center',
+        paddingLeft: 15,
         color: '#010001'
+    },
+    yelpLocation:{
+        margin: 15
     },
     yelpText: {
         fontSize: 15,
         color: '#010001'
     },
     yelpStars: {
-        paddingStart: 10,
-        justifyContent: 'flex-start',
+        marginLeft: 15,
+        justifyContent: 'center',
         alignItems: 'flex-start',
+        alignSelf: 'center',
+        flexDirection: 'row',
+    },
+    yelpReview:{
         flexDirection: 'column',
+        alignItems: 'flex-start',
+        alignSelf: 'flex-end'
+    },
+    yelpImage: {
+        width: 125,
+        height: 50,
     },
     cardImage: {
-        width: "65%",
-        height: "65%",
+        width: "95%",
+        height: undefined,
         aspectRatio: 1,
-        borderRadius:10,
-        borderWidth: 2,
-        borderColor: '#20232a'
     },
     modalView: {
         margin: 20,
@@ -534,10 +557,6 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#bc0402'
     },
-    yelpImage: {
-        width: 150,
-        height: 75,
-    }
 });
 
 export default Cards;

@@ -187,7 +187,7 @@ export default class HostSession extends Component {
     copyToClipboard = () => {
         Clipboard.setString(this.state.code);
         if(Platform.OS === 'android'){
-            ToastAndroid.show('Copies to Clipboard', ToastAndroid.SHORT)
+            ToastAndroid.show('Copied to Clipboard', ToastAndroid.SHORT)
         }else{
             AlertIOS.Alert.alert('Copied to Clipboard');
         }

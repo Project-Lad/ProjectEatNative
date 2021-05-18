@@ -2,7 +2,7 @@
 import {YELP_API_KEY} from '@env'
 import Cards from "./Cards.js";
 import React, {useEffect, useState} from 'react';
-import { View, Alert} from "react-native";
+import {View, Alert, StyleSheet, Text} from "react-native";
 import * as Location from 'expo-location';
 
 //Declares lat and long vars
@@ -22,7 +22,7 @@ function getPosition(position) {
 }*/
 
 (async () => {
-    let { status } = await Location.requestPermissionsAsync();
+    let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
         Alert.alert('Please enable Location Services in your Settings');
     } else {
@@ -71,10 +71,16 @@ const Data = (props) => {
     }
 
     return(
-        <View className='container'>
-            <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance}/>
-        </View>
+            <View style={styles.container}>
+                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance}/>
+            </View>
     )
 }
-
+const styles = StyleSheet.create({
+    container:{
+        backgroundColor: "#EBBB5C",
+        height:'100%',
+        width:'100%',
+    },
+})
 export default Data;
