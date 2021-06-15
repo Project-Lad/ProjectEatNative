@@ -204,7 +204,7 @@ export default class HostSession extends Component {
                     }}
                     value={this.state.zip}
                     placeholder="Enter Zipcode or Leave Blank for Current Location"
-                    style={InputStyles.inputStyle}
+                    style={InputStyles.zipInputStyle}
                 />
 
                 <ScrollView>

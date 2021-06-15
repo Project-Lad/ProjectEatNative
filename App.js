@@ -24,9 +24,10 @@ function AuthStack() {
             screenOptions={{
                 headerTitleAlign: 'center',
                 headerStyle: {
-                    backgroundColor: '#EBBB5C',
+                    backgroundColor: 'rgba(218,44,56,.25)',
+                    elevation: 0,
+                    shadowOpacity: 0,
                 },
-                headerTintColor: '#2A232D',
                 headerTitleStyle: {
                     fontWeight: 'bold',
                 },
@@ -39,7 +40,7 @@ function AuthStack() {
             <Stack.Screen
                 name="Final Decision"
                 component={Decision}
-                options={{ title: 'Final Decision', headerLeft: null}}
+                options={{ headerShown: false, headerLeft: null}}
             />
             <Stack.Screen
                 name="Forgot Password"
@@ -49,7 +50,7 @@ function AuthStack() {
             <Stack.Screen
                 name="Profile"
                 component={Profile}
-                options={{ title: 'Profile', headerLeft: null}}
+                options={{ headerShown: false,}}
             />
             <Stack.Screen
                 name="Edit Account"
@@ -109,12 +110,12 @@ function LoginSignup(){
         <Stack.Screen
             name="SignUp"
             component={SignUp}
-            options={{ title: 'Signup' }}
+            options={{ headerShown: false }}
         />
         <Stack.Screen
             name="Login"
             component={Login}
-            options={{title: 'Login', headerLeft: null}}
+            options={{headerShown: false, headerLeft: null}}
         />
         <Stack.Screen
             name="Forgot Password"

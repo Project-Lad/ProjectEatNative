@@ -43,14 +43,14 @@ export default function Dashboard(){
                    {newProfilePicture && <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />}
                 </View>
                 <View style={{paddingTop:10}}>
-                    <Text style={InputStyles.buttonText}>
+                    <Text style={InputStyles.userNameText}>
                         {newProfileUsername}
                     </Text>
                 </View>
                 <TouchableOpacity
                     style={ProfileStyles.editButton}
                     onPress={() => navigation.navigate('Edit Account')}>
-                    <Ionicons style={IconStyles.iconLeft} name="create-outline"/>
+                    <Ionicons style={IconStyles.editIcon} name="create-outline"/>
                 </TouchableOpacity>
             </View>
 

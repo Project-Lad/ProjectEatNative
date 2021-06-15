@@ -22,7 +22,7 @@ function getPosition(position) {
 }*/
 
 (async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+    let { status } = await Location.requestPermissionsAsync();
     if (status === 'denied') {
         Alert.alert('Please enable Location Services in your Settings');
     } else {
@@ -79,7 +79,6 @@ const Data = (props) => {
 }
 const styles = StyleSheet.create({
     container:{
-        backgroundColor: "#EBBB5C",
         height:'100%',
         width:'100%',
     },
