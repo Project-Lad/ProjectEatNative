@@ -100,18 +100,32 @@ class LoadingCard extends React.Component {
 
     render() {
         return (
-
+        <View style={CardStyle.cardContainer}>
             <View style={CardStyle.card}>
-                <Image source={burgerGIF} style={CardStyle.cardImage}/>
-
-                <Text style={CardStyle.cardsText}>Finding Local Restaurants...</Text>
-
-                <View style={CardStyle.yelpStars}>
-                    <Text style={CardStyle.yelpText}>Please remember, if you are waiting a long time
-                        for the restaurants to load, there may be no restaurants nearby or your connection was lost.
-                        If this is the case,please increase the distance or establish a connection.</Text>
+                <View style={{
+                    borderTopLeftRadius:25,
+                    borderTopRightRadius:25,
+                    overflow: 'hidden',
+                    width: "100%",
+                }}>
+                    <Image source={burgerGIF} style={{
+                        width: "100%",
+                        height: undefined,
+                        aspectRatio: 1,
+                        borderTopLeftRadius:25,
+                        borderTopRightRadius:25,
+                        overlayColor: 'white'
+                    }}/>
                 </View>
+                    <Text style={CardStyle.cardsText}>Finding Local Restaurants...</Text>
+
+                    <View style={CardStyle.yelpStars}>
+                        <Text style={CardStyle.yelpText}>Please remember, if you are waiting a long time
+                            for the restaurants to load, there may be no restaurants nearby or your connection was lost.
+                            If this is the case,please increase the distance or establish a connection.</Text>
+                    </View>
             </View>
+        </View>
         )
     }
 }
@@ -435,7 +449,7 @@ const Cards = (props) => {
                         }}>
                         <View style={CardStyle.modalView}>
                             <Text style={CardStyle.modalText}>Let's Eat!</Text>
-                                <Image source={{uri: `${cardState.imageURL}`}} style={CardStyle.cardImageModal}/>
+                            <Image source={{uri: `${cardState.imageURL}`}} style={CardStyle.cardImageModal}/>
                             <Text style={CardStyle.modalText}>The group chose {'\n' + cardState.name}</Text>
                             <Pressable style={CardStyle.button}
                                        onPress={() => {

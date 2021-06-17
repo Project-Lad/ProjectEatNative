@@ -43,11 +43,6 @@ function AuthStack() {
                 options={{ headerShown: false, headerLeft: null}}
             />
             <Stack.Screen
-                name="Forgot Password"
-                component={ForgotPassword}
-                options={{ title: 'ForgotPassword'}}
-            />
-            <Stack.Screen
                 name="Profile"
                 component={Profile}
                 options={{ headerShown: false,}}
@@ -62,7 +57,7 @@ function AuthStack() {
                 component={HostSession}
                 options={{ title: 'Lobby',}}
             />
-            <Stack.Screen
+{/*            <Stack.Screen
                 name="Friends List"
                 component={FriendsList}
                 options={({navigation}) =>({ title: 'Friends List',
@@ -73,7 +68,7 @@ function AuthStack() {
                         </TouchableOpacity>
                     )
                 })}
-            />
+            />*/}
             <Stack.Screen
                 name="Guest Session"
                 component={GuestSession}
@@ -100,7 +95,9 @@ function LoginSignup(){
         screenOptions={{
             headerTitleAlign: 'center',
             headerStyle: {
-                backgroundColor: '#EBBB5C',
+                backgroundColor: 'rgba(218,44,56,.25)',
+                elevation: 0,
+                shadowOpacity: 0,
             },
             headerTintColor: '#2A232D',
             headerTitleStyle: {
