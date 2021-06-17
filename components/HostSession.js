@@ -167,7 +167,7 @@ export default class HostSession extends Component {
                 //navigate to the swipe page manually
                 this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance})
             } else {
-                Alert.alert("That zip dont work bucko")
+                Alert.alert("Invalid ZipCode")
             }
         } else {
             //updates the start field in the current session to true to send everyone to the swipe feature
