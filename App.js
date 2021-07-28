@@ -1,8 +1,6 @@
-import { StatusBar } from 'expo-status-bar';
 import React, {useEffect,useState} from 'react';
-import {StyleSheet, TouchableOpacity, Text} from "react-native";
 import SwipeFeature from "./components/SwipeFeature";
-import {NavigationContainer, useIsFocused} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
@@ -10,7 +8,6 @@ import ForgotPassword from "./components/ForgotPassword";
 import Profile from "./components/Profile";
 import EditAccount from "./components/EditAccount";
 import AddFriend from "./components/AddFriend";
-import FriendsList from "./components/FriendsList";
 import HostSession from "./components/HostSession";
 import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
@@ -40,6 +37,11 @@ function AuthStack() {
             <Stack.Screen
                 name="Final Decision"
                 component={Decision}
+                options={{ headerShown: false}}
+            />
+            <Stack.Screen
+                name="Forgot Password"
+                component={ForgotPassword}
                 options={{ headerShown: false, headerLeft: null}}
             />
             <Stack.Screen
@@ -55,7 +57,7 @@ function AuthStack() {
             <Stack.Screen
                 name="HostSession"
                 component={HostSession}
-                options={{ title: 'Lobby',}}
+                options={{ title: 'Lobby', headerLeft:null}}
             />
 {/*            <Stack.Screen
                 name="Friends List"
@@ -72,12 +74,12 @@ function AuthStack() {
             <Stack.Screen
                 name="Guest Session"
                 component={GuestSession}
-                options={{title:'Lobby',}}
+                options={{headerShown: false}}
             />
             <Stack.Screen
                 name="Connect"
                 component={Connect}
-                options={{title:'Connect to Lobby',}}
+                options={{headerShown: false}}
             />
             <Stack.Screen
                 name="Add Friends"
@@ -142,22 +144,3 @@ export default function App() {
       </NavigationContainer>
   );
 }
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    button: {
-        alignItems: "center",
-        backgroundColor: "#DDDDDD",
-        padding: 10,
-        width:250,
-        marginTop:20,
-        borderRadius:50,
-        shadowColor: '#3E3C3C',
-        shadowOffset: { width: 250, height: 2 },
-        shadowOpacity: 0.2,
-        elevation: 5,
-    }
-});
