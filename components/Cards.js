@@ -390,6 +390,7 @@ const Cards = (props) => {
                 if((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
+                    data = []
                     navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code})
                     console.log("Majority Rule")
                 }
@@ -424,6 +425,7 @@ const Cards = (props) => {
                 if((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
+                    data = []
                     navigation.navigate('Final Decision',{id: docSnapshot.id})
                     console.log("Majority Rule")
                 }
