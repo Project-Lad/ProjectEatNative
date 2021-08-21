@@ -170,6 +170,7 @@ const LobbyStyles = StyleSheet.create({
         borderRadius: 50,
     },
     shareCodeContainer:{
+        display:'flex',
         borderStyle:'dashed',
         borderWidth:2,
         borderColor:'#BC0B02',
@@ -178,8 +179,9 @@ const LobbyStyles = StyleSheet.create({
         backgroundColor:'rgba(188, 11, 2, 0.25)',
         paddingTop:10,
         paddingBottom: 10,
-
+        flexDirection:'row',
         marginBottom:25,
+        justifyContent:'space-evenly'
     },
     shareCodeText:{
         fontSize:18,
