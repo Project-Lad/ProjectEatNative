@@ -2,18 +2,17 @@ import React, { Component } from 'react';
 import {
     Text,
     View,
-    FlatList,
     Image,
     Alert,
     TouchableOpacity,
     Platform,
-    ToastAndroid, AlertIOS, ScrollView
+    ToastAndroid, ScrollView, Share
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
-import burger from "../assets/burger.jpg";
-import {InputStyles,LobbyStyles} from "./InputStyles";
+import {IconStyles, InputStyles, LobbyStyles} from "./InputStyles";
 import Clipboard from "expo-clipboard";
+import {Ionicons} from "@expo/vector-icons";
 let TAG = "Console: ";
 
 export default class GuestSession extends Component {
@@ -141,6 +140,7 @@ export default class GuestSession extends Component {
             ]
         )
     }
+
     copyToClipboard = () => {
         Clipboard.setString(this.state.code);
         if(Platform.OS === 'android'){
@@ -150,6 +150,25 @@ export default class GuestSession extends Component {
         }
     };
 
+    onShare = async () => {
+        try {
+            const result = await Share.share({
+                message: 'React Native | A framework for building native apps using React'
+
+            });
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    };
     render() {
         return (
             <View style={LobbyStyles.container}>
@@ -187,9 +206,13 @@ export default class GuestSession extends Component {
                 />*/}
                 <View style={LobbyStyles.bottomContainer}>
                     <Text style={InputStyles.buttonText}>Share Code</Text>
-                    <View>
-                        <TouchableOpacity style={LobbyStyles.shareCodeContainer} onPress={this.copyToClipboard}>
+
+                    <View style={LobbyStyles.shareCodeContainer}>
+                        <TouchableOpacity  onPress={this.copyToClipboard}>
                             <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={this.onShare}>
+                            <Ionicons style={IconStyles.iconLeft} name="share-social-outline"/>
                         </TouchableOpacity>
                     </View>
 

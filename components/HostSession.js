@@ -2,22 +2,22 @@ import React, {Component} from 'react';
 import {
     Text,
     View,
-    FlatList,
     Image,
     Alert,
     TextInput,
     TouchableOpacity,
     ToastAndroid,
     Platform,
-    AlertIOS, ScrollView,
+    ScrollView,
+    Share
 } from 'react-native';
 import Slider from 'react-native-smooth-slider';
-import burger from '../assets/burger.jpg';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {InputStyles,IconStyles,LobbyStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import Clipboard from 'expo-clipboard';
+import * as Linking from 'expo-linking';
 let TAG = "Console: ";
 
 export default class HostSession extends Component {
@@ -193,6 +193,26 @@ export default class HostSession extends Component {
         }
     };
 
+    onShare = async () => {
+        try {
+            const result = await Share.share({
+                message: 'React Native | A framework for building native apps using React'
+
+            });
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
     render() {
         //host changes distance and zipcode (possible change in future for users to change themselves)
         return (
@@ -256,9 +276,13 @@ export default class HostSession extends Component {
 
 
                 <Text style={InputStyles.buttonText}>Share Code</Text>
-                <View>
-                    <TouchableOpacity style={LobbyStyles.shareCodeContainer} onPress={this.copyToClipboard}>
+
+                <View style={LobbyStyles.shareCodeContainer}>
+                    <TouchableOpacity  onPress={this.copyToClipboard}>
                         <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this.onShare}>
+                        <Ionicons style={IconStyles.iconLeft} name="share-social-outline"/>
                     </TouchableOpacity>
                 </View>
 
