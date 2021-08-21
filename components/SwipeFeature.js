@@ -16,7 +16,6 @@ export default function SwipeFeature({route}) {
 const styles = StyleSheet.create({
     container: {
         flex: 0.9,
-        backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
     }});

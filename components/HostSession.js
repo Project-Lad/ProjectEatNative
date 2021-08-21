@@ -2,22 +2,22 @@ import React, {Component} from 'react';
 import {
     Text,
     View,
-    FlatList,
     Image,
     Alert,
     TextInput,
     TouchableOpacity,
     ToastAndroid,
     Platform,
-    AlertIOS, ScrollView,
+    ScrollView,
+    Share
 } from 'react-native';
 import Slider from 'react-native-smooth-slider';
-import burger from '../assets/burger.jpg';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {InputStyles,IconStyles,LobbyStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import Clipboard from 'expo-clipboard';
+import * as Linking from 'expo-linking';
 let TAG = "Console: ";
 
 export default class HostSession extends Component {
@@ -167,7 +167,7 @@ export default class HostSession extends Component {
                 //navigate to the swipe page manually
                 this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance})
             } else {
-                Alert.alert("That zip dont work bucko")
+                Alert.alert("Invalid ZipCode")
             }
         } else {
             //updates the start field in the current session to true to send everyone to the swipe feature
@@ -187,9 +187,29 @@ export default class HostSession extends Component {
     copyToClipboard = () => {
         Clipboard.setString(this.state.code);
         if(Platform.OS === 'android'){
-            ToastAndroid.show('Copies to Clipboard', ToastAndroid.SHORT)
+            ToastAndroid.show('Copied to Clipboard', ToastAndroid.SHORT)
         }else{
             AlertIOS.Alert.alert('Copied to Clipboard');
+        }
+    };
+
+    onShare = async () => {
+        try {
+            const result = await Share.share({
+                message: 'React Native | A framework for building native apps using React'
+
+            });
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
+            }
+        } catch (error) {
+            alert(error.message);
         }
     };
 
@@ -204,7 +224,7 @@ export default class HostSession extends Component {
                     }}
                     value={this.state.zip}
                     placeholder="Enter Zipcode or Leave Blank for Current Location"
-                    style={InputStyles.inputStyle}
+                    style={InputStyles.zipInputStyle}
                 />
 
                 <ScrollView>
@@ -256,9 +276,13 @@ export default class HostSession extends Component {
 
 
                 <Text style={InputStyles.buttonText}>Share Code</Text>
-                <View>
-                    <TouchableOpacity style={LobbyStyles.shareCodeContainer} onPress={this.copyToClipboard}>
+
+                <View style={LobbyStyles.shareCodeContainer}>
+                    <TouchableOpacity  onPress={this.copyToClipboard}>
                         <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this.onShare}>
+                        <Ionicons style={IconStyles.iconLeft} name="share-social-outline"/>
                     </TouchableOpacity>
                 </View>
 

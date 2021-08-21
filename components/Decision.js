@@ -26,6 +26,8 @@ import iosStar5 from '../assets/ios/regular_5.png'
 import firebase from "../firebase";
 import {useNavigation} from "@react-navigation/native";
 import YelpImage from "../assets/YelpImage.png";
+import {IconStyles, InputStyles,DecisionStyle} from "./InputStyles";
+import {Ionicons} from "@expo/vector-icons";
 
 const Decision = ({route}) => {
     let [restaurant, setRestaurant] = useState({
@@ -205,8 +207,8 @@ const Decision = ({route}) => {
         )
     } else {
         return(
-            <View className='container'>
-                <View>
+            <View style={DecisionStyle.container}>
+                <View style={{width:"100%" ,borderRadius:10}}>
                     <ScrollView
                         horizontal
                         pagingEnabled
@@ -215,16 +217,16 @@ const Decision = ({route}) => {
                                <Image
                                     key={image}
                                     source={{uri: image}}
-                                    style={styles.cardImages}
+                                    style={DecisionStyle.cardImages}
                                 />
                             ))}
                     </ScrollView>
-                    <View style={styles.circleDiv}>
+                    <View style={DecisionStyle.circleDiv}>
                         {restaurant.photos.map((image,i) => (
                             <View
                                 key={image}
                                 style={[
-                                    styles.whiteCircle,
+                                    DecisionStyle.whiteCircle,
                                     {opacity: i === selectedIndex ? 1 : 0.5}
                                 ]}
                             />
@@ -232,83 +234,35 @@ const Decision = ({route}) => {
                     </View>
                 </View>
 
-                <Text style={styles.cardsText}>{restaurant.name}</Text>
+                <Text style={DecisionStyle.cardsText}>{restaurant.name}</Text>
 
-                <View style={styles.yelpStars}>
-                    <Text style={styles.yelpText}>{restaurant.location.address1}</Text>
-                    <Text style={styles.yelpText}>{restaurant.location.city}, {restaurant.location.state}</Text>
-                    <Image source={rating} />
-                    <Text style={styles.yelpText}>Based on {restaurant.review_count} Reviews</Text>
+                <View style={DecisionStyle.yelpContainer}>
+                    <View style={DecisionStyle.yelpInformation}>
+                        <Text style={DecisionStyle.yelpText}>{restaurant.location.address1}</Text>
+                        <Text style={DecisionStyle.yelpText}>{restaurant.location.city}, {restaurant.location.state}</Text>
+                        <Text style={DecisionStyle.yelpText}>Based on {restaurant.review_count} Reviews</Text>
+                        <Image source={rating} style={{width:200}}/>
+                    </View>
                     <TouchableOpacity onPress={() => Linking.openURL(restaurant.url)}>
-                        <Image style={styles.yelpImage} source={YelpImage}/>
+                        <Image style={DecisionStyle.yelpImage} source={YelpImage}/>
                     </TouchableOpacity>
-                    <Button style={styles.button} title='Find on Google Maps' className="btn info" onPress={() => Linking.openURL(googleURL)}/>
-                    <Button style={styles.button} title='Finished' className="btn info" onPress={() => deleteDocument()}/>
+                </View>
+
+                <View>
+                    <TouchableOpacity onPress={() => Linking.openURL(googleURL)} style = {InputStyles.buttons}>
+                        <Ionicons style={IconStyles.iconLeft} name="map"/>
+                        <Text style={InputStyles.buttonText}>Open in Maps</Text>
+                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
+                    <TouchableOpacity  onPress={() => deleteDocument()} style = {InputStyles.buttons}>
+                        <Ionicons style={IconStyles.iconLeft} name="fast-food-outline"/>
+                        <Text style={InputStyles.buttonText}>Finished</Text>
+                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
                 </View>
             </View>
         )
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#2a222d",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius:10,
-        borderWidth: 2,
-    },
-    yelpImage: {
-        width: 150,
-        height: 75,
-    },
-    cardImages: {
-        width: 400,
-        height: 300,
-        borderRadius:10,
-        borderWidth: 2,
-        borderColor: '#20232a'
-    },
-    cardsText: {
-        fontSize: 20,
-        fontWeight: "bold",
-        alignSelf: 'center',
-        color: '#010001'
-    },
-    yelpText: {
-        fontSize: 15,
-        color: '#010001'
-    },
-    yelpStars: {
-        paddingStart: 10,
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        flexDirection: 'column',
-    },
-    button: {
-        backgroundColor: '#bc0402',
-        borderRadius: 20,
-        padding: 5,
-        borderColor: '#20232a',
-    },
-    circleDiv: {
-        position: "absolute",
-        bottom: 15,
-        height: 10,
-        width: "100%",
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    whiteCircle: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        margin: 5,
-        backgroundColor: "#fff"
-    }
-});
 
 export default Decision;

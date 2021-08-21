@@ -2,7 +2,7 @@
 import {YELP_API_KEY} from '@env'
 import Cards from "./Cards.js";
 import React, {useEffect, useState} from 'react';
-import { View, Alert} from "react-native";
+import {View, Alert, StyleSheet} from "react-native";
 import * as Location from 'expo-location';
 
 //Declares lat and long vars
@@ -22,7 +22,7 @@ function getPosition(position) {
 }*/
 
 (async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+    let { status } = await Location.requestPermissionsAsync();
     if (status === 'denied') {
         Alert.alert('Please enable Location Services in your Settings');
     } else {
@@ -52,30 +52,38 @@ const Data = (props) => {
             redirect: 'follow'
         };
 
-        if (props.zip === null) {
+        if (props.zip === '') {
             fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=${props.distance * 1609}&sort_by=distance`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     setRestaurantData(result.businesses);
                     console.log(result.businesses);
+
                 })
                 .catch(error => console.log('error', error));
         } else {
+            console.log("Before fetch" + props.zip)
             fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&location=${props.zip}&limit=50&offset=${props.offset}&radius=${props.distance * 1609}&sort_by=distance`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     setRestaurantData(result.businesses);
                     console.log(result.businesses);
+                    console.log(props.zip)
                 })
                 .catch(error => console.log('error', error));
         }
     }
 
     return(
-        <View className='container'>
-            <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance}/>
-        </View>
+            <View style={styles.container}>
+                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance}/>
+            </View>
     )
 }
-
+const styles = StyleSheet.create({
+    container:{
+        height:'100%',
+        width:'100%',
+    },
+})
 export default Data;
