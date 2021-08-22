@@ -6,8 +6,6 @@ import {
     Alert,
     TextInput,
     TouchableOpacity,
-    ToastAndroid,
-    Platform,
     ScrollView,
     Share
 } from 'react-native';
@@ -16,7 +14,6 @@ import firebase from "../firebase";
 import "firebase/firestore";
 import {InputStyles,IconStyles,LobbyStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
-import Clipboard from 'expo-clipboard';
 import * as Linking from 'expo-linking';
 let TAG = "Console: ";
 
@@ -184,20 +181,10 @@ export default class HostSession extends Component {
         }
     }
 
-    copyToClipboard = () => {
-        Clipboard.setString(this.state.code);
-        if(Platform.OS === 'android'){
-            ToastAndroid.show('Copied to Clipboard', ToastAndroid.SHORT)
-        }else{
-            AlertIOS.Alert.alert('Copied to Clipboard');
-        }
-    };
-
     onShare = async () => {
         try {
             const result = await Share.share({
-                message: 'React Native | A framework for building native apps using React'
-
+                message: `Your Lobby Code is: ${this.state.code}`
             });
             if (result.action === Share.sharedAction) {
                 if (result.activityType) {
@@ -277,12 +264,10 @@ export default class HostSession extends Component {
 
                 <Text style={InputStyles.buttonText}>Share Code</Text>
 
-                <View style={LobbyStyles.shareCodeContainer}>
-                    <TouchableOpacity  onPress={this.copyToClipboard}>
+                <View>
+                    <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
                         <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.onShare}>
-                        <Ionicons style={IconStyles.iconLeft} name="share-social-outline"/>
+                        <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
                     </TouchableOpacity>
                 </View>
 

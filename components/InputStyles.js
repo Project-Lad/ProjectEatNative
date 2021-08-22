@@ -84,6 +84,11 @@ const IconStyles = StyleSheet.create({
         color:"#eee",
         alignSelf: 'center'
     },
+    iconShare:{
+        fontSize:22,
+        color:"#000",
+        alignSelf: 'center'
+    },
     iconContainer:{
         position: 'relative',
         top:-25,
