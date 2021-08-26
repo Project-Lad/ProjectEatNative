@@ -151,7 +151,7 @@ export default class HostSession extends Component {
     }
 
     changeScreens = () => {
-        if(this.state.zip !== null) {
+        if(this.state.zip !== null && this.state.zip !== "") {
             let zipCodePattern = /^\d{5}$|^\d{5}-\d{4}$/;
 
             if(zipCodePattern.test(this.state.zip)) {
@@ -165,8 +165,9 @@ export default class HostSession extends Component {
                 })
 
                 //navigate to the swipe page manually
-                this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance})
+                this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance, isHost:true})
             } else {
+                console.log("Zip Code: ", this.state.zip);
                 Alert.alert("Invalid ZipCode")
             }
         } else {
@@ -180,7 +181,7 @@ export default class HostSession extends Component {
             })
 
             //navigate to the swipe page manually
-            this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance})
+            this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance, isHost:true})
         }
     }
 

@@ -26,7 +26,7 @@ function getPosition(position) {
     if (status === 'denied') {
         Alert.alert('Please enable Location Services in your Settings');
     } else {
-        await Location.getCurrentPositionAsync({})
+        await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Lowest})
             .then(location => {
                 latitude = location.coords.latitude
                 longitude = location.coords.longitude
@@ -76,7 +76,7 @@ const Data = (props) => {
 
     return(
             <View style={styles.container}>
-                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance}/>
+                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance} isHost={props.isHost}/>
             </View>
     )
 }
