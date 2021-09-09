@@ -26,7 +26,7 @@ function getPosition(position) {
     if (status === 'denied') {
         Alert.alert('Please enable Location Services in your Settings');
     } else {
-        await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Lowest})
+        await Location.getCurrentPositionAsync()
             .then(location => {
                 latitude = location.coords.latitude
                 longitude = location.coords.longitude
@@ -53,11 +53,15 @@ const Data = (props) => {
         };
 
         if (props.zip === null) {
+            console.log("Latitude: " + latitude)
+            console.log("Longitude: " + longitude)
+            console.log("Offset: " + props.offset)
+            console.log("Distance: " + props.distance)
             fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=${props.distance * 1609}&sort_by=distance`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     setRestaurantData(result.businesses);
-                    console.log(result.businesses);
+                    //console.log(result.businesses);
 
                 })
                 .catch(error => console.log('error', error));
