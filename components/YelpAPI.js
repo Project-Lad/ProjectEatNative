@@ -2,22 +2,38 @@
 import {YELP_API_KEY} from '@env'
 import Cards from "./Cards.js";
 import React, {useEffect, useState} from 'react';
-import {Button, View, Text} from "react-native";
-
-if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(getPosition);
-}
+import {View, Alert, StyleSheet} from "react-native";
+import * as Location from 'expo-location';
 
 //Declares lat and long vars
 let latitude;
 let longitude;
+
+/* expo has required us to use expo-location for security purposes as this bypassed all security
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(getPosition);
+}
 
 function getPosition(position) {
     console.log(position.coords.latitude, position.coords.longitude);
     //sets lat and long vars
     latitude = position.coords.latitude;
     longitude = position.coords.longitude;
-}
+}*/
+
+(async () => {
+    let { status } = await Location.requestPermissionsAsync();
+    if (status === 'denied') {
+        Alert.alert('Please enable Location Services in your Settings');
+    } else {
+        await Location.getCurrentPositionAsync()
+            .then(location => {
+                latitude = location.coords.latitude
+                longitude = location.coords.longitude
+            })
+        console.log(latitude, ", ", longitude)
+    }}
+)()
 
 const Data = (props) => {
     let [restaurantData, setRestaurantData] = useState([]);
@@ -36,20 +52,42 @@ const Data = (props) => {
             redirect: 'follow'
         };
 
-        fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=2000&sort_by=distance`, requestOptions)
-            .then(response => response.json())
-            .then(result => {
-                setRestaurantData(result.businesses);
-                console.log(result.businesses);
-            })
-            .catch(error => console.log('error', error));
+        if (props.zip === null) {
+            console.log("Latitude: " + latitude)
+            console.log("Longitude: " + longitude)
+            console.log("Offset: " + props.offset)
+            console.log("Distance: " + props.distance)
+            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=${props.distance * 1609}&sort_by=distance`, requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    setRestaurantData(result.businesses);
+                    //console.log(result.businesses);
+
+                })
+                .catch(error => console.log('error', error));
+        } else {
+            console.log("Fetching Zip Area")
+            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&location=${props.zip}&limit=50&offset=${props.offset}&radius=${props.distance * 1609}&sort_by=distance`, requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    setRestaurantData(result.businesses);
+                    console.log(result.businesses);
+                    console.log(props.zip)
+                })
+                .catch(error => console.log('error', error));
+        }
     }
 
     return(
-        <View className='container'>
-            <Cards restaurantData={restaurantData} code={props.code} lat={latitude} lon={longitude} offset={props.offset}/>
-        </View>
+            <View style={styles.container}>
+                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance} isHost={props.isHost}/>
+            </View>
     )
 }
-
+const styles = StyleSheet.create({
+    container:{
+        height:'100%',
+        width:'100%',
+    },
+})
 export default Data;

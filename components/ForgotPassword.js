@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
-import {Alert, Button, StyleSheet, Text, TextInput, View} from 'react-native'
+import {Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native'
 import firebase from "firebase";
+import {IconStyles, InputStyles} from "./InputStyles";
+import {Ionicons} from "@expo/vector-icons";
 
 class ForgotPassword extends Component {
     constructor() {
@@ -37,19 +39,19 @@ class ForgotPassword extends Component {
     }
     render() {
         return (
-            <View style={styles.container}>
+            <View style={InputStyles.container}>
                 <TextInput
-                    style={styles.inputStyle}
+                    style={InputStyles.inputStyle}
                     placeholder="Email"
                     value={this.state.email}
                     keyboardType={'email-address'}
                     onChangeText={(val) => this.updateInputVal(val, 'email')}
                 />
-                <Button
-                    color="#e98477"
-                    title="Reset Password"
-                    onPress={() => this.forgotPassword()}
-                />
+                <TouchableOpacity style={InputStyles.buttons} onPress={() => this.forgotPassword()}>
+                    <Text style={InputStyles.buttonText}>Reset Password</Text>
+                    <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                </TouchableOpacity>
+
             </View>
         )
     }

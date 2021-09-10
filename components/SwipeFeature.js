@@ -7,7 +7,7 @@ export default function SwipeFeature({route}) {
 
     return (
         <View style={styles.container}>
-            <Data code={route.params.code} offset={0}/>
+            <Data code={route.params.code} zip={route.params.zip} offset={0} distance={route.params.distance} isHost={route.params.isHost}/>
             <StatusBar style="auto" />
         </View>
     );
@@ -16,7 +16,6 @@ export default function SwipeFeature({route}) {
 const styles = StyleSheet.create({
     container: {
         flex: 0.9,
-        backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
     }});
