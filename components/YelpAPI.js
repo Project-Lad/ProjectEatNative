@@ -10,18 +10,40 @@ let latitude;
 let longitude;
 
 (async () => {
+    let location;
+    let locationSuccess = false;
+    let count = 0;
     let { status } = await Location.requestPermissionsAsync();
+    console.log(status)
+
     if (status === 'denied') {
         Alert.alert('Please enable Location Services in your Settings');
     } else {
-        await Location.getCurrentPositionAsync()
-            .then(location => {
-                latitude = location.coords.latitude
-                longitude = location.coords.longitude
-            })
-        console.log(latitude, ", ", longitude)
-    }}
-)()
+        while (!locationSuccess) {
+            try {
+                location = await Location.getCurrentPositionAsync({
+                    accuracy: Location.Accuracy.Lowest,
+                });
+                locationSuccess = true;
+            } catch (ex) {
+                //console.log(ex)
+                count++;
+                console.log(count);
+                console.log("retrying....");
+
+                if (count === 500) {
+                    Alert.alert("Location Unreachable", "Your location cannot be found.", ["Cancel", "OK"])
+                    locationSuccess = true;
+                }
+            }
+        }
+    }
+
+    latitude = location.coords.latitude;
+    longitude = location.coords.longitude;
+
+    console.log(latitude + ", " + longitude)
+})();
 
 const Data = (props) => {
     let [restaurantData, setRestaurantData] = useState([]);
