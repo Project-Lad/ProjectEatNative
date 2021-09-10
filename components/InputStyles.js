@@ -84,13 +84,19 @@ const IconStyles = StyleSheet.create({
         color:"#eee",
         alignSelf: 'center'
     },
+    iconShare:{
+        fontSize:22,
+        color:"#000",
+        alignSelf: 'center'
+    },
     iconContainer:{
-        position: 'relative',
-        top:-25,
-        left:75
+        display:'flex',
+        flexDirection:'column'
     },
     addProfilePic:{
         fontSize:24,
+        alignSelf:'flex-end',
+        paddingBottom:10
     },
     profilePicture:{
         width: 200,

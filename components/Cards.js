@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Text, View, Image, Linking, Modal, Pressable, StyleSheet, Platform, TouchableOpacity} from "react-native";
+import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity} from "react-native";
 import {useNavigation} from '@react-navigation/native'
 import burgerGIF from '../assets/burger.gif';
 import burgerJPG from '../assets/burger.jpg';

@@ -69,8 +69,8 @@ export default function EditAccount(){
     return(
         <View style={InputStyles.container}>
             <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
-                <Image source={{ uri: newProfilePicture.photoURL }} style={IconStyles.profilePicture} />
                 <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
+                    <Image source={{ uri: newProfilePicture.photoURL }} style={IconStyles.profilePicture} />
                     <Ionicons style={IconStyles.addProfilePic} name="camera-outline"/>
                 </TouchableOpacity>
             </View>

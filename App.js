@@ -13,6 +13,8 @@ import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import firebase from "./firebase";
+import * as Linking from "expo-linking";
+import {Alert} from "react-native";
 
 function AuthStack() {
     return (
@@ -124,10 +126,42 @@ function LoginSignup(){
     </Stack.Navigator>
     )
 }
+
 const Stack = createStackNavigator();
+/*const prefix = Linking.createURL('/');*/
 
 export default function App() {
     const [isLoggedIn, setLogIn] = useState(false)
+
+
+/*Broken Linking needs looked at further
+const [data, setData] = useState(null)
+
+    const linking ={
+        prefixes:[prefix],
+        config:{
+            screens:{
+                Connect:"connect"
+            }
+        }
+    }
+    function handleDeepLink(event) {
+        let data = Linking.parse(event.url)
+        setData(data.hostname)
+    }
+
+    useEffect(()=>{
+        async function getInitialURL(){
+            const initialURL = await Linking.getInitialURL();
+            if(initialURL) setData(Linking.parse(initialURL))
+        }
+        Linking.addEventListener("url", handleDeepLink);
+        if(!data){getInitialURL().then(()=>console.log(data))}
+        Alert.alert(`${data}`)
+        return(( handler)=>{
+            Linking.removeEventListener("url", handler)
+        })
+    },[])*/
     useEffect(()=>{
         firebase.auth().onAuthStateChanged(user => {
             if(user) {
@@ -139,8 +173,9 @@ export default function App() {
     },[])
 
   return (
-      <NavigationContainer>
+      <NavigationContainer /*linking={linking}*/>
           {isLoggedIn ? (<AuthStack/>) : (<LoginSignup/>)}
       </NavigationContainer>
+
   );
 }

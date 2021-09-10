@@ -9,18 +9,6 @@ import * as Location from 'expo-location';
 let latitude;
 let longitude;
 
-/* expo has required us to use expo-location for security purposes as this bypassed all security
-if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(getPosition);
-}
-
-function getPosition(position) {
-    console.log(position.coords.latitude, position.coords.longitude);
-    //sets lat and long vars
-    latitude = position.coords.latitude;
-    longitude = position.coords.longitude;
-}*/
-
 (async () => {
     let { status } = await Location.requestPermissionsAsync();
     if (status === 'denied') {
@@ -53,10 +41,6 @@ const Data = (props) => {
         };
 
         if (props.zip === null) {
-            console.log("Latitude: " + latitude)
-            console.log("Longitude: " + longitude)
-            console.log("Offset: " + props.offset)
-            console.log("Distance: " + props.distance)
             fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=${props.distance * 1609}&sort_by=distance`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
@@ -66,13 +50,11 @@ const Data = (props) => {
                 })
                 .catch(error => console.log('error', error));
         } else {
-            console.log("Fetching Zip Area")
             fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&location=${props.zip}&limit=50&offset=${props.offset}&radius=${props.distance * 1609}&sort_by=distance`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     setRestaurantData(result.businesses);
                     console.log(result.businesses);
-                    console.log(props.zip)
                 })
                 .catch(error => console.log('error', error));
         }
