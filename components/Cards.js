@@ -146,10 +146,16 @@ class LoadingCard extends React.Component {
                             If this is the case,please head back to the lobby and increase the distance or establish a connection.</Text>
                     </View>
 
-                <TouchableOpacity onPress={() => {
+                <TouchableOpacity style={CardStyle.backButton} onPress={() => {
                     this.updateLobby();
                 }}>
-                    <Text style={CardStyle.yelpText}>Back to Lobby</Text>
+                    <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
+                    <Text style={{
+                        color:'#EEEEEE',
+                        fontWeight: "400",
+                        fontSize: 20,
+                        paddingLeft:10,
+                    }}>Back to Lobby</Text>
                 </TouchableOpacity>
             </View>
         </View>
