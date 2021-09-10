@@ -14,6 +14,7 @@ import { useNavigation} from '@react-navigation/native'
 import * as ImagePicker from 'expo-image-picker';
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
+import userPhoto from '../assets/user-placeholder.png'
 
 export default function Signup(){
     const navigation = useNavigation()
@@ -21,7 +22,9 @@ export default function Signup(){
     const [userEmail, setUserEmail] = useState({email:''})
     const [userPassword, setUserPassword] = useState({password:''})
     const [isLoading, setLoading] = useState(false)
-    const [image, setImage] = useState({photoURL:null});
+
+    const DEFAULT_IMAGE = Image.resolveAssetSource(userPhoto).uri;
+    const [image, setImage] = useState({photoURL:DEFAULT_IMAGE});
 
     useEffect(() => {
         (async () => {
@@ -56,9 +59,8 @@ export default function Signup(){
         let ref = firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/`+ imageName);
         return ref.put(blob)
     }
-
     async function registerUser(){
-        if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '' || image.photoURL === null) {
+        if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '') {
             Alert.alert('Fill in all fields')
         }else if(userPassword.password.length < 8){
             alert('Password not long enough')
@@ -107,8 +109,13 @@ export default function Signup(){
     return(
         <View style={InputStyles.container}>
             <View style={{  alignItems: 'center', justifyContent: 'center' }}>
-                {image.photoURL && <Image source={{ uri: image.photoURL }} style={IconStyles.profilePicture} />}
                 <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
+                    {image.photoURL === '../assets/user-placeholder.png' ?
+                        <Image source={ require('../assets/user-placeholder.png') }
+                               style={IconStyles.profilePicture}
+                               resizeMode='contain'/>
+                        :
+                        <Image source={{ uri: image.photoURL }} style={IconStyles.profilePicture} />}
                     <Ionicons style={IconStyles.addProfilePic} name="person-add-outline"/>
                 </TouchableOpacity>
             </View>
