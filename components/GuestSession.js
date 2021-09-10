@@ -172,28 +172,6 @@ export default class GuestSession extends Component {
                         )
                     })}
                 </ScrollView>
-{/*                <FlatList
-                    data={this.state.users}
-                    renderItem={({item}) => {
-                        if (item.photoURL === burger) {
-                            return (
-                                <View style={LobbyStyles.listContainer}>
-                                    <Image source={item.photoURL} style={LobbyStyles.image}/>
-                                    <Text style={LobbyStyles.userName}>{item.displayName}</Text>
-                                </View>
-                            )
-                        } else {
-                            return (
-                                <View style={LobbyStyles.listContainer}>
-                                    <Image source={{uri: item.photoURL}} style={LobbyStyles.image}/>
-                                    <Text style={LobbyStyles.userName}>{item.displayName}</Text>
-                                </View>
-                            )
-                        }
-                    }}
-                    keyExtractor={item => item.id}
-                    nestedScrollEnabled
-                />*/}
                 <View style={LobbyStyles.bottomContainer}>
                     <Text style={InputStyles.buttonText}>Share Code</Text>
 
