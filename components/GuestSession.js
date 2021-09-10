@@ -98,12 +98,12 @@ export default class GuestSession extends Component {
             //if document exists
             if (documentSnapshot.exists) {
                 //and lobby has not started
-                if (start === false) {
+                if (start === false) {                        //MIGHT NOT NEED THIS IF STATEMENT
                     //if start is true on firebase, then
                     if(documentSnapshot.data().start) {
                         //set start to true and navigate
-                        start = true
-                        this.props.navigation.navigate('Swipe Feature',{code:this.state.code, zip:documentSnapshot.data().zip, distance: documentSnapshot.data().distance})
+                        //start = true
+                        this.props.navigation.navigate('Swipe Feature',{code:this.state.code, zip:documentSnapshot.data().zip, distance: documentSnapshot.data().distance, isHost:false})
                     }
                 }
             } else {

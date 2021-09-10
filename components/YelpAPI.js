@@ -9,24 +9,12 @@ import * as Location from 'expo-location';
 let latitude;
 let longitude;
 
-/* expo has required us to use expo-location for security purposes as this bypassed all security
-if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(getPosition);
-}
-
-function getPosition(position) {
-    console.log(position.coords.latitude, position.coords.longitude);
-    //sets lat and long vars
-    latitude = position.coords.latitude;
-    longitude = position.coords.longitude;
-}*/
-
 (async () => {
     let { status } = await Location.requestPermissionsAsync();
     if (status === 'denied') {
         Alert.alert('Please enable Location Services in your Settings');
     } else {
-        await Location.getCurrentPositionAsync({})
+        await Location.getCurrentPositionAsync()
             .then(location => {
                 latitude = location.coords.latitude
                 longitude = location.coords.longitude
@@ -57,7 +45,7 @@ const Data = (props) => {
                 .then(response => response.json())
                 .then(result => {
                     setRestaurantData(result.businesses);
-                    console.log(result.businesses);
+                    //console.log(result.businesses);
 
                 })
                 .catch(error => console.log('error', error));
@@ -74,7 +62,7 @@ const Data = (props) => {
 
     return(
             <View style={styles.container}>
-                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance}/>
+                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance} isHost={props.isHost}/>
             </View>
     )
 }

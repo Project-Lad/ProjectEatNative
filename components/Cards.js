@@ -98,6 +98,27 @@ class LoadingCard extends React.Component {
         super(props);
     }
 
+    updateLobby = () => {
+        //updates the start field in the current session to true to send everyone to the swipe feature
+        firebase.firestore().collection('sessions')
+            .doc(this.props.code).update({zip: null, start: false, distance: null})
+            .then(() => {
+                console.log("Reset lobby data.")
+            }).catch(error => {
+            console.log(`Encountered Update Error: ${error}`)
+        })
+
+        if (this.props.isHost === true) {
+            //if user is the host
+            console.log(this.props.isHost)
+            this.props.navigation.navigate('HostSession', {code: this.props.code, zip: null, distance: null})
+        } else {
+            //if not, back to guest session
+            console.log(this.props.isHost)
+            this.props.navigation.navigate('Guest Session', {code: this.props.code})
+        }
+    }
+
     render() {
         return (
         <View style={CardStyle.cardContainer}>
@@ -122,8 +143,20 @@ class LoadingCard extends React.Component {
                     <View style={CardStyle.yelpStars}>
                         <Text style={CardStyle.yelpText}>Please remember, if you are waiting a long time
                             for the restaurants to load, there may be no restaurants nearby or your connection was lost.
-                            If this is the case,please increase the distance or establish a connection.</Text>
+                            If this is the case,please head back to the lobby and increase the distance or establish a connection.</Text>
                     </View>
+
+                <TouchableOpacity style={CardStyle.backButton} onPress={() => {
+                    this.updateLobby();
+                }}>
+                    <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
+                    <Text style={{
+                        color:'#EEEEEE',
+                        fontWeight: "400",
+                        fontSize: 20,
+                        paddingLeft:10,
+                    }}>Back to Lobby</Text>
+                </TouchableOpacity>
             </View>
         </View>
         )
@@ -436,7 +469,7 @@ const Cards = (props) => {
     if (data.length === 0) {
         return (
             <View style={CardStyle.container}>
-                <LoadingCard code={props.code} offset={props.offset}/>
+                <LoadingCard code={props.code} offset={props.offset} navigation={navigation} isHost={props.isHost}/>
             </View>
         )
     } else {
@@ -483,7 +516,7 @@ const Cards = (props) => {
                         renderNoMoreCards={() => {
                                 let size = data.length
                                 data=[]
-                                return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance}/>)
+                                return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost}/>)
                             }
                         }
                         handleYup={handleYup}

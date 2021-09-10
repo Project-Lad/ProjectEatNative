@@ -307,6 +307,23 @@ const CardStyle = StyleSheet.create({
         fontSize: 20,
         paddingLeft:10,
     },
+    backButton: {
+        backgroundColor:"#DA2C38",
+        padding: 15,
+        display: 'flex',
+        flexDirection: 'row',
+        fontWeight: "normal",
+        justifyContent:'space-between',
+        margin:10,
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
     modalText: {
         marginBottom: 15,
         textAlign: "center",
@@ -389,4 +406,5 @@ const DecisionStyle = StyleSheet.create({
         backgroundColor: "#fff"
     }
 })
+
 export {InputStyles, IconStyles,ProfileStyles,LobbyStyles, CardStyle,DecisionStyle}
