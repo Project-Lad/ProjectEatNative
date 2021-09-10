@@ -24,9 +24,6 @@ export default function Dashboard(){
            userInformation()
         },[isFocused])
 
-    /*console.log(user.displayName)*/
-    //console.log(user)
-    //console.log(newProfilePicture)
 
     async function signOut(){
         await firebase.auth().signOut()
@@ -61,13 +58,6 @@ export default function Dashboard(){
                     <Text style={InputStyles.buttonText}>Create Lobby</Text>
                     <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                 </TouchableOpacity>
-
-{/*                <TouchableOpacity
-                    onPress={() => navigation.navigate('Friends List')}
-                    style = {styles.buttonStyle}
-                >
-                    <Text style={styles.textButton}>Friends List</Text>
-                </TouchableOpacity>*/}
 
                 <TouchableOpacity style={InputStyles.buttons} onPress={() => navigation.navigate('Connect')}>
                     <Ionicons style={IconStyles.iconLeft} name="people"/>
