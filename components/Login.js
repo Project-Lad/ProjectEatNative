@@ -17,7 +17,7 @@ export default class Login extends Component {
 
     updateInputVal = (val, prop) => {
         const state = this.state;
-        state[prop] = val;
+        state[prop] = val.trim();
         this.setState(state);
     }
 
