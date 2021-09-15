@@ -59,9 +59,10 @@ export default function Signup(){
         let ref = firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/`+ imageName);
         return ref.put(blob)
     }
+
     async function registerUser(){
         if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '') {
-            Alert.alert('Fill in all fields')
+            Alert.alert('Fill in all fields', 'One of the fields have been left empty')
         }else if(userPassword.password.length < 8){
             alert('Password not long enough')
         }else{
@@ -94,6 +95,11 @@ export default function Signup(){
                         })
                     })
                 }).catch(error => {
+                    if(error.message === 'The email address is already in use by another account.'){
+                        Alert.alert('Email Exists', 'This email already exists.s',
+                            [{text: 'Try Again', onPress:() => navigation.navigate('Login')}]
+                        )
+                    }
                     console.log(error.message)
                 })
         }
