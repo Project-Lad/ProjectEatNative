@@ -63,16 +63,19 @@ const Data = (props) => {
         };
 
         if (props.zip === null) {
-            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=${props.distance * 1609}&sort_by=distance`, requestOptions)
+            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=${parseInt(props.distance * 1609)}&sort_by=distance`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
+                    console.log("Latitude: " + latitude)
+                    console.log("Longitude: " + longitude)
+                    console.log("Offset: " + props.offset)
+                    console.log("Distance: " + parseInt((props.distance * 1609)))
                     setRestaurantData(result.businesses);
                     //console.log(result.businesses);
-
                 })
                 .catch(error => console.log('error', error));
         } else {
-            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&location=${props.zip}&limit=50&offset=${props.offset}&radius=${props.distance * 1609}&sort_by=distance`, requestOptions)
+            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&location=${props.zip}&limit=50&offset=${props.offset}&radius=${parseInt(props.distance * 1609)}&sort_by=distance`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     setRestaurantData(result.businesses);

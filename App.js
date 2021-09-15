@@ -12,7 +12,7 @@ import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import firebase from "./firebase";
-import {Alert} from "react-native";
+import {Alert, BackHandler} from "react-native";
 
 function AuthStack() {
     return (
@@ -121,6 +121,15 @@ export default function App() {
                 setLogIn(false)
             }
         })
+
+        const backAction = () => {
+            return false;
+        };
+
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
     },[])
 
   return (
