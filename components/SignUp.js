@@ -96,8 +96,12 @@ export default function Signup(){
                     })
                 }).catch(error => {
                     if(error.message === 'The email address is already in use by another account.'){
-                        Alert.alert('Email Exists', 'This email already exists.s',
+                        Alert.alert('Email Exists', 'This email already exists',
                             [{text: 'Try Again', onPress:() => navigation.navigate('Login')}]
+                        )
+                    }else{
+                        Alert.alert('Email Invalid', 'Your email is invalid please enter it again',
+                            [{text: 'Try Again', onPress:() => navigation.goBack()}]
                         )
                     }
                     console.log(error.message)
@@ -128,15 +132,15 @@ export default function Signup(){
             <TextInput
                 style={InputStyles.inputStyle}
                 placeholder="Username"
-                onChangeText={(username)=>setUserDisplayName(username)}
+                onChangeText={(username)=>setUserDisplayName(username.trim())}
                 value={userDisplayName}
             />
             <TextInput
                 style={InputStyles.inputStyle}
                 placeholder="Email"
                 keyboardType={'email-address'}
-                onChangeText={email => setUserEmail({email:email})}
-                value={userEmail.email}
+                onChangeText={email => setUserEmail({email:email.trim()})}
+                value={userEmail.email.trim()}
             />
             <TextInput
                 style={InputStyles.inputStyle}
