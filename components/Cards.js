@@ -41,9 +41,10 @@ class Card extends React.Component {
     render() {
         if(this.props.imageURL === burgerJPG) {
             return (
-                <View style={CardStyle.container}>
                     <View style={CardStyle.card}>
-                        <Image source={this.props.imageURL} style={CardStyle.cardImage}/>
+                        <View style={CardStyle.cardImage}>
+                        <Image source={this.props.imageURL} />
+                        </View>
 
                         <Text style={CardStyle.cardsText}>{this.props.name}</Text>
 
@@ -62,11 +63,9 @@ class Card extends React.Component {
                             </TouchableOpacity>
                         </View>
                     </View>
-                </View>
             )
         }else {
             return (
-                <View style={CardStyle.container}>
                     <View style={CardStyle.card}>
                         <Image source={{uri: `${this.props.imageURL}`}} style={CardStyle.cardImage}/>
 
@@ -87,7 +86,6 @@ class Card extends React.Component {
                             </TouchableOpacity>
                         </View>
                     </View>
-                </View>
             )
         }
     }
@@ -121,11 +119,11 @@ class LoadingCard extends React.Component {
 
     render() {
         return (
-        <View style={CardStyle.cardContainer}>
+        <View style={CardStyle.loadContainer}>
             <View style={CardStyle.card}>
                 <View style={{
-                    borderTopLeftRadius:25,
-                    borderTopRightRadius:25,
+                    borderTopLeftRadius:10,
+                    borderTopRightRadius:10,
                     overflow: 'hidden',
                     width: "100%",
                 }}>
@@ -133,11 +131,11 @@ class LoadingCard extends React.Component {
                         width: "100%",
                         height: undefined,
                         aspectRatio: 1,
-                        borderTopLeftRadius:25,
-                        borderTopRightRadius:25,
+                        borderTopLeftRadius:10,
+                        borderTopRightRadius:10,
                         overlayColor: 'white'
                     }}/>
-                </View>
+
                     <Text style={CardStyle.cardsText}>Finding Local Restaurants...</Text>
 
                     <View style={CardStyle.yelpStars}>
@@ -146,17 +144,19 @@ class LoadingCard extends React.Component {
                             If this is the case,please head back to the lobby and increase the distance or establish a connection.</Text>
                     </View>
 
-                <TouchableOpacity style={CardStyle.backButton} onPress={() => {
-                    this.updateLobby();
-                }}>
-                    <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
-                    <Text style={{
-                        color:'#EEEEEE',
-                        fontWeight: "400",
-                        fontSize: 20,
-                        paddingLeft:10,
-                    }}>Back to Lobby</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={CardStyle.backButton} onPress={() => {
+                        this.updateLobby();
+                    }}>
+                        <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
+                        <Text style={{
+                            color:'#EEEEEE',
+                            fontWeight: "400",
+                            fontSize: 20,
+                            paddingLeft:10,
+                        }}>Back to Lobby</Text>
+                    </TouchableOpacity>
+                </View>
+
             </View>
         </View>
         )
@@ -474,7 +474,6 @@ const Cards = (props) => {
         )
     } else {
         return (
-            <View style={CardStyle.container}>
                 <View style={CardStyle.container}>
                     <Modal
                         animationType="slide"
@@ -506,24 +505,21 @@ const Cards = (props) => {
                             </Pressable>
                         </View>
                     </Modal>
-                </View>
-
-                <View style={CardStyle.cardContainer}>
                     <SwipeCards
                         cards={data}
                         renderCard={(cardData) => <Card {...cardData} />}
                         keyExtractor={(cardData) => String(cardData.id)}
                         renderNoMoreCards={() => {
-                                let size = data.length
-                                data=[]
-                                return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost}/>)
+                            let size = data.length
+                            data=[]
+                            return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost}/>)
                             }
                         }
                         handleYup={handleYup}
                         handleNope={handleNope}
                     />
                 </View>
-            </View>
+
         )
     }
 }

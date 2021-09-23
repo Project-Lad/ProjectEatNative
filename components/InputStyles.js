@@ -1,5 +1,7 @@
-import {StyleSheet} from "react-native";
+import {Dimensions, StyleSheet} from "react-native";
 
+let ScreenHeight = Dimensions.get("window").height;
+let ScreenWidth = Dimensions.get("window").width;
 const InputStyles = StyleSheet.create({
     container: {
         flex: 1,
@@ -216,30 +218,34 @@ const LobbyStyles = StyleSheet.create({
 })
 const CardStyle = StyleSheet.create({
     container:{
-        flex: 1,
         backgroundColor:'#eee',
-        height:'100%',
-        width:'100%'
+        height:ScreenHeight,
+        flex:1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom:-70,
+        padding:10
     },
-    cardContainer:{
-        position:'absolute',
+    loadContainer:{
         backgroundColor:'#eee',
-        top:75,
-        bottom:-20,
-        left:0,
-        right:0
+        height:ScreenHeight,
+        flex:1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding:10
     },
     card: {
-        height:'100%',
-        width:'100%',
-        backgroundColor: 'rgba(218,44,56,.25)',
-        borderRadius:25
+        height:600,
+        backgroundColor: 'rgba(218,44,56,1)',
+        borderRadius:10,
+
     },
     cardsText: {
         fontSize: 18,
         fontWeight: "bold",
         paddingLeft: 15,
-        color: '#010001'
+        color: '#010001',
+        padding:5
     },
     yelpLocation:{
         margin: 15
@@ -250,33 +256,34 @@ const CardStyle = StyleSheet.create({
     },
     yelpStars: {
         marginLeft: 15,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        alignSelf: 'center',
+        alignSelf: 'flex-start',
         flexDirection: 'row',
     },
     yelpReview:{
         flexDirection: 'column',
         alignItems: 'flex-start',
-        alignSelf: 'flex-end'
+        alignSelf: 'flex-start',
+        padding:5
     },
     yelpImage: {
         width: 125,
         height: 50,
     },
     cardImage: {
-        width: "95%",
+        width: '100%',
         height: undefined,
         aspectRatio: 1,
-        borderTopLeftRadius:25,
-        borderTopRightRadius:25
+        borderTopLeftRadius:10,
+        borderTopRightRadius:10
     },
     modalView: {
-        margin: 10,
         backgroundColor: 'rgba(218,44,56,.75)',
         borderRadius: 20,
         padding: 20,
-        shadowColor: "#000",
+        margin: 10,
+        shadowColor: "#eee",
         shadowOffset: {
             width: 0,
             height: 2
