@@ -1,27 +1,29 @@
-import {Dimensions, StyleSheet} from "react-native";
+import {Dimensions,Platform, StyleSheet} from "react-native";
 
 let ScreenHeight = Dimensions.get("window").height;
 let ScreenWidth = Dimensions.get("window").width;
+
 const InputStyles = StyleSheet.create({
     container: {
-        flex: 1,
+        height:ScreenHeight,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        padding: 35,
+        padding: '10%',
         backgroundColor: '#fff'
     },
     inputStyle: {
         width: '100%',
         marginBottom: 15,
-        padding: 15,
+        padding: '5%',
         alignSelf: "center",
-        borderColor: "#DA2C38",
+        borderColor: "#2decb4",
         borderBottomWidth: 3,
         borderRightWidth:3,
         borderTopWidth:3,
         borderLeftWidth:3,
-        fontSize:20
+        fontSize:20,
+        borderRadius:25
     },
     zipInputStyle: {
         width: '100%',
@@ -41,7 +43,7 @@ const InputStyles = StyleSheet.create({
         textAlign: 'center'
     },
     buttons:{
-        backgroundColor:"#DA2C38",
+        backgroundColor:"#2decb4",
         padding: 15,
         display: 'flex',
         flexDirection: 'row',
@@ -55,10 +57,11 @@ const InputStyles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 3.84,
         elevation: 5,
+        borderRadius:25
     },
     buttonText:{
         fontSize: 20,
-        color:"#eee"
+        color:"#5D737E"
     },
     preloader: {
         left: 0,
@@ -79,11 +82,11 @@ const IconStyles = StyleSheet.create({
     arrowRight:{
         fontSize:20,
         alignSelf: 'center',
-        color:"#eee"
+        color:"#5D737E"
     },
     iconLeft:{
         fontSize:22,
-        color:"#eee",
+        color:"#5D737E",
         alignSelf: 'center'
     },
     iconShare:{
@@ -101,42 +104,52 @@ const IconStyles = StyleSheet.create({
         paddingBottom:10
     },
     profilePicture:{
-        width: 200,
-        height: 200,
+        width: 75,
+        height: 75,
         borderRadius:100
     },
     editIcon:{
         color:"#5D737E",
-        fontSize:24,
-        fontWeight:"bold"
+        fontSize:26,
+        justifyContent:'center'
     }
 })
 const ProfileStyles = StyleSheet.create({
     container: {
-        flex: 1,
-        display: "flex",
-        marginTop: 50,
-        padding:10,
+        padding:'5%',
+        flex:1,
+        alignContent: 'center',
+        justifyContent:'center'
     },
     card:{
-        backgroundColor: '#fff',
-        justifyContent:'center',
+        flexDirection:"row",
+        justifyContent:'space-evenly',
         alignItems: 'center',
         width:'100%',
-        height:'50%',
+        padding:'2%',
         borderRadius:10,
-        shadowColor: '#DA2C38',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 1,
-        elevation: 5,
-        marginBottom:10
+        backgroundColor:'#fff',
     },
     editButton:{
-        position:'absolute',
-        bottom:20,
-        right:10,
-        fontSize:24
-    }
+        fontSize:24,
+        justifyContent:'center'
+    },
+    buttons:{
+        backgroundColor:"#2decb4",
+        padding: '5%',
+        flexDirection: 'row',
+        justifyContent:'space-between',
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderRadius:25,
+        marginTop:'5%'
+    },
 })
 const LobbyStyles = StyleSheet.create({
     container:{
