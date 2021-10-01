@@ -28,14 +28,15 @@ const InputStyles = StyleSheet.create({
     zipInputStyle: {
         width: '100%',
         marginBottom: 15,
-        padding: 10,
+        padding:  Platform.OS === 'ios'?'5%':10,
         alignSelf: "center",
-        borderColor: "#DA2C38",
+        borderColor: "#5D737E",
         borderBottomWidth: 3,
         borderRightWidth:3,
         borderTopWidth:3,
         borderLeftWidth:3,
-        fontSize:12
+        fontSize:12,
+        borderRadius:25
     },
     loginText: {
         color: '#000',
@@ -89,6 +90,12 @@ const IconStyles = StyleSheet.create({
         color:"#5D737E",
         alignSelf: 'center'
     },
+    closeButton:{
+        padding: "2%",
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems:'center'
+    },
     iconShare:{
         fontSize:22,
         color:"#000",
@@ -127,8 +134,13 @@ const ProfileStyles = StyleSheet.create({
         alignItems: 'center',
         width:'100%',
         padding:'2%',
-        borderRadius:10,
         backgroundColor:'#fff',
+        borderRadius:4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 1,
     },
     editButton:{
         fontSize:24,
@@ -157,7 +169,7 @@ const LobbyStyles = StyleSheet.create({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        margin: 20,
+        padding:Platform.OS === 'ios'?'5%' : 10 ,
         height:'50%',
     },
     listContainer:{
@@ -170,15 +182,12 @@ const LobbyStyles = StyleSheet.create({
         borderRadius:4,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.8,
-        shadowRadius: 10,
-        elevation: 2,
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 1,
         marginBottom:10,
         padding:10,
         flex: 5,
-    },
-    bottomContainer:{
-      flex:0
     },
     userName:{
         alignSelf:'center',
@@ -191,13 +200,12 @@ const LobbyStyles = StyleSheet.create({
         borderRadius: 50,
     },
     shareCodeContainer:{
-        display:'flex',
         borderStyle:'dashed',
         borderWidth:2,
-        borderColor:'#BC0B02',
+        borderColor:'#5D737E',
         borderRadius:1,
         alignItems:'center',
-        backgroundColor:'rgba(188, 11, 2, 0.25)',
+        backgroundColor:'#fff',
         paddingTop:10,
         paddingBottom: 10,
         flexDirection:'row',
@@ -220,13 +228,13 @@ const LobbyStyles = StyleSheet.create({
     sliderTrack:{
         height: 15,
         borderRadius: 25,
-        backgroundColor:'rgba(188, 11, 2, 0.25)'
+        backgroundColor:'#5D737E'
     },
     sliderThumb:{
         height: 25,
         width:25,
         borderRadius: 20,
-        backgroundColor:'rgb(188, 11, 2)'
+        backgroundColor:'#2decb4'
     }
 })
 const CardStyle = StyleSheet.create({

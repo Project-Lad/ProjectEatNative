@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Text, View, TextInput, TouchableOpacity, Image} from 'react-native';
+import {Text, View, TextInput, TouchableOpacity, Image, Alert} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
