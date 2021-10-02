@@ -164,6 +164,8 @@ class LoadingCard extends React.Component {
 }
 
 let data = [];
+let unsubs = [];
+let unsub;
 
 const Cards = (props) => {
     let [resCounter, setCounter] = useState(0);
@@ -332,7 +334,7 @@ const Cards = (props) => {
             console.error("Error writing restaurant: ", error);
         });
 
-        usersRef.onSnapshot(querySnapshot => {
+        unsub = usersRef.onSnapshot(querySnapshot => {
             console.log(querySnapshot.size)
             querySnapshot.forEach(documentSnapshot => {
                 if (querySnapshot.size === 1) {
@@ -369,6 +371,7 @@ const Cards = (props) => {
             //reset counter so when snapshot detects changes, it doesn't over count
             counter = 1;
         })
+        unsubs.push(unsub)
         return true;
     }
 
@@ -417,17 +420,19 @@ const Cards = (props) => {
                 });
             }
 
-            matchedRef.onSnapshot(docSnapshot => {
+            unsub = matchedRef.onSnapshot(docSnapshot => {
                 console.log(docSnapshot.data())
                 //if majority of the group wants this
                 if((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
                     data = []
-                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code})
+                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs})
                     console.log("Majority Rule")
                 }
             })
+
+            unsubs.push(unsub)
         })
     }
 
@@ -453,16 +458,18 @@ const Cards = (props) => {
                 });
             }
 
-            matchedRef.onSnapshot(docSnapshot => {
+            unsub = matchedRef.onSnapshot(docSnapshot => {
                 console.log(docSnapshot.data())
                 if((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
                     data = []
-                    navigation.navigate('Final Decision',{id: docSnapshot.id})
+                    navigation.navigate('Final Decision',{id: docSnapshot.id, code: props.code, unsubs: unsubs})
                     console.log("Majority Rule")
                 }
             })
+
+            unsubs.push(unsub)
         })
     }
 
