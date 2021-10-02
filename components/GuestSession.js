@@ -172,7 +172,7 @@ export default class GuestSession extends Component {
                         )
                     })}
                 </ScrollView>
-                <View style={LobbyStyles.bottomContainer}>
+                <View>
                     <Text style={InputStyles.buttonText}>Share Code</Text>
 
                     <View>
@@ -182,8 +182,9 @@ export default class GuestSession extends Component {
                         </TouchableOpacity>
                     </View>
 
-                    <TouchableOpacity onPress={()=>{this.leaveLobby()}}>
-                        <Text style={{marginTop:15}}>Leave Lobby</Text>
+                    <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={IconStyles.closeButton}>
+                        <Ionicons style={{fontSize:16}} name="close-circle-outline"/>
+                        <Text style={{fontSize:16}}>Leave Lobby</Text>
                     </TouchableOpacity>
                 </View>
             </View>

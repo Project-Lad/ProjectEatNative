@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {Image, Text, TouchableOpacity, TouchableOpacityComponent, View} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {useIsFocused, useNavigation} from '@react-navigation/native'
@@ -35,49 +35,43 @@ export default function Dashboard(){
     return(
         <View style={ProfileStyles.container}>
             {/*Profile Card View*/}
-            <View style = {ProfileStyles.card}>
+            <TouchableOpacity style = {ProfileStyles.card} onPress={() => navigation.navigate('Edit Account')}>
                 <View>
                    {newProfilePicture && <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />}
                 </View>
-                <View style={{paddingTop:10}}>
+                <View>
                     <Text style={InputStyles.userNameText}>
                         {newProfileUsername}
                     </Text>
                 </View>
-                <TouchableOpacity
-                    style={ProfileStyles.editButton}
-                    onPress={() => navigation.navigate('Edit Account')}>
-                    <Ionicons style={IconStyles.editIcon} name="create-outline"/>
-                </TouchableOpacity>
-            </View>
-
+                <View style={ProfileStyles.editButton}>
+                    <Ionicons style={IconStyles.editIcon} name="chevron-forward-outline"/>
+                </View>
+            </TouchableOpacity>
             {/*Button View*/}
-            <View styles={InputStyles.container}>
-                <TouchableOpacity onPress={() => navigation.navigate('HostSession')} style = {InputStyles.buttons}>
-                    <Ionicons style={IconStyles.iconLeft} name="fast-food-outline"/>
-                    <Text style={InputStyles.buttonText}>Create Lobby</Text>
-                    <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
-                </TouchableOpacity>
+            <View>
+                    <TouchableOpacity onPress={() => navigation.navigate('HostSession')} style = {ProfileStyles.buttons}>
+                        <Ionicons style={IconStyles.iconLeft} name="fast-food-outline"/>
+                        <Text style={InputStyles.buttonText}>Create Lobby</Text>
+                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={InputStyles.buttons} onPress={() => navigation.navigate('Connect')}>
-                    <Ionicons style={IconStyles.iconLeft} name="people"/>
-                    <Text style={InputStyles.buttonText}>Join Lobby</Text>
-                    <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
-                </TouchableOpacity>
+                    <TouchableOpacity style={ProfileStyles.buttons} onPress={() => navigation.navigate('Connect')}>
+                        <Ionicons style={IconStyles.iconLeft} name="people"/>
+                        <Text style={InputStyles.buttonText}>Join Lobby</Text>
+                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={signOut} style = {InputStyles.buttons}>
-                    <Ionicons style={IconStyles.iconLeft} name="log-out-outline"/>
-                    <Text style={InputStyles.buttonText}>Logout</Text>
-                    <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
-                </TouchableOpacity>
+                    <TouchableOpacity onPress={signOut} style = {ProfileStyles.buttons}>
+                        <Ionicons style={IconStyles.iconLeft} name="log-out-outline"/>
+                        <Text style={InputStyles.buttonText}>Logout</Text>
+                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
 
-                <TouchableOpacity
-                    onPress={deleteAccount}
-                    style = {InputStyles.buttons}
-                >
-                    <Text style={InputStyles.buttonText}>delete</Text>
-                </TouchableOpacity>
-            </View>
+                    <TouchableOpacity onPress={deleteAccount} style = {ProfileStyles.buttons}>
+                        <Text style={InputStyles.buttonText}>delete</Text>
+                    </TouchableOpacity>
+                </View>
         </View>
     )
 }
