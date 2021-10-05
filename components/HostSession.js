@@ -237,9 +237,9 @@ export default class HostSession extends Component {
                         thumbStyle={LobbyStyles.sliderThumb}
                         trackStyle={LobbyStyles.sliderTrack}
                         />
+
                     <Text>Distance: {this.state.distance} mi</Text>
                 </View>
-
 
                 <Text style={InputStyles.buttonText}>Share Code</Text>
 

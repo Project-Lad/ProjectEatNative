@@ -169,7 +169,7 @@ const LobbyStyles = StyleSheet.create({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding:Platform.OS === 'ios'?'5%' : 10 ,
+        padding:Platform.OS === 'ios'?'5%' : 10,
         height:'50%',
     },
     listContainer:{
@@ -219,11 +219,10 @@ const LobbyStyles = StyleSheet.create({
     },
     sliderContainer:{
         flex: 1,
-        marginLeft: 10,
-        marginRight: 10,
+        marginLeft: '10%',
+        marginRight: '10%',
         alignItems: "stretch",
         justifyContent: "center",
-        color:'red'
     },
     sliderTrack:{
         height: 15,
@@ -235,6 +234,17 @@ const LobbyStyles = StyleSheet.create({
         width:25,
         borderRadius: 20,
         backgroundColor:'#2decb4'
+    },
+    sliderTrack2:{
+        height: 15,
+        borderRadius: 25,
+        backgroundColor:'rgba(188, 11, 2, 0.25)'
+    },
+    sliderThumb2:{
+        height: 25,
+        width:25,
+        borderRadius: 20,
+        backgroundColor:'rgb(188, 11, 2)'
     }
 })
 const CardStyle = StyleSheet.create({
@@ -244,7 +254,6 @@ const CardStyle = StyleSheet.create({
         flex:1,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom:-70,
         padding:10
     },
     loadContainer:{
@@ -257,39 +266,35 @@ const CardStyle = StyleSheet.create({
     },
     card: {
         height:600,
-        backgroundColor: 'rgba(218,44,56,1)',
+        backgroundColor: '#2decb4',
         borderRadius:10,
 
     },
     cardsText: {
         fontSize: 18,
         fontWeight: "bold",
-        paddingLeft: 15,
         color: '#010001',
-        padding:5
-    },
-    yelpLocation:{
-        margin: 15
     },
     yelpText: {
-        fontSize: 15,
+        fontSize: 16,
         color: '#010001'
     },
-    yelpStars: {
-        marginLeft: 15,
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        alignSelf: 'flex-start',
-        flexDirection: 'row',
+    yelpInfo: {
+        padding:15
     },
     yelpReview:{
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'flex-start',
-        alignSelf: 'flex-start',
-        padding:5
+        justifyContent:'space-between',
+        marginTop:'2%',
+        height:'30%'
+    },
+    yelpStars:{
+        width:225,
+        height:'50%'
     },
     yelpImage: {
-        width: 125,
+        width: 50,
         height: 50,
     },
     cardImage: {
@@ -300,10 +305,11 @@ const CardStyle = StyleSheet.create({
         borderTopRightRadius:10
     },
     modalView: {
-        backgroundColor: 'rgba(218,44,56,.75)',
+        backgroundColor: '#5D737E',
         borderRadius: 20,
-        padding: 20,
-        margin: 10,
+        padding: 10,
+
+        margin:10,
         shadowColor: "#eee",
         shadowOffset: {
             width: 0,
@@ -311,29 +317,9 @@ const CardStyle = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 20
-    },
-    button: {
-        backgroundColor:"#DA2C38",
-        padding: 15,
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent:'space-between',
-        alignItems:"stretch",
-        marginBottom:10,
-        shadowOffset: {
-            width: 0,
-            height: 0,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    buttonText:{
-        color: "#EEEEEE",
-        fontWeight: "bold",
-        fontSize: 20,
-        paddingLeft:10,
+        elevation: 20,
+        justifyContent:'center'
+
     },
     backButton: {
         backgroundColor:"#DA2C38",
