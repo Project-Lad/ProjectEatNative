@@ -56,6 +56,7 @@ const Decision = ({route}) => {
         console.log("Getting Data")
         getData() //use API fetch only once to reduce amount of API calls
         setIsLoading(true)
+        clearSubs()
     }, []);
 
     setData()   //called everytime an action occurs on the screen
@@ -184,6 +185,12 @@ const Decision = ({route}) => {
         console.log(googleURL)
     }
 
+    function clearSubs() {
+        for (let i = 0; i < route.params.unsubs.length; i++) {
+            route.params.unsubs[i]()
+        }
+    }
+
     //for dots under images
     const setIndex = event => {
         const viewSize = event.nativeEvent.layoutMeasurement.width
@@ -193,10 +200,32 @@ const Decision = ({route}) => {
     }
 
     function deleteDocument() {
+        let currentSession = firebase.firestore().collection('sessions').doc(route.params.code)
+
+        currentSession.collection('matched').get().then(snapshot => {
+            snapshot.forEach(doc => {
+                currentSession.collection('matched').doc(doc.id).delete().then(() => {
+                    console.log("Deleted match restaurant number: ", doc.id)
+                }).catch((error) => {
+                    console.log("Error deleting matched restaurant: ", error)
+                })
+            })
+        })
+
+        currentSession.collection('users').get().then(snapshot => {
+            snapshot.forEach(doc => {
+                currentSession.collection('users').doc(doc.id).delete().then(() => {
+                    console.log("Deleted user: ", doc.id)
+                }).catch((error) => {
+                    console.log("Error deleting user: ", error)
+                })
+            })
+        })
+
         //delete the firebase document
         firebase.firestore().collection('sessions').doc(route.params.code).delete()
             .then(() => {navigation.navigate('Profile')})
-            .catch((e) => console.log("Error: ", e))
+            .catch((e) => console.log("Error deleting document session: ", e))
     }
 
     if(isLoading === false) {
