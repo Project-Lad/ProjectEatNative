@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
-import {Text, View, TextInput, TouchableOpacity, Image, Alert} from 'react-native';
+import {
+    Text,
+    View,
+    TextInput,
+    TouchableOpacity,
+    Image,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Keyboard
+} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
+import {TouchableWithoutFeedback} from "react-native-gesture-handler";
 
 export default function EditAccount(){
     const navigation = useNavigation()
@@ -67,7 +78,7 @@ export default function EditAccount(){
     }
 
     return(
-        <View style={InputStyles.container}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
             <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
                 <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
                     <Image source={{ uri: newProfilePicture.photoURL }} style={IconStyles.profilePicture} />
@@ -83,6 +94,6 @@ export default function EditAccount(){
                 <Text style={InputStyles.buttonText}>Update</Text>
                 <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
             </TouchableOpacity>
-        </View>
+        </KeyboardAvoidingView>
     )
 }
