@@ -79,11 +79,9 @@ function LoginSignup(){
         screenOptions={{
             headerTitleAlign: 'center',
             headerStyle: {
-                backgroundColor: 'rgba(218,44,56,.25)',
-                elevation: 0,
-                shadowOpacity: 0,
+                backgroundColor: '#2decb4',
+
             },
-            headerTintColor: '#2A232D',
             headerTitleStyle: {
                 fontWeight: 'bold',
             },
