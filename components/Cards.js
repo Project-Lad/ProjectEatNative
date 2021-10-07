@@ -525,6 +525,11 @@ const Cards = (props) => {
                             return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost}/>)
                             }
                         }
+
+                        actions={{
+                            nope: {onAction: handleNope},
+                            yup: {onAction: handleYup}
+                        }}
                         handleYup={handleYup}
                         handleNope={handleNope}
                     />
