@@ -7,6 +7,7 @@ import {
     ActivityIndicator,
     Platform,
     Image, TouchableOpacity,
+    KeyboardAvoidingView
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -59,9 +60,10 @@ export default function Signup(){
         let ref = firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/`+ imageName);
         return ref.put(blob)
     }
+
     async function registerUser(){
         if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '') {
-            Alert.alert('Fill in all fields')
+            Alert.alert('Fill in all fields', 'One of the fields have been left empty')
         }else if(userPassword.password.length < 8){
             alert('Password not long enough')
         }else{
@@ -94,6 +96,15 @@ export default function Signup(){
                         })
                     })
                 }).catch(error => {
+                    if(error.message === 'The email address is already in use by another account.'){
+                        Alert.alert('Email Exists', 'This email already exists',
+                            [{text: 'Try Again', onPress:() => navigation.navigate('Login')}]
+                        )
+                    }else{
+                        Alert.alert('Email Invalid', 'Your email is invalid please enter it again',
+                            [{text: 'Try Again', onPress:() => navigation.goBack()}]
+                        )
+                    }
                     console.log(error.message)
                 })
         }
@@ -107,7 +118,7 @@ export default function Signup(){
         )
     }
     return(
-        <View style={InputStyles.container}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
             <View style={{  alignItems: 'center', justifyContent: 'center' }}>
                 <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
                     {image.photoURL === '../assets/user-placeholder.png' ?
@@ -122,15 +133,15 @@ export default function Signup(){
             <TextInput
                 style={InputStyles.inputStyle}
                 placeholder="Username"
-                onChangeText={(username)=>setUserDisplayName(username)}
+                onChangeText={(username)=>setUserDisplayName(username.trim())}
                 value={userDisplayName}
             />
             <TextInput
                 style={InputStyles.inputStyle}
                 placeholder="Email"
                 keyboardType={'email-address'}
-                onChangeText={email => setUserEmail({email:email})}
-                value={userEmail.email}
+                onChangeText={email => setUserEmail({email:email.trim()})}
+                value={userEmail.email.trim()}
             />
             <TextInput
                 style={InputStyles.inputStyle}
@@ -149,6 +160,6 @@ export default function Signup(){
                 onPress={() => navigation.navigate('Login')}>
                 Already Registered? Login
             </Text>
-        </View>
+        </KeyboardAvoidingView>
     )
 }

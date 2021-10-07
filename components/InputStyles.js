@@ -1,37 +1,42 @@
-import {StyleSheet} from "react-native";
+import {Dimensions,Platform, StyleSheet} from "react-native";
+
+let ScreenHeight = Dimensions.get("window").height;
+let ScreenWidth = Dimensions.get("window").width;
 
 const InputStyles = StyleSheet.create({
     container: {
-        flex: 1,
+        height:ScreenHeight,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        padding: 35,
+        padding: '10%',
         backgroundColor: '#fff'
     },
     inputStyle: {
         width: '100%',
         marginBottom: 15,
-        padding: 15,
+        padding: '5%',
         alignSelf: "center",
-        borderColor: "#DA2C38",
+        borderColor: "#2decb4",
         borderBottomWidth: 3,
         borderRightWidth:3,
         borderTopWidth:3,
         borderLeftWidth:3,
-        fontSize:20
+        fontSize:20,
+        borderRadius:25
     },
     zipInputStyle: {
         width: '100%',
         marginBottom: 15,
-        padding: 10,
+        padding:  Platform.OS === 'ios'?'5%':10,
         alignSelf: "center",
-        borderColor: "#DA2C38",
+        borderColor: "#5D737E",
         borderBottomWidth: 3,
         borderRightWidth:3,
         borderTopWidth:3,
         borderLeftWidth:3,
-        fontSize:12
+        fontSize:12,
+        borderRadius:25
     },
     loginText: {
         color: '#000',
@@ -39,7 +44,7 @@ const InputStyles = StyleSheet.create({
         textAlign: 'center'
     },
     buttons:{
-        backgroundColor:"#DA2C38",
+        backgroundColor:"#2decb4",
         padding: 15,
         display: 'flex',
         flexDirection: 'row',
@@ -53,10 +58,11 @@ const InputStyles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 3.84,
         elevation: 5,
+        borderRadius:25
     },
     buttonText:{
         fontSize: 20,
-        color:"#eee"
+        color:"#5D737E"
     },
     preloader: {
         left: 0,
@@ -77,12 +83,18 @@ const IconStyles = StyleSheet.create({
     arrowRight:{
         fontSize:20,
         alignSelf: 'center',
-        color:"#eee"
+        color:"#5D737E"
     },
     iconLeft:{
         fontSize:22,
-        color:"#eee",
+        color:"#5D737E",
         alignSelf: 'center'
+    },
+    closeButton:{
+        padding: "2%",
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems:'center'
     },
     iconShare:{
         fontSize:22,
@@ -99,42 +111,57 @@ const IconStyles = StyleSheet.create({
         paddingBottom:10
     },
     profilePicture:{
-        width: 200,
-        height: 200,
+        width: 75,
+        height: 75,
         borderRadius:100
     },
     editIcon:{
         color:"#5D737E",
-        fontSize:24,
-        fontWeight:"bold"
+        fontSize:26,
+        justifyContent:'center'
     }
 })
 const ProfileStyles = StyleSheet.create({
     container: {
-        flex: 1,
-        display: "flex",
-        marginTop: 50,
-        padding:10,
+        padding:'5%',
+        flex:1,
+        alignContent: 'center',
+        justifyContent:'center'
     },
     card:{
-        backgroundColor: '#fff',
-        justifyContent:'center',
+        flexDirection:"row",
+        justifyContent:'space-evenly',
         alignItems: 'center',
         width:'100%',
-        height:'50%',
-        borderRadius:10,
-        shadowColor: '#DA2C38',
+        padding:'2%',
+        backgroundColor:'#fff',
+        borderRadius:4,
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 1,
-        elevation: 5,
-        marginBottom:10
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 1,
     },
     editButton:{
-        position:'absolute',
-        bottom:20,
-        right:10,
-        fontSize:24
-    }
+        fontSize:24,
+        justifyContent:'center'
+    },
+    buttons:{
+        backgroundColor:"#2decb4",
+        padding: '5%',
+        flexDirection: 'row',
+        justifyContent:'space-between',
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderRadius:25,
+        marginTop:'5%'
+    },
 })
 const LobbyStyles = StyleSheet.create({
     container:{
@@ -142,7 +169,7 @@ const LobbyStyles = StyleSheet.create({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        margin: 20,
+        padding:Platform.OS === 'ios'?'5%' : 10,
         height:'50%',
     },
     listContainer:{
@@ -155,15 +182,12 @@ const LobbyStyles = StyleSheet.create({
         borderRadius:4,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.8,
-        shadowRadius: 10,
-        elevation: 2,
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 1,
         marginBottom:10,
         padding:10,
         flex: 5,
-    },
-    bottomContainer:{
-      flex:0
     },
     userName:{
         alignSelf:'center',
@@ -176,13 +200,12 @@ const LobbyStyles = StyleSheet.create({
         borderRadius: 50,
     },
     shareCodeContainer:{
-        display:'flex',
         borderStyle:'dashed',
         borderWidth:2,
-        borderColor:'#BC0B02',
+        borderColor:'#5D737E',
         borderRadius:1,
         alignItems:'center',
-        backgroundColor:'rgba(188, 11, 2, 0.25)',
+        backgroundColor:'#fff',
         paddingTop:10,
         paddingBottom: 10,
         flexDirection:'row',
@@ -196,18 +219,28 @@ const LobbyStyles = StyleSheet.create({
     },
     sliderContainer:{
         flex: 1,
-        marginLeft: 10,
-        marginRight: 10,
+        marginLeft: '10%',
+        marginRight: '10%',
         alignItems: "stretch",
         justifyContent: "center",
-        color:'red'
     },
     sliderTrack:{
         height: 15,
         borderRadius: 25,
-        backgroundColor:'rgba(188, 11, 2, 0.25)'
+        backgroundColor:'#5D737E'
     },
     sliderThumb:{
+        height: 25,
+        width:25,
+        borderRadius: 20,
+        backgroundColor:'#2decb4'
+    },
+    sliderTrack2:{
+        height: 15,
+        borderRadius: 25,
+        backgroundColor:'rgba(188, 11, 2, 0.25)'
+    },
+    sliderThumb2:{
         height: 25,
         width:25,
         borderRadius: 20,
@@ -216,96 +249,77 @@ const LobbyStyles = StyleSheet.create({
 })
 const CardStyle = StyleSheet.create({
     container:{
-        flex: 1,
         backgroundColor:'#eee',
-        height:'100%',
-        width:'100%'
+        height:ScreenHeight,
+        flex:1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding:10
     },
-    cardContainer:{
-        position:'absolute',
+    loadContainer:{
         backgroundColor:'#eee',
-        top:75,
-        bottom:-20,
-        left:0,
-        right:0
+        height:ScreenHeight,
+        flex:1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding:10
     },
     card: {
-        height:'100%',
-        width:'100%',
-        backgroundColor: 'rgba(218,44,56,.25)',
-        borderRadius:25
+        height:600,
+        backgroundColor: '#2decb4',
+        borderRadius:10,
+
     },
     cardsText: {
         fontSize: 18,
         fontWeight: "bold",
-        paddingLeft: 15,
-        color: '#010001'
-    },
-    yelpLocation:{
-        margin: 15
+        color: '#010001',
     },
     yelpText: {
-        fontSize: 15,
+        fontSize: 16,
         color: '#010001'
     },
-    yelpStars: {
-        marginLeft: 15,
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        alignSelf: 'center',
-        flexDirection: 'row',
+    yelpInfo: {
+        padding:15
     },
     yelpReview:{
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'flex-start',
-        alignSelf: 'flex-end'
+        justifyContent:'space-between',
+        marginTop:'2%',
+        height:'30%'
+    },
+    yelpStars:{
+        width:225,
+        height:'50%'
     },
     yelpImage: {
-        width: 125,
+        width: 50,
         height: 50,
     },
     cardImage: {
-        width: "95%",
+        width: '100%',
         height: undefined,
         aspectRatio: 1,
-        borderTopLeftRadius:25,
-        borderTopRightRadius:25
+        borderTopLeftRadius:10,
+        borderTopRightRadius:10
     },
     modalView: {
-        margin: 10,
-        backgroundColor: 'rgba(218,44,56,.75)',
+        backgroundColor: '#5D737E',
         borderRadius: 20,
-        padding: 20,
-        shadowColor: "#000",
+        padding: 10,
+
+        margin:10,
+        shadowColor: "#eee",
         shadowOffset: {
             width: 0,
             height: 2
         },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 20
-    },
-    button: {
-        backgroundColor:"#DA2C38",
-        padding: 15,
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent:'space-between',
-        alignItems:"stretch",
-        marginBottom:10,
-        shadowOffset: {
-            width: 0,
-            height: 0,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    buttonText:{
-        color: "#EEEEEE",
-        fontWeight: "bold",
-        fontSize: 20,
-        paddingLeft:10,
+        elevation: 20,
+        justifyContent:'center'
+
     },
     backButton: {
         backgroundColor:"#DA2C38",

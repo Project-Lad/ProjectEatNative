@@ -13,7 +13,7 @@ let longitude;
     let location;
     let locationSuccess = false;
     let count = 0;
-    let { status } = await Location.requestPermissionsAsync();
+    let { status } = await Location.requestForegroundPermissionsAsync();
     console.log(status)
 
     if (status === 'denied') {

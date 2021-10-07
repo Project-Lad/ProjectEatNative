@@ -3,7 +3,8 @@ import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity
 import {useNavigation} from '@react-navigation/native'
 import burgerGIF from '../assets/burger.gif';
 import burgerJPG from '../assets/burger.jpg';
-import YelpImage from '../assets/YelpImage.png'
+//import YelpImage from '../assets/YelpImage.png'
+import YelpBurst from '../assets/yelp_burst.png'
 import Data from './YelpAPI.js'
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
@@ -30,7 +31,7 @@ import iosStar5 from '../assets/ios/regular_5.png'
 import SwipeCards from "react-native-swipe-cards-deck";
 import firebase from "../firebase";
 import "firebase/firestore"
-import {CardStyle,IconStyles} from "./InputStyles";
+import {CardStyle, IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 
 class Card extends React.Component {
@@ -41,9 +42,10 @@ class Card extends React.Component {
     render() {
         if(this.props.imageURL === burgerJPG) {
             return (
-                <View style={CardStyle.container}>
                     <View style={CardStyle.card}>
-                        <Image source={this.props.imageURL} style={CardStyle.cardImage}/>
+                        <View style={CardStyle.cardImage}>
+                        <Image source={this.props.imageURL} />
+                        </View>
 
                         <Text style={CardStyle.cardsText}>{this.props.name}</Text>
 
@@ -58,36 +60,34 @@ class Card extends React.Component {
                                 <Text style={CardStyle.yelpText}>Based on {this.props.review_count} Reviews</Text>
                             </View>
                             <TouchableOpacity onPress={() => Linking.openURL(this.props.businessURL)}>
-                                <Image style={CardStyle.yelpImage} source={YelpImage}/>
+                                <Image style={CardStyle.yelpImage} source={YelpBurst}/>
                             </TouchableOpacity>
                         </View>
                     </View>
-                </View>
             )
         }else {
             return (
-                <View style={CardStyle.container}>
                     <View style={CardStyle.card}>
                         <Image source={{uri: `${this.props.imageURL}`}} style={CardStyle.cardImage}/>
+                        <View style={CardStyle.yelpInfo}>
+                            <Text style={CardStyle.cardsText}>{this.props.name}</Text>
 
-                        <Text style={CardStyle.cardsText}>{this.props.name}</Text>
-
-                        <View style={CardStyle.yelpLocation}>
-                            <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
-                            <Text style={CardStyle.yelpText}>{this.props.address}</Text>
-                        </View>
-
-                        <View style={CardStyle.yelpStars}>
-                            <View style={CardStyle.yelpReview}>
-                                <Image source={this.props.rating} />
-                                <Text style={CardStyle.yelpText}>Based on {this.props.review_count} Reviews</Text>
+                            <View>
+                                <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
+                                <Text style={CardStyle.yelpText}>{this.props.address}</Text>
                             </View>
-                            <TouchableOpacity onPress={() => Linking.openURL(this.props.businessURL)}>
-                                <Image style={CardStyle.yelpImage} source={YelpImage}/>
-                            </TouchableOpacity>
+
+                            <View style={CardStyle.yelpReview}>
+                                <View>
+                                    <Image style={CardStyle.yelpStars} source={this.props.rating} />
+                                    <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
+                                </View>
+                                <TouchableOpacity  onPress={() => Linking.openURL(this.props.businessURL)}>
+                                    <Image style={CardStyle.yelpImage} source={YelpBurst}/>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
-                </View>
             )
         }
     }
@@ -121,11 +121,11 @@ class LoadingCard extends React.Component {
 
     render() {
         return (
-        <View style={CardStyle.cardContainer}>
+        <View style={CardStyle.loadContainer}>
             <View style={CardStyle.card}>
                 <View style={{
-                    borderTopLeftRadius:25,
-                    borderTopRightRadius:25,
+                    borderTopLeftRadius:10,
+                    borderTopRightRadius:10,
                     overflow: 'hidden',
                     width: "100%",
                 }}>
@@ -133,11 +133,11 @@ class LoadingCard extends React.Component {
                         width: "100%",
                         height: undefined,
                         aspectRatio: 1,
-                        borderTopLeftRadius:25,
-                        borderTopRightRadius:25,
+                        borderTopLeftRadius:10,
+                        borderTopRightRadius:10,
                         overlayColor: 'white'
                     }}/>
-                </View>
+
                     <Text style={CardStyle.cardsText}>Finding Local Restaurants...</Text>
 
                     <View style={CardStyle.yelpStars}>
@@ -146,17 +146,19 @@ class LoadingCard extends React.Component {
                             If this is the case,please head back to the lobby and increase the distance or establish a connection.</Text>
                     </View>
 
-                <TouchableOpacity style={CardStyle.backButton} onPress={() => {
-                    this.updateLobby();
-                }}>
-                    <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
-                    <Text style={{
-                        color:'#EEEEEE',
-                        fontWeight: "400",
-                        fontSize: 20,
-                        paddingLeft:10,
-                    }}>Back to Lobby</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={CardStyle.backButton} onPress={() => {
+                        this.updateLobby();
+                    }}>
+                        <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
+                        <Text style={{
+                            color:'#EEEEEE',
+                            fontWeight: "400",
+                            fontSize: 20,
+                            paddingLeft:10,
+                        }}>Back to Lobby</Text>
+                    </TouchableOpacity>
+                </View>
+
             </View>
         </View>
         )
@@ -481,9 +483,9 @@ const Cards = (props) => {
         )
     } else {
         return (
-            <View style={CardStyle.container}>
                 <View style={CardStyle.container}>
                     <Modal
+                        style={{flex:1, justifyContent:'center'}}
                         animationType="slide"
                         visible={modalVisible}
                         onRequestClose={() => {
@@ -493,44 +495,46 @@ const Cards = (props) => {
                             <Text style={CardStyle.modalText}>Let's Eat!</Text>
                             <Image source={{uri: `${cardState.imageURL}`}} style={CardStyle.cardImageModal}/>
                             <Text style={CardStyle.modalText}>The group chose {'\n' + cardState.name}</Text>
-                            <Pressable style={CardStyle.button}
+                            <Pressable style={InputStyles.buttons}
                                        onPress={() => {
                                            loveIt(cardState)
                                            setModalVisible(!modalVisible)
                                        }}>
                                 <Ionicons style={IconStyles.iconLeft} name="heart"/>
-                                <Text style={CardStyle.buttonText}>Love It!</Text>
+                                <Text style={InputStyles.buttonText}>Love It!</Text>
                                 <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
                             </Pressable>
-                            <Pressable style={CardStyle.button}
+                            <Pressable style={InputStyles.buttons}
                                        onPress={() => {
                                            hateIt(cardState)
                                            setModalVisible(!modalVisible)
                                        }}>
                                 <Ionicons style={IconStyles.iconLeft} name="heart-dislike"/>
-                                <Text style={CardStyle.buttonText}>Keep Swiping</Text>
+                                <Text style={InputStyles.buttonText}>Keep Swiping</Text>
                                 <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
                             </Pressable>
                         </View>
                     </Modal>
-                </View>
-
-                <View style={CardStyle.cardContainer}>
                     <SwipeCards
                         cards={data}
                         renderCard={(cardData) => <Card {...cardData} />}
                         keyExtractor={(cardData) => String(cardData.id)}
                         renderNoMoreCards={() => {
-                                let size = data.length
-                                data=[]
-                                return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost}/>)
+                            let size = data.length
+                            data=[]
+                            return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost}/>)
                             }
                         }
+
+                        actions={{
+                            nope: {onAction: handleNope},
+                            yup: {onAction: handleYup}
+                        }}
                         handleYup={handleYup}
                         handleNope={handleNope}
                     />
                 </View>
-            </View>
+
         )
     }
 }

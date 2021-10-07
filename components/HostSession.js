@@ -233,13 +233,13 @@ export default class HostSession extends Component {
                         maximumValue={25}
                         step={0.5}
                         onValueChange={value => this.setState({distance: value})}
-                        minimumTrackTintColor='#BC0B02'
+                        minimumTrackTintColor='#2decb4'
                         thumbStyle={LobbyStyles.sliderThumb}
                         trackStyle={LobbyStyles.sliderTrack}
                         />
+
                     <Text>Distance: {this.state.distance} mi</Text>
                 </View>
-
 
                 <Text style={InputStyles.buttonText}>Share Code</Text>
 
@@ -256,8 +256,9 @@ export default class HostSession extends Component {
                     <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={()=>{this.endLobby()}}>
-                    <Text style={{marginTop:15}}>Close Lobby</Text>
+                <TouchableOpacity onPress={()=>{this.endLobby()}} style={IconStyles.closeButton}>
+                    <Ionicons style={{fontSize:16}} name="close-circle-outline"/>
+                    <Text style={{fontSize:16}}> Close Lobby</Text>
                 </TouchableOpacity>
             </View>
         )

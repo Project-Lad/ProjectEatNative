@@ -21,9 +21,8 @@ function AuthStack() {
             screenOptions={{
                 headerTitleAlign: 'center',
                 headerStyle: {
-                    backgroundColor: 'rgba(218,44,56,.25)',
-                    elevation: 0,
-                    shadowOpacity: 0,
+                    backgroundColor: '#2decb4',
+
                 },
                 headerTitleStyle: {
                     fontWeight: 'bold',
@@ -62,7 +61,7 @@ function AuthStack() {
             <Stack.Screen
                 name="Guest Session"
                 component={GuestSession}
-                options={{headerShown: false}}
+                options={{headerShown: true, title:'Lobby', headerLeft:null}}
             />
             <Stack.Screen
                 name="Connect"
@@ -80,11 +79,9 @@ function LoginSignup(){
         screenOptions={{
             headerTitleAlign: 'center',
             headerStyle: {
-                backgroundColor: 'rgba(218,44,56,.25)',
-                elevation: 0,
-                shadowOpacity: 0,
+                backgroundColor: '#2decb4',
+
             },
-            headerTintColor: '#2A232D',
             headerTitleStyle: {
                 fontWeight: 'bold',
             },
