@@ -393,7 +393,7 @@ const Cards = (props) => {
         //retrieve document
         matchedRef.get().then((doc) => {
             //if the document data isn't null
-            if(doc.data() == null) {
+            if(doc.data() === undefined) {
                 //console log that the document doesn't exist
                 console.log("Document Doesn't Exist, Creating Document")
                 //set the document counter to 1 for this user
@@ -409,7 +409,7 @@ const Cards = (props) => {
             }
 
             //if the data isn't null
-            if(doc.data() != null) {
+            if(doc.data() !== undefined) {
                 //update current document
                 matchedRef.update({
                     counter: doc.data().counter + increment
@@ -447,7 +447,7 @@ const Cards = (props) => {
         })
 
         matchedRef.get().then((doc) => {
-            if(doc.data() == null) {
+            if(doc.data() === undefined) {
                 console.log("Document Doesn't Exist, Creating Document")
                 matchedRef.set({
                     counter: 0
