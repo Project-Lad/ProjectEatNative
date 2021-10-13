@@ -47,6 +47,7 @@ const Decision = ({route}) => {
     let [selectedIndex, setSelectedIndex] = useState(0)
     let navigation = useNavigation()
     let rating = ""
+    let phone = ""
     let address = []
     let name = []
     let googleURL = "https://www.google.com/maps/search/?api=1&query=";
@@ -82,6 +83,9 @@ const Decision = ({route}) => {
 
     function setData() {
         rating = restaurant.rating
+
+        //console.log(restaurant)
+        phone = restaurant.phone
 
         //set image based upon platform
         if(Platform.OS === 'android') {
@@ -270,6 +274,7 @@ const Decision = ({route}) => {
                         <Text style={DecisionStyle.yelpText}>{restaurant.location.address1}</Text>
                         <Text style={DecisionStyle.yelpText}>{restaurant.location.city}, {restaurant.location.state}</Text>
                         <Text style={DecisionStyle.yelpText}>Based on {restaurant.review_count} Reviews</Text>
+                        <Text style={DecisionStyle.yelpText}>Phone: {phone}</Text>
                         <Image source={rating} style={{width:200}}/>
                     </View>
                     <TouchableOpacity onPress={() => Linking.openURL(restaurant.url)}>

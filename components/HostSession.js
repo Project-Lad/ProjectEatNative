@@ -7,12 +7,12 @@ import {
     TextInput,
     TouchableOpacity,
     ScrollView,
-    Share
+    Share, Pressable, Modal, Switch
 } from 'react-native';
 import Slider from 'react-native-smooth-slider';
 import firebase from "../firebase";
 import "firebase/firestore";
-import {InputStyles,IconStyles,LobbyStyles} from "./InputStyles";
+import {InputStyles, IconStyles, LobbyStyles, CardStyle} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import * as Linking from 'expo-linking';
 let TAG = "Console: ";
@@ -27,7 +27,13 @@ export default class HostSession extends Component {
         photoFound: 0,
         zip: null,
         distance: 1,
-        copyClipboard:''
+        copyClipboard:'',
+        categories: ['all'],
+        modalVisible: false,
+        isAll: true,
+        isAmerican: false,
+        isAfrican: false,
+        isItalian: false
     }
 
     constructor(props) {
@@ -162,7 +168,7 @@ export default class HostSession extends Component {
                 })
 
                 //navigate to the swipe page manually
-                this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance, isHost:true})
+                this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance, isHost:true, categories: this.state.categories})
             } else {
                 console.log("Zip Code: ", this.state.zip);
                 Alert.alert("Invalid ZipCode")
@@ -178,7 +184,7 @@ export default class HostSession extends Component {
             })
 
             //navigate to the swipe page manually
-            this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance, isHost:true})
+            this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance, isHost:true, categories: this.state.categories})
         }
     }
 
@@ -201,19 +207,123 @@ export default class HostSession extends Component {
         }
     };
 
+    filterPress = () => {
+
+    }
+
     render() {
         //host changes distance and zipcode (possible change in future for users to change themselves)
         return (
             <View style={LobbyStyles.container}>
 
-                <TextInput
-                    onChangeText={(text) => {
-                        this.setState({zip: text})
-                    }}
-                    value={this.state.zip}
-                    placeholder="Enter Zipcode or Leave Blank for Current Location"
-                    style={InputStyles.zipInputStyle}
-                />
+                <Modal
+                    style={{flex:1, justifyContent:'center'}}
+                    animationType="slide"
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {
+                        this.setState({modalVisible: !this.state.modalVisible});
+                    }}>
+                    <View style={CardStyle.modalView}>
+                        <Text style={CardStyle.modalText}>Choose your Filter!</Text>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>All Restaurants</Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isAll ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {
+                                    this.setState({isAfrican: false, isAmerican: false, isItalian: false, isAll: !this.state.isAll})
+                                }}
+                                value={this.state.isAll}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>American: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isAmerican ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isAmerican: !this.state.isAmerican, isAll: false})}}
+                                value={this.state.isAmerican}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>African: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isAfrican ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isAfrican: !this.state.isAfrican, isAll: false})}}
+                                value={this.state.isAfrican}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Italian: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isItalian ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isItalian: !this.state.isItalian, isAll: false})}}
+                                value={this.state.isItalian}
+                            />
+                        </View>
+
+                        <Pressable style={InputStyles.buttons}
+                                   onPress={() => {
+                                       if(this.state.isAll === true) {
+                                           this.state.categories = ['all']
+                                           console.log(this.state.categories)
+                                           this.setState({modalVisible: !this.state.modalVisible})
+                                       } else if(this.state.isAll === false && this.state.isItalian === false && this.state.isAfrican === false && this.state.isAmerican === false) {
+                                           Alert.alert("Whoops!", "Must apply at least one filter!")
+                                       } else {
+                                           this.state.categories = [];
+                                           if(this.state.isAmerican === true) {
+                                               this.state.categories.push('newamerican', 'tradamerican')
+                                           }
+
+                                           if(this.state.isItalian === true) {
+                                               this.state.categories.push('italian')
+                                           }
+
+                                           if(this.state.isAfrican === true) {
+                                               this.state.categories.push('african')
+                                           }
+
+                                           console.log(this.state.categories)
+                                           this.setState({modalVisible: !this.state.modalVisible})
+                                       }
+                                   }}>
+                            <Text style={InputStyles.buttonText}>Apply Filters</Text>
+                        </Pressable>
+
+                        <Pressable style={InputStyles.buttons}
+                                   onPress={() => {
+                                       this.setState({modalVisible: !this.state.modalVisible})
+                                   }}>
+                            <Text style={InputStyles.buttonText}>Close Modal</Text>
+                        </Pressable>
+                    </View>
+                </Modal>
+
+                <View style={{flexDirection: 'row'}}>
+                    <TextInput
+                        onChangeText={(text) => {
+                            this.setState({zip: text})
+                        }}
+                        value={this.state.zip}
+                        placeholder="Enter Zipcode or Leave Blank for Current Location"
+                        style={InputStyles.zipInputStyle}
+                    />
+
+                    <TouchableOpacity onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}>
+                        <Ionicons name="filter-sharp" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
 
                 <ScrollView>
                     {this.state.users.map(user=>{

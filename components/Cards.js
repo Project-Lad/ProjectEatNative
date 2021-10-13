@@ -146,9 +146,7 @@ class LoadingCard extends React.Component {
                             If this is the case,please head back to the lobby and increase the distance or establish a connection.</Text>
                     </View>
 
-                    <TouchableOpacity style={CardStyle.backButton} onPress={() => {
-                        this.updateLobby();
-                    }}>
+                    <TouchableOpacity style={CardStyle.backButton} onPress={() => {this.updateLobby();}}>
                         <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
                         <Text style={{
                             color:'#EEEEEE',
@@ -166,8 +164,8 @@ class LoadingCard extends React.Component {
 }
 
 let data = [];
-let unsubs = [];
 let unsub;
+let unsubs = [];
 
 const Cards = (props) => {
     let [resCounter, setCounter] = useState(0);
@@ -522,7 +520,7 @@ const Cards = (props) => {
                         renderNoMoreCards={() => {
                             let size = data.length
                             data=[]
-                            return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost}/>)
+                            return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories}/>)
                             }
                         }
 
@@ -530,8 +528,6 @@ const Cards = (props) => {
                             nope: {onAction: handleNope},
                             yup: {onAction: handleYup}
                         }}
-                        handleYup={handleYup}
-                        handleNope={handleNope}
                     />
                 </View>
 
