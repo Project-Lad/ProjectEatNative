@@ -232,6 +232,16 @@ const Decision = ({route}) => {
             .catch((e) => console.log("Error deleting document session: ", e))
     }
 
+    function callRestaurant(number) {
+        let phoneNumber = '';
+        if (Platform.OS === 'android') {
+            phoneNumber = `tel:${number}`;
+        } else {
+            phoneNumber = `telprompt:${number}`;
+        }
+        Linking.openURL(phoneNumber).then(() => {console.log("Making phone call")}).catch((error) => {console.log("Error making call ", error)})
+    }
+
     if(isLoading === false) {
         return(
             <View>
@@ -274,7 +284,9 @@ const Decision = ({route}) => {
                         <Text style={DecisionStyle.yelpText}>{restaurant.location.address1}</Text>
                         <Text style={DecisionStyle.yelpText}>{restaurant.location.city}, {restaurant.location.state}</Text>
                         <Text style={DecisionStyle.yelpText}>Based on {restaurant.review_count} Reviews</Text>
-                        <Text style={DecisionStyle.yelpText}>Phone: {phone}</Text>
+                        <TouchableOpacity onPress={() => {callRestaurant(phone)}}>
+                            <Ionicons name="call" size={24} color="black" />
+                        </TouchableOpacity>
                         <Image source={rating} style={{width:200}}/>
                     </View>
                     <TouchableOpacity onPress={() => Linking.openURL(restaurant.url)}>
