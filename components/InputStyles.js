@@ -257,7 +257,6 @@ const CardStyle = StyleSheet.create({
         height:600,
         backgroundColor: '#2decb4',
         borderRadius:10,
-
     },
     cardsText: {
         fontSize: 18,
@@ -279,8 +278,9 @@ const CardStyle = StyleSheet.create({
         height:'30%'
     },
     yelpStars:{
-        width:225,
-        height:'50%'
+        width:"100%",
+        height:'50%',
+        padding:20
     },
     yelpImage: {
         width: 50,
@@ -311,21 +311,10 @@ const CardStyle = StyleSheet.create({
 
     },
     backButton: {
-        backgroundColor:"#DA2C38",
-        padding: 15,
-        display: 'flex',
+        padding: '5%',
         flexDirection: 'row',
-        fontWeight: "normal",
         justifyContent:'space-between',
-        margin:10,
-        shadowColor: "#5D737E",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 3.84,
-        elevation: 5,
+        marginTop:'5%'
     },
     modalText: {
         marginBottom: 15,

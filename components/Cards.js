@@ -137,26 +137,25 @@ class LoadingCard extends React.Component {
                         borderTopRightRadius:10,
                         overlayColor: 'white'
                     }}/>
-
-                    <Text style={CardStyle.cardsText}>Finding Local Restaurants...</Text>
-
                     <View style={CardStyle.yelpStars}>
+                        <Text style={CardStyle.cardsText}>Finding Local Restaurants...</Text>
                         <Text style={CardStyle.yelpText}>Please remember, if you are waiting a long time
                             for the restaurants to load, there may be no restaurants nearby or your connection was lost.
                             If this is the case,please head back to the lobby and increase the distance or establish a connection.</Text>
+                        <TouchableOpacity style={CardStyle.backButton} onPress={() => {
+                            this.updateLobby();
+                        }}>
+                            <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
+{/*                            <Text style={{
+                                color:'#EEEEEE',
+                                fontWeight: "400",
+                                fontSize: 20,
+                                paddingLeft:10,
+                            }}>Back to Lobby</Text>*/}
+                        </TouchableOpacity>
                     </View>
 
-                    <TouchableOpacity style={CardStyle.backButton} onPress={() => {
-                        this.updateLobby();
-                    }}>
-                        <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
-                        <Text style={{
-                            color:'#EEEEEE',
-                            fontWeight: "400",
-                            fontSize: 20,
-                            paddingLeft:10,
-                        }}>Back to Lobby</Text>
-                    </TouchableOpacity>
+
                 </View>
 
             </View>
@@ -475,7 +474,7 @@ const Cards = (props) => {
         })
     }
 
-    if (data.length === 0) {
+    if (data.length >= 0) {
         return (
             <View style={CardStyle.container}>
                 <LoadingCard code={props.code} offset={props.offset} navigation={navigation} isHost={props.isHost}/>
