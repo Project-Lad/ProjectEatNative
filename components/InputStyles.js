@@ -234,17 +234,6 @@ const LobbyStyles = StyleSheet.create({
         width:25,
         borderRadius: 20,
         backgroundColor:'#2decb4'
-    },
-    sliderTrack2:{
-        height: 15,
-        borderRadius: 25,
-        backgroundColor:'rgba(188, 11, 2, 0.25)'
-    },
-    sliderThumb2:{
-        height: 25,
-        width:25,
-        borderRadius: 20,
-        backgroundColor:'rgb(188, 11, 2)'
     }
 })
 const CardStyle = StyleSheet.create({
@@ -360,21 +349,18 @@ const DecisionStyle = StyleSheet.create({
     container: {
         flex:1,
         height:'100%',
-        width:'100%',
-        padding:10,
+        width:ScreenWidth,
         paddingTop:"35%",
-        backgroundColor: 'rgba(218,44,56,.25)',
         borderRadius:10
     },
     yelpImage: {
-        width: 125,
-        height: 75,
+        width: 40,
+        height: 40,
+
     },
     cardImages: {
-        width: 339.5,
-        height: 200,
-        aspectRatio: 1.5,
-        borderRadius:10,
+        width: ScreenWidth,
+        aspectRatio: 3/2,
     },
     cardsText: {
         fontSize: 20,
@@ -389,18 +375,20 @@ const DecisionStyle = StyleSheet.create({
         color: '#010001'
     },
     yelpContainer: {
-        padding: 10,
-        display: "flex",
-        flexDirection: "row"
-    },
-    yelpInformation:{
+        padding: 25,
         display: "flex",
         flexDirection: "column"
     },
-    button: {
-        backgroundColor: '#bc0402',
-        borderRadius: 20,
-        padding: 5,
+    yelpStars:{
+        display:"flex",
+        flexDirection:"row",
+        justifyContent:"space-between",
+        alignItems:'center'
+    },
+    yelpInformation:{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent:"space-evenly"
     },
     circleDiv: {
         position: "absolute",
