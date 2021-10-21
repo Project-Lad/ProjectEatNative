@@ -160,7 +160,7 @@ export default class HostSession extends Component {
             if(zipCodePattern.test(this.state.zip)) {
                 //updates the start field in the current session to true to send everyone to the swipe feature
                 firebase.firestore().collection('sessions')
-                    .doc(this.state.code).update({zip: this.state.zip, start: true, distance: this.state.distance})
+                    .doc(this.state.code).update({zip: this.state.zip, start: true, distance: this.state.distance, categories: this.state.categories})
                     .then(() => {
                         console.log("Session start updated to true, zipcode updated")
                     }).catch(error => {
@@ -176,7 +176,7 @@ export default class HostSession extends Component {
         } else {
             //updates the start field in the current session to true to send everyone to the swipe feature
             firebase.firestore().collection('sessions')
-                .doc(this.state.code).update({start: true, distance: this.state.distance})
+                .doc(this.state.code).update({start: true, distance: this.state.distance, categories: this.state.categories})
                 .then(() => {
                     console.log("Session start updated to true")
                 }).catch(error => {
@@ -206,10 +206,6 @@ export default class HostSession extends Component {
             alert(error.message);
         }
     };
-
-    filterPress = () => {
-
-    }
 
     render() {
         //host changes distance and zipcode (possible change in future for users to change themselves)
