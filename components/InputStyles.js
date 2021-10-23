@@ -26,7 +26,7 @@ const InputStyles = StyleSheet.create({
         borderRadius:25
     },
     zipInputStyle: {
-        width: '100%',
+        width: '90%',
         marginBottom: 15,
         padding:  Platform.OS === 'ios'?'5%':10,
         alignSelf: "center",

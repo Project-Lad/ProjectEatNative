@@ -165,8 +165,8 @@ class LoadingCard extends React.Component {
 }
 
 let data = [];
-let unsubs = [];
 let unsub;
+let unsubs = [];
 
 const Cards = (props) => {
     let [resCounter, setCounter] = useState(0);
@@ -394,7 +394,7 @@ const Cards = (props) => {
         //retrieve document
         matchedRef.get().then((doc) => {
             //if the document data isn't null
-            if(doc.data() == null) {
+            if(doc.data() === undefined) {
                 //console log that the document doesn't exist
                 console.log("Document Doesn't Exist, Creating Document")
                 //set the document counter to 1 for this user
@@ -410,7 +410,7 @@ const Cards = (props) => {
             }
 
             //if the data isn't null
-            if(doc.data() != null) {
+            if(doc.data() !== undefined) {
                 //update current document
                 matchedRef.update({
                     counter: doc.data().counter + increment
@@ -448,7 +448,7 @@ const Cards = (props) => {
         })
 
         matchedRef.get().then((doc) => {
-            if(doc.data() == null) {
+            if(doc.data() === undefined) {
                 console.log("Document Doesn't Exist, Creating Document")
                 matchedRef.set({
                     counter: 0
@@ -474,7 +474,7 @@ const Cards = (props) => {
         })
     }
 
-    if (data.length >= 0) {
+    if (data.length === 0) {
         return (
             <View style={CardStyle.container}>
                 <LoadingCard code={props.code} offset={props.offset} navigation={navigation} isHost={props.isHost}/>
@@ -521,7 +521,7 @@ const Cards = (props) => {
                         renderNoMoreCards={() => {
                             let size = data.length
                             data=[]
-                            return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost}/>)
+                            return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories}/>)
                             }
                         }
 
@@ -529,8 +529,6 @@ const Cards = (props) => {
                             nope: {onAction: handleNope},
                             yup: {onAction: handleYup}
                         }}
-                        handleYup={handleYup}
-                        handleNope={handleNope}
                     />
                 </View>
 
