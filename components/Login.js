@@ -79,6 +79,8 @@ export default class Login extends Component {
                     keyboardType={'email-address'}
                     onChangeText={(val) => this.updateInputVal(val, 'email')}
                     windowSoftInputMode="adjustPan"
+                    autoComplete='email'
+                    autoCapitalize={'none'}
                 />
                 <TextInput
                     style={InputStyles.inputStyle}
