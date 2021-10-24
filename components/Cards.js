@@ -49,7 +49,7 @@ class Card extends React.Component {
 
                         <Text style={CardStyle.cardsText}>{this.props.name}</Text>
 
-                        <View style={CardStyle.yelpLocation}>
+                        <View>
                             <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
                             <Text style={CardStyle.yelpText}>{this.props.address}</Text>
                         </View>
@@ -71,18 +71,17 @@ class Card extends React.Component {
                         <Image source={{uri: `${this.props.imageURL}`}} style={CardStyle.cardImage}/>
                         <View style={CardStyle.yelpInfo}>
                             <Text style={CardStyle.cardsText}>{this.props.name}</Text>
-
                             <View>
                                 <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
                                 <Text style={CardStyle.yelpText}>{this.props.address}</Text>
                             </View>
 
                             <View style={CardStyle.yelpReview}>
-                                <View>
+                                <View style={{width:'90%'}}>
                                     <Image style={CardStyle.yelpStars} source={this.props.rating} />
                                     <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
                                 </View>
-                                <TouchableOpacity  onPress={() => Linking.openURL(this.props.businessURL)}>
+                                <TouchableOpacity style={{width:'10%'}} onPress={() => Linking.openURL(this.props.businessURL)}>
                                     <Image style={CardStyle.yelpImage} source={YelpBurst}/>
                                 </TouchableOpacity>
                             </View>
@@ -137,27 +136,24 @@ class LoadingCard extends React.Component {
                         borderTopRightRadius:10,
                         overlayColor: 'white'
                     }}/>
-                    <View style={CardStyle.yelpStars}>
+                    <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
                         <Text style={CardStyle.cardsText}>Finding Local Restaurants...</Text>
                         <Text style={CardStyle.yelpText}>Please remember, if you are waiting a long time
                             for the restaurants to load, there may be no restaurants nearby or your connection was lost.
                             If this is the case,please head back to the lobby and increase the distance or establish a connection.</Text>
-                        <TouchableOpacity style={CardStyle.backButton} onPress={() => {
-                            this.updateLobby();
-                        }}>
-                            <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
-{/*                            <Text style={{
+                    </View>
+                    <TouchableOpacity style={CardStyle.backButton} onPress={() => {
+                        this.updateLobby();
+                    }}>
+                        <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
+                        {/*                            <Text style={{
                                 color:'#EEEEEE',
                                 fontWeight: "400",
                                 fontSize: 20,
                                 paddingLeft:10,
                             }}>Back to Lobby</Text>*/}
-                        </TouchableOpacity>
-                    </View>
-
-
+                    </TouchableOpacity>
                 </View>
-
             </View>
         </View>
         )

@@ -268,19 +268,19 @@ const CardStyle = StyleSheet.create({
         color: '#010001'
     },
     yelpInfo: {
-        padding:15
+        margin:20
     },
     yelpReview:{
         flexDirection: 'row',
         alignItems: 'flex-start',
         justifyContent:'space-between',
         marginTop:'2%',
-        height:'30%'
+        height:'50%',
+
     },
     yelpStars:{
-        width:"100%",
-        height:'50%',
-        padding:20
+        width:'90%',
+        height:'22%'
     },
     yelpImage: {
         width: 50,

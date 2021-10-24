@@ -1,7 +1,7 @@
 //checks for location
 import {YELP_API_KEY} from '@env'
 import React, {useState, useEffect} from 'react';
-import {View, Text, Image, Platform, Linking, ScrollView, TouchableOpacity, Dimensions} from "react-native";
+import {View, Text, Image, Platform, Linking, ScrollView, TouchableOpacity} from "react-native";
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
 import androidStar15 from '../assets/android/stars_regular_1_half.png'
@@ -273,8 +273,8 @@ const Decision = ({route}) => {
                         <TouchableOpacity onPress={() => {callRestaurant(phone)}}>
                             <Ionicons name="call" size={24} color="black" />
                         </TouchableOpacity>
-                        <Image source={rating} style={{width:200}}/>
                     </View>
+
                     <View style={DecisionStyle.yelpStars}>
                     <Image source={rating} style={{width:'60%', height:35}}/>
                     <TouchableOpacity onPress={() => Linking.openURL(restaurant.url)}>
