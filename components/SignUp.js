@@ -142,6 +142,8 @@ export default function Signup(){
                 keyboardType={'email-address'}
                 onChangeText={email => setUserEmail({email:email.trim()})}
                 value={userEmail.email.trim()}
+                autoComplete='email'
+                autoCapitalize={'none'}
             />
             <TextInput
                 style={InputStyles.inputStyle}

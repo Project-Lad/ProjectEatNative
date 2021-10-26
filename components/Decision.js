@@ -1,7 +1,7 @@
 //checks for location
 import {YELP_API_KEY} from '@env'
 import React, {useState, useEffect} from 'react';
-import {Button, View, Text, Image, Platform, Linking, StyleSheet, ScrollView, TouchableOpacity} from "react-native";
+import {View, Text, Image, Platform, Linking, ScrollView, TouchableOpacity} from "react-native";
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
 import androidStar15 from '../assets/android/stars_regular_1_half.png'
@@ -25,7 +25,7 @@ import iosStar45 from '../assets/ios/regular_4_half.png'
 import iosStar5 from '../assets/ios/regular_5.png'
 import firebase from "../firebase";
 import {useNavigation} from "@react-navigation/native";
-import YelpImage from "../assets/YelpImage.png";
+import YelpImage from "../assets/yelp_burst.png";
 import {IconStyles, InputStyles,DecisionStyle} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 
@@ -47,7 +47,6 @@ const Decision = ({route}) => {
     let [selectedIndex, setSelectedIndex] = useState(0)
     let navigation = useNavigation()
     let rating = ""
-    let phone = ""
     let address = []
     let name = []
     let googleURL = "https://www.google.com/maps/search/?api=1&query=";
@@ -83,9 +82,6 @@ const Decision = ({route}) => {
 
     function setData() {
         rating = restaurant.rating
-
-        //console.log(restaurant)
-        phone = restaurant.phone
 
         //set image based upon platform
         if(Platform.OS === 'android') {
@@ -232,16 +228,6 @@ const Decision = ({route}) => {
             .catch((e) => console.log("Error deleting document session: ", e))
     }
 
-    function callRestaurant(number) {
-        let phoneNumber = '';
-        if (Platform.OS === 'android') {
-            phoneNumber = `tel:${number}`;
-        } else {
-            phoneNumber = `telprompt:${number}`;
-        }
-        Linking.openURL(phoneNumber).then(() => {console.log("Making phone call")}).catch((error) => {console.log("Error making call ", error)})
-    }
-
     if(isLoading === false) {
         return(
             <View>
@@ -251,7 +237,7 @@ const Decision = ({route}) => {
     } else {
         return(
             <View style={DecisionStyle.container}>
-                <View style={{width:"100%" ,borderRadius:10}}>
+                <View style={{width:"100%"}}>
                     <ScrollView
                         horizontal
                         pagingEnabled
@@ -276,25 +262,26 @@ const Decision = ({route}) => {
                         ))}
                     </View>
                 </View>
-
                 <Text style={DecisionStyle.cardsText}>{restaurant.name}</Text>
-
                 <View style={DecisionStyle.yelpContainer}>
                     <View style={DecisionStyle.yelpInformation}>
                         <Text style={DecisionStyle.yelpText}>{restaurant.location.address1}</Text>
                         <Text style={DecisionStyle.yelpText}>{restaurant.location.city}, {restaurant.location.state}</Text>
                         <Text style={DecisionStyle.yelpText}>Based on {restaurant.review_count} Reviews</Text>
-                        <TouchableOpacity onPress={() => {callRestaurant(phone)}}>
-                            <Ionicons name="call" size={24} color="black" />
-                        </TouchableOpacity>
-                        <Image source={rating} style={{width:200}}/>
                     </View>
+                    <View style={DecisionStyle.yelpStars}>
+                    <Image source={rating} style={{width:'50%', height:Platform.OS === 'ios'?'55%':'55%'}}/>
                     <TouchableOpacity onPress={() => Linking.openURL(restaurant.url)}>
                         <Image style={DecisionStyle.yelpImage} source={YelpImage}/>
                     </TouchableOpacity>
+                    </View>
                 </View>
-
-                <View>
+                <View style={{padding:25}}>
+                    <TouchableOpacity style = {InputStyles.buttons} onPress={() => {callRestaurant(phone)}}>
+                        <Ionicons name="call" size={24} style={IconStyles.iconLeft} />
+                        <Text style={InputStyles.buttonText}>Call Now</Text>
+                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => Linking.openURL(googleURL)} style = {InputStyles.buttons}>
                         <Ionicons style={IconStyles.iconLeft} name="map"/>
                         <Text style={InputStyles.buttonText}>Open in Maps</Text>
