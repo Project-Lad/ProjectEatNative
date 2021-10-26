@@ -1,14 +1,5 @@
 import React, {Component} from 'react';
-import {
-    Text,
-    View,
-    Image,
-    Alert,
-    TextInput,
-    TouchableOpacity,
-    ScrollView,
-    Share, Pressable, Modal, Switch
-} from 'react-native';
+import {Text, View, Image, Alert, TextInput, TouchableOpacity, ScrollView, Share, Pressable, Modal, Switch} from 'react-native';
 import Slider from 'react-native-smooth-slider';
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -33,7 +24,14 @@ export default class HostSession extends Component {
         isAll: true,
         isAmerican: false,
         isAfrican: false,
-        isItalian: false
+        isItalian: false,
+        isCaribbean: false,
+        isAsian: false,
+        isEuropean: false,
+        isMexican: false,
+        isMiddleEast: false,
+        isSeafood: false,
+        isVegan: false
     }
 
     constructor(props) {
@@ -229,7 +227,8 @@ export default class HostSession extends Component {
                                 thumbColor={this.state.isAll ? '#f5dd4b' : '#f4f3f4'}
                                 ios_backgroundColor="#3e3e3e"
                                 onValueChange={() => {
-                                    this.setState({isAfrican: false, isAmerican: false, isItalian: false, isAll: !this.state.isAll})
+                                    this.setState({isAfrican: false, isAmerican: false, isAsian: false, isCaribbean: false, isEuropean: false,
+                                        isItalian: false, isMexican: false, isMiddleEast: false, isSeafood: false, isVegan: false, isAll: !this.state.isAll})
                                 }}
                                 value={this.state.isAll}
                             />
@@ -268,26 +267,134 @@ export default class HostSession extends Component {
                             />
                         </View>
 
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Caribbean: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isCaribbean ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isCaribbean: !this.state.isCaribbean, isAll: false})}}
+                                value={this.state.isCaribbean}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Asian: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isAsian ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isAsian: !this.state.isAsian, isAll: false})}}
+                                value={this.state.isAsian}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>European: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isEuropean ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isEuropean: !this.state.isEuropean, isAll: false})}}
+                                value={this.state.isEuropean}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Mexican: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isMexican ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isMexican: !this.state.isMexican, isAll: false})}}
+                                value={this.state.isMexican}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Middle Eastern: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isMiddleEast ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isMiddleEast: !this.state.isMiddleEast, isAll: false})}}
+                                value={this.state.isMiddleEast}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Seafood/Sushi: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isSeafood ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isSeafood: !this.state.isSeafood, isAll: false})}}
+                                value={this.state.isSeafood}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Vegan: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isVegan ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isVegan: !this.state.isVegan, isAll: false})}}
+                                value={this.state.isVegan}
+                            />
+                        </View>
+
                         <Pressable style={InputStyles.buttons}
                                    onPress={() => {
                                        if(this.state.isAll === true) {
                                            this.state.categories = ['all']
                                            console.log(this.state.categories)
                                            this.setState({modalVisible: !this.state.modalVisible})
-                                       } else if(this.state.isAll === false && this.state.isItalian === false && this.state.isAfrican === false && this.state.isAmerican === false) {
+                                       } else if(this.state.isAll === false && this.state.isItalian === false && this.state.isAfrican === false &&
+                                           this.state.isAmerican === false && this.state.isAsian === false && this.state.isMiddleEast === false &&
+                                           this.state.isEuropean === false && this.state.isVegan === false && this.state.isCaribbean === false &&
+                                           this.state.isSeafood === false && this.state.isMexican === false) {
                                            Alert.alert("Whoops!", "Must apply at least one filter!")
                                        } else {
                                            this.state.categories = [];
                                            if(this.state.isAmerican === true) {
-                                               this.state.categories.push('newamerican', 'tradamerican')
-                                           }
-
-                                           if(this.state.isItalian === true) {
-                                               this.state.categories.push('italian')
+                                               this.state.categories.push('newamerican', 'tradamerican', 'bbq', 'breakfast_brunch', 'cafeteria', 'cajun', 'steak', 'newcanadian')
                                            }
 
                                            if(this.state.isAfrican === true) {
                                                this.state.categories.push('african')
+                                           }
+
+                                           if(this.state.isAsian === true) {
+                                               this.state.categories.push('chinese', 'japanese', 'korean', 'singaporean', 'thai', 'vietnamese', 'taiwanese')
+                                           }
+
+                                           if(this.state.isCaribbean === true) {
+                                               this.state.categories.push('caribbean', 'cuban', 'dominican', 'puertorican', 'filipino')
+                                           }
+
+                                           if(this.state.isEuropean === true) {
+                                               this.state.categories.push('danish', 'french', 'belgian', 'british', 'german', 'greek', 'irish', 'polish')
+                                           }
+
+                                           if(this.state.isItalian === true) {
+                                               this.state.categories.push('italian', 'pizza', 'mediterranean')
+                                           }
+
+                                           if(this.state.isMexican === true) {
+                                               this.state.categories.push('mexican', 'newmexican', 'spanish', 'latin')
+                                           }
+
+                                           if(this.state.isMiddleEast === true) {
+                                               this.state.categories.push('mideastern', 'egyptian', 'pakistani', 'persian', 'afghani', 'indpak')
+                                           }
+
+                                           if(this.state.isSeafood === true) {
+                                               this.state.categories.push('seafood', 'sushi')
+                                           }
+
+                                           if(this.state.isVegan === true) {
+                                               this.state.categories.push('vegan', 'vegetarian')
                                            }
 
                                            console.log(this.state.categories)
