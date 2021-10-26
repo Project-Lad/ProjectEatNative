@@ -47,6 +47,7 @@ const Decision = ({route}) => {
     let [selectedIndex, setSelectedIndex] = useState(0)
     let navigation = useNavigation()
     let rating = ""
+    let phone = ""
     let address = []
     let name = []
     let googleURL = "https://www.google.com/maps/search/?api=1&query=";
@@ -82,6 +83,8 @@ const Decision = ({route}) => {
 
     function setData() {
         rating = restaurant.rating
+
+        phone = restaurant.phone
 
         //set image based upon platform
         if(Platform.OS === 'android') {
