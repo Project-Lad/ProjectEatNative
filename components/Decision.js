@@ -228,6 +228,16 @@ const Decision = ({route}) => {
             .catch((e) => console.log("Error deleting document session: ", e))
     }
 
+    function callRestaurant(number) {
+        let phoneNumber = '';
+        if (Platform.OS === 'android') {
+            phoneNumber = `tel:${number}`;
+        } else {
+            phoneNumber = `telprompt:${number}`;
+        }
+        Linking.openURL(phoneNumber).then(() => {console.log("Making phone call")}).catch((error) => {console.log("Error making call ", error)})
+    }
+
     if(isLoading === false) {
         return(
             <View>
