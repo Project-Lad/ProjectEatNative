@@ -337,14 +337,12 @@ const CardStyle = StyleSheet.create({
 const DecisionStyle = StyleSheet.create({
     container: {
         flex:1,
-        height:'100%',
         width:ScreenWidth,
-        paddingTop:"35%",
-        borderRadius:10
+        paddingTop:"15%",
     },
     yelpImage: {
-        width: 40,
-        height: 40,
+        width: 50,
+        height: 50,
 
     },
     cardImages: {
