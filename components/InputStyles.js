@@ -243,7 +243,7 @@ const CardStyle = StyleSheet.create({
         flex:1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding:10
+        padding:10,
     },
     loadContainer:{
         backgroundColor:'#eee',
@@ -251,7 +251,6 @@ const CardStyle = StyleSheet.create({
         flex:1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding:10
     },
     card: {
         height:600,
@@ -283,8 +282,8 @@ const CardStyle = StyleSheet.create({
         height:'22%'
     },
     yelpImage: {
-        width: 50,
-        height: 50,
+        width:45,
+        height:50,
     },
     cardImage: {
         width: '100%',
