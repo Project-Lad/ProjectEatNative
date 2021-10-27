@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Text, View, Image, Alert, TextInput, TouchableOpacity, ScrollView, Share, Pressable, Modal, Switch} from 'react-native';
-import Slider from 'react-native-smooth-slider';
+import Slider from '@react-native-community/slider';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {InputStyles, IconStyles, LobbyStyles, CardStyle} from "./InputStyles";
@@ -208,7 +208,6 @@ export default class HostSession extends Component {
         //host changes distance and zipcode (possible change in future for users to change themselves)
         return (
             <View style={LobbyStyles.container}>
-
                 <Modal
                     animationType="slide"
                     visible={this.state.modalVisible}
@@ -437,19 +436,17 @@ export default class HostSession extends Component {
                     })}
                 </ScrollView>
                 <View style={LobbyStyles.sliderContainer}>
+                    <Text>Distance: {this.state.distance} mi</Text>
                     <Slider
                         value={this.state.distance}
                         useNativeDriver={true}
                         minimumValue={1}
-                        maximumValue={25}
-                        step={0.5}
+                        maximumValue={20}
+                        step={1}
                         onValueChange={value => this.setState({distance: value})}
                         minimumTrackTintColor='#2decb4'
-                        thumbStyle={LobbyStyles.sliderThumb}
-                        trackStyle={LobbyStyles.sliderTrack}
-                        />
 
-                    <Text>Distance: {this.state.distance} mi</Text>
+                        />
                 </View>
 
                 <Text style={InputStyles.buttonText}>Share Code</Text>

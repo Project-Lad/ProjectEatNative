@@ -225,7 +225,7 @@ const LobbyStyles = StyleSheet.create({
         justifyContent: "center",
     },
     sliderTrack:{
-        height: 15,
+        height: 25,
         borderRadius: 25,
         backgroundColor:'#5D737E'
     },
@@ -298,7 +298,7 @@ const CardStyle = StyleSheet.create({
         padding: 10,
 
         margin:10,
-        marginTop:50,
+        marginTop:Platform.OS === 'ios' ? 50 : 20,
         shadowColor: "#eee",
         shadowOffset: {
             width: 0,
