@@ -341,9 +341,8 @@ const DecisionStyle = StyleSheet.create({
         paddingTop:"15%",
     },
     yelpImage: {
-        width: 50,
-        height: 50,
-
+        width:45,
+        height:50,
     },
     cardImages: {
         width: ScreenWidth,
@@ -362,15 +361,25 @@ const DecisionStyle = StyleSheet.create({
         color: '#010001'
     },
     yelpContainer: {
-        padding: 25,
+        paddingTop: 5,
+        paddingLeft:25,
+        paddingRight:25,
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
     },
     yelpStars:{
         display:"flex",
         flexDirection:"row",
-        justifyContent:"space-between",
-        alignItems:'center'
+        justifyContent:'space-between',
+        width:ScreenWidth -25
+    },
+    yelpStarReviewContainer:{
+        width:'75%',
+        alignSelf:'center'
+    },
+    yelpStarReview:{
+        width:Platform.OS === 'ios' ? 150: 205,
+        padding:'5%'
     },
     yelpInformation:{
         display: "flex",
