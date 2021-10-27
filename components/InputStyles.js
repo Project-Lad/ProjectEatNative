@@ -298,6 +298,7 @@ const CardStyle = StyleSheet.create({
         padding: 10,
 
         margin:10,
+        marginTop:50,
         shadowColor: "#eee",
         shadowOffset: {
             width: 0,

@@ -5,7 +5,6 @@ import firebase from "../firebase";
 import "firebase/firestore";
 import {InputStyles, IconStyles, LobbyStyles, CardStyle} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
-import * as Linking from 'expo-linking';
 let TAG = "Console: ";
 
 export default class HostSession extends Component {
@@ -211,7 +210,6 @@ export default class HostSession extends Component {
             <View style={LobbyStyles.container}>
 
                 <Modal
-                    style={{flex:1, justifyContent:'center'}}
                     animationType="slide"
                     visible={this.state.modalVisible}
                     onRequestClose={() => {
