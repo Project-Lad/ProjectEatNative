@@ -51,7 +51,7 @@ const Data = (props) => {
     let counter = 0;
 
     while (props.categories[counter] != null) {
-        //add to the google URL
+        //add to the api categories
         apicategories += props.categories[counter];
         apicategories += ",";
         counter++;
@@ -77,10 +77,10 @@ const Data = (props) => {
             fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=${parseInt(props.distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
-                    console.log("Latitude: " + latitude)
-                    console.log("Longitude: " + longitude)
-                    console.log("Offset: " + props.offset)
-                    console.log("Distance: " + parseInt((props.distance * 1609)))
+                    //console.log("Latitude: " + latitude)
+                    //console.log("Longitude: " + longitude)
+                    //console.log("Offset: " + props.offset)
+                    //console.log("Distance: " + parseInt((props.distance * 1609)))
                     console.log("Categories: " + apicategories)
                     setRestaurantData(result.businesses);
                     //console.log(result.businesses);
@@ -91,7 +91,7 @@ const Data = (props) => {
                 .then(response => response.json())
                 .then(result => {
                     setRestaurantData(result.businesses);
-                    console.log(result.businesses);
+                    //console.log(result.businesses);
                 })
                 .catch(error => console.log('error', error));
         }

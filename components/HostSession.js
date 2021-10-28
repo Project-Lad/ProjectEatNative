@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Text, View, Image, Alert, TextInput, TouchableOpacity, ScrollView, Share, Pressable, Modal, Switch} from 'react-native';
-import Slider from 'react-native-smooth-slider';
+//import Slider from 'react-native-smooth-slider';
+import {Slider} from 'react-native-elements';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {InputStyles, IconStyles, LobbyStyles, CardStyle} from "./InputStyles";
@@ -441,10 +442,9 @@ export default class HostSession extends Component {
                 <View style={LobbyStyles.sliderContainer}>
                     <Slider
                         value={this.state.distance}
-                        useNativeDriver={true}
                         minimumValue={1}
-                        maximumValue={25}
-                        step={0.5}
+                        maximumValue={20}
+                        step={1}
                         onValueChange={value => this.setState({distance: value})}
                         minimumTrackTintColor='#2decb4'
                         thumbStyle={LobbyStyles.sliderThumb}
