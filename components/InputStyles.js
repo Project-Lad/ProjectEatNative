@@ -234,6 +234,93 @@ const LobbyStyles = StyleSheet.create({
         width:25,
         borderRadius: 20,
         backgroundColor:'#2decb4'
+    },
+    modalSlider: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    modalView: {
+        backgroundColor: '#5D737E',
+        borderRadius: 20,
+        padding: 10,
+        margin:10,
+        shadowColor: "#eee",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 20
+    },
+    zipInputStyle: {
+        width: '90%',
+        marginBottom: 15,
+        padding:  Platform.OS === 'ios'?'5%':10,
+        alignSelf: "center",
+        borderColor: "#eee",
+        backgroundColor: 'white',
+        borderBottomWidth: 3,
+        borderRightWidth:3,
+        borderTopWidth:3,
+        borderLeftWidth:3,
+        fontSize:12,
+        borderRadius:25
+    },
+    modalLobby: {
+        backgroundColor: '#5D737E',
+        borderRadius: 20,
+        padding: 10,
+        margin:10,
+        shadowColor: "#eee",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 20,
+        flex:1, justifyContent:'center'
+    },
+    filterButton: {
+        backgroundColor:"#2decb4",
+        padding: 15,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent:'space-between',
+        marginBottom:10,
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderBottomLeftRadius:25,
+        borderTopLeftRadius:25,
+        width: '30%'
+    },
+    startButton: {
+        backgroundColor:"#2decb4",
+        padding: 15,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent:'space-between',
+        marginBottom:10,
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderBottomRightRadius:25,
+        borderTopRightRadius:25,
+        borderLeftWidth: 1,
+        width: '70%'
     }
 })
 const CardStyle = StyleSheet.create({
@@ -332,6 +419,7 @@ const CardStyle = StyleSheet.create({
         left:10,
         right:10
     },
+
 
 })
 const DecisionStyle = StyleSheet.create({
