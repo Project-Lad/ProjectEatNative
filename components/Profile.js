@@ -14,14 +14,12 @@ export default function Dashboard(){
     const navigation = useNavigation()
     const isFocused = useIsFocused();
 
-    function userInformation(){
-        firebase.firestore().collection('users').doc(user).get().then((doc)=>{
-            setNewProfileUsername(doc.data().username)
-            setNewProfilePicture(doc.data().photoURL)
-        })
-    }
+
        useEffect(()=>{
-           userInformation()
+           firebase.firestore().collection('users').doc(user).get().then((doc)=>{
+               setNewProfileUsername(doc.data().username)
+               setNewProfilePicture(doc.data().photoURL)
+           })
         },[isFocused])
 
 

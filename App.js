@@ -27,6 +27,7 @@ function AuthStack() {
                 headerTitleStyle: {
                     fontWeight: 'bold',
                 },
+                gestureEnabled:false
             }}>
             <Stack.Screen
                 name="Swipe Feature"
