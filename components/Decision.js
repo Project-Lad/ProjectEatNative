@@ -232,7 +232,7 @@ const Decision = ({route}) => {
     }
 
     function callRestaurant(number) {
-        let phoneNumber = '';
+        let phoneNumber;
         if (Platform.OS === 'android') {
             phoneNumber = `tel:${number}`;
         } else {
