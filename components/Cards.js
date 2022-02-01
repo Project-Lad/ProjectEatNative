@@ -310,7 +310,7 @@ const Cards = (props) => {
                 counter = 0;
             }
         } catch (e) {
-            console.log("Error: ", e)
+            console.log("Error setting data: ", e)
         }
     }
 
@@ -424,7 +424,7 @@ const Cards = (props) => {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
                     data = []
-                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs})
+                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs, ourData: !props.usedFirebase})
                     console.log("Majority Rule")
                 }
             })
@@ -517,7 +517,7 @@ const Cards = (props) => {
                         renderNoMoreCards={() => {
                             let size = data.length
                             data=[]
-                            return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories}/>)
+                            return (<Data usedFirebase={true} code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories}/>)
                             }
                         }
 

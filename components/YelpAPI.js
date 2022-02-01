@@ -4,6 +4,9 @@ import Cards from "./Cards.js";
 import React, {useEffect, useState} from 'react';
 import {View, Alert, StyleSheet} from "react-native";
 import * as Location from 'expo-location';
+import firebase from "../firebase";
+const geofire = require('geofire-common')
+const zipcodes = require('zipcodes')
 
 //Declares lat and long vars
 let latitude;
@@ -60,8 +63,83 @@ const Data = (props) => {
     apicategories = apicategories.slice(0, -1)
 
     useEffect(() => {
-        getData()
+        if(!props.usedFirebase) {
+            queryLocations()
+        } else {
+            getData()
+        }
     }, [])
+
+    const queryLocations = () => {
+        if(props.zip !== null){
+            let result = zipcodes.lookup(props.zip)
+            console.log("Zip: ", props.zip)
+            console.log("Result: ",result)
+        }
+
+        const center = [latitude, longitude];
+        const radiusInM = 1609;
+
+        // Each item in 'bounds' represents a startAt/endAt pair. We have to issue
+        // a separate query for each pair. There can be up to 9 pairs of bounds
+        // depending on overlap, but in most cases there are 4.
+        const bounds = geofire.geohashQueryBounds(center, radiusInM);
+        const promises = [];
+        for (const b of bounds) {
+            const q = firebase.firestore().collection('restaurants')
+                .orderBy('geohash')
+                .startAt(b[0])
+                .endAt(b[1]);
+
+            promises.push(q.get());
+        }
+
+        // Collect all the query results together into a single list
+        Promise.all(promises).then((snapshots) => {
+            const matchingDocs = [];
+
+            for (const snap of snapshots) {
+                for (const doc of snap.docs) {
+                    const lat = doc.get('latitude');
+                    const lng = doc.get('longitude');
+                    const name = doc.get('name');
+                    const price_range = doc.get('price_range');
+                    const location = doc.get('location');
+                    const rating = doc.get('rating');
+                    const review_count = doc.get('review_count');
+                    const phone_numbers = doc.get('phone_numbers')
+                    const imageURL = doc.get('imageURL')
+                    const businessURL = doc.get('businessURL')
+                    const id = doc.id
+
+                    // We have to filter out a few false positives due to GeoHash
+                    // accuracy, but most will match
+                    const distanceInKm = geofire.distanceBetween([lat, lng], center);
+                    const distance = distanceInKm * 1000;
+                    if (distance <= radiusInM) {
+                        matchingDocs.unshift({
+                            id,
+                            lat,
+                            lng,
+                            name,
+                            distance,
+                            price_range,
+                            location,
+                            rating,
+                            review_count,
+                            phone_numbers,
+                            imageURL,
+                            businessURL
+                        });
+                    }
+                }
+            }
+
+            return matchingDocs;
+        }).then((matchingDocs) => {
+            setRestaurantData(matchingDocs);
+        })
+    }
 
     function getData(){
         const myHeaders = new Headers();
@@ -99,7 +177,7 @@ const Data = (props) => {
 
     return(
             <View style={styles.container}>
-                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance} isHost={props.isHost} categories={props.categories}/>
+                <Cards restaurantData={restaurantData} usedFirebase={props.usedFirebase} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance} isHost={props.isHost} categories={props.categories}/>
             </View>
     )
 }

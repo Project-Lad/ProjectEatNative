@@ -55,7 +55,12 @@ const Decision = ({route}) => {
 
     useEffect(() => {
         console.log("Getting Data")
-        getData() //use API fetch only once to reduce amount of API calls
+        console.log("Our Data: ", route.params.ourData)
+        if(route.params.ourData) {
+            getOurData()
+        } else {
+            getData() //use API fetch only once to reduce amount of API calls
+        }
         setIsLoading(true)
         clearSubs()
     }, []);
@@ -79,6 +84,36 @@ const Decision = ({route}) => {
                 setRestaurant(result);
             })
             .catch(error => console.log('error', error));
+    }
+
+    function getOurData() {
+        const restaurantRef = firebase.firestore().collection('restaurants').doc(route.params.id);
+        const name = restaurantRef.get('name');
+        const price_range = restaurantRef.get('price_range');
+        const location = restaurantRef.get('location');
+        const rating = restaurantRef.get('rating');
+        const review_count = restaurantRef.get('review_count');
+        const phone_numbers = restaurantRef.get('phone_numbers')
+        const imageURL = restaurantRef.get('imageURL')
+        const businessURL = restaurantRef.get('businessURL')
+        const id = restaurantRef.id
+
+        setRestaurant({
+            name: name,
+            location: {
+                address1: location.address1,
+                address2: location.address2,
+                address3: location.address3,
+                city: location.city,
+                state: location.state
+            },
+            review_count: review_count,
+            rating: rating,
+            price_range: price_range,
+            phone: phone_numbers,
+            businessURL: businessURL,
+            photos: [imageURL],
+        })
     }
 
     function setData() {
