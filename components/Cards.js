@@ -38,32 +38,29 @@ class Card extends React.Component {
     constructor(props) {
         super(props);
     }
-
     render() {
         if(this.props.imageURL === burgerJPG) {
             return (
-                    <View style={CardStyle.card}>
-                        <View style={CardStyle.cardImage}>
-                        <Image source={this.props.imageURL} />
-                        </View>
-
+                <View style={CardStyle.card}>
+                    <Image source={this.props.imageURL} style={CardStyle.cardImage} />
+                    <View style={CardStyle.yelpInfo}>
                         <Text style={CardStyle.cardsText}>{this.props.name}</Text>
-
                         <View>
                             <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
                             <Text style={CardStyle.yelpText}>{this.props.address}</Text>
                         </View>
 
-                        <View style={CardStyle.yelpStars}>
-                            <View style={CardStyle.yelpReview}>
-                                <Image source={this.props.rating} />
-                                <Text style={CardStyle.yelpText}>Based on {this.props.review_count} Reviews</Text>
+                        <View style={CardStyle.yelpReview}>
+                            <View style={{width:'85%'}}>
+                                <Image style={CardStyle.yelpStars} source={this.props.rating} />
+                                <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
                             </View>
-                            <TouchableOpacity onPress={() => Linking.openURL(this.props.businessURL)}>
+                            <TouchableOpacity style={{width:'15%'}} onPress={() => Linking.openURL(props.businessURL)}>
                                 <Image style={CardStyle.yelpImage} source={YelpBurst}/>
                             </TouchableOpacity>
                         </View>
                     </View>
+                </View>
             )
         }else {
             return (
@@ -478,7 +475,7 @@ const Cards = (props) => {
         )
     } else {
         return (
-                <View style={CardStyle.container}>
+            <View style={CardStyle.container}>
                     <Modal
                         style={{flex:1, justifyContent:'center'}}
                         animationType="slide"

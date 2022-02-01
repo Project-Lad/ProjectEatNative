@@ -225,7 +225,7 @@ const LobbyStyles = StyleSheet.create({
         justifyContent: "center",
     },
     sliderTrack:{
-        height: 15,
+        height: 25,
         borderRadius: 25,
         backgroundColor:'#5D737E'
     },
@@ -330,7 +330,7 @@ const CardStyle = StyleSheet.create({
         flex:1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding:10
+        padding:10,
     },
     loadContainer:{
         backgroundColor:'#eee',
@@ -338,7 +338,6 @@ const CardStyle = StyleSheet.create({
         flex:1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding:10
     },
     card: {
         height:600,
@@ -370,8 +369,8 @@ const CardStyle = StyleSheet.create({
         height:'22%'
     },
     yelpImage: {
-        width: 50,
-        height: 50,
+        width:45,
+        height:50,
     },
     cardImage: {
         width: '100%',
@@ -386,6 +385,7 @@ const CardStyle = StyleSheet.create({
         padding: 10,
 
         margin:10,
+        marginTop:Platform.OS === 'ios' ? 50 : 20,
         shadowColor: "#eee",
         shadowOffset: {
             width: 0,
@@ -429,9 +429,8 @@ const DecisionStyle = StyleSheet.create({
         paddingTop:"15%",
     },
     yelpImage: {
-        width: 50,
-        height: 50,
-
+        width:45,
+        height:50,
     },
     cardImages: {
         width: ScreenWidth,
@@ -450,15 +449,25 @@ const DecisionStyle = StyleSheet.create({
         color: '#010001'
     },
     yelpContainer: {
-        padding: 25,
+        paddingTop: 5,
+        paddingLeft:25,
+        paddingRight:25,
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
     },
     yelpStars:{
         display:"flex",
         flexDirection:"row",
-        justifyContent:"space-between",
-        alignItems:'center'
+        justifyContent:'space-between',
+        width:ScreenWidth -25
+    },
+    yelpStarReviewContainer:{
+        width:'75%',
+        alignSelf:'center'
+    },
+    yelpStarReview:{
+        width:Platform.OS === 'ios' ? 150: 205,
+        padding:'5%'
     },
     yelpInformation:{
         display: "flex",

@@ -22,11 +22,11 @@ function AuthStack() {
                 headerTitleAlign: 'center',
                 headerStyle: {
                     backgroundColor: '#2decb4',
-
                 },
                 headerTitleStyle: {
                     fontWeight: 'bold',
                 },
+                gestureEnabled:false
             }}>
             <Stack.Screen
                 name="Swipe Feature"
@@ -80,7 +80,6 @@ function LoginSignup(){
             headerTitleAlign: 'center',
             headerStyle: {
                 backgroundColor: '#2decb4',
-
             },
             headerTitleStyle: {
                 fontWeight: 'bold',

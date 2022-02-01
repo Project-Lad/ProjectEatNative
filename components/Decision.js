@@ -283,10 +283,12 @@ const Decision = ({route}) => {
                         <Text style={DecisionStyle.yelpText}>Based on {restaurant.review_count} Reviews</Text>
                     </View>
                     <View style={DecisionStyle.yelpStars}>
-                    <Image source={rating} style={{width:'50%', height:Platform.OS === 'ios'?'55%':'55%'}}/>
-                    <TouchableOpacity onPress={() => Linking.openURL(restaurant.url)}>
-                        <Image style={DecisionStyle.yelpImage} source={YelpImage}/>
-                    </TouchableOpacity>
+                        <View style={DecisionStyle.yelpStarReviewContainer}>
+                            <Image source={rating} style={DecisionStyle.yelpStarReview}/>
+                        </View>
+                        <TouchableOpacity style={{width:'20%'}} onPress={() => Linking.openURL(restaurant.url)}>
+                            <Image style={DecisionStyle.yelpImage} source={YelpImage}/>
+                        </TouchableOpacity>
                     </View>
                 </View>
                 <View style={{padding:25}}>
