@@ -7,6 +7,7 @@ import {
     ActivityIndicator,
     Platform,
     Image, TouchableOpacity,
+    KeyboardAvoidingView
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -117,7 +118,7 @@ export default function Signup(){
         )
     }
     return(
-        <View style={InputStyles.container}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
             <View style={{  alignItems: 'center', justifyContent: 'center' }}>
                 <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
                     {image.photoURL === '../assets/user-placeholder.png' ?
@@ -141,6 +142,8 @@ export default function Signup(){
                 keyboardType={'email-address'}
                 onChangeText={email => setUserEmail({email:email.trim()})}
                 value={userEmail.email.trim()}
+                autoComplete='email'
+                autoCapitalize={'none'}
             />
             <TextInput
                 style={InputStyles.inputStyle}
@@ -159,6 +162,6 @@ export default function Signup(){
                 onPress={() => navigation.navigate('Login')}>
                 Already Registered? Login
             </Text>
-        </View>
+        </KeyboardAvoidingView>
     )
 }

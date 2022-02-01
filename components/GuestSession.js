@@ -22,7 +22,8 @@ export default class GuestSession extends Component {
         users: [],
         code: 0,
         photoURL: "",
-        photoFound: 0
+        photoFound: 0,
+        categories: []
     }
 
      constructor(props) {
@@ -102,8 +103,10 @@ export default class GuestSession extends Component {
                     //if start is true on firebase, then
                     if(documentSnapshot.data().start) {
                         //set start to true and navigate
-                        //start = true
-                        this.props.navigation.navigate('Swipe Feature',{code:this.state.code, zip:documentSnapshot.data().zip, distance: documentSnapshot.data().distance, isHost:false})
+                        documentSnapshot.data().categories.forEach(category => {
+                            this.state.categories.push(category)
+                        })
+                        this.props.navigation.navigate('Swipe Feature',{code:this.state.code, zip:documentSnapshot.data().zip, distance: documentSnapshot.data().distance, isHost:false, categories: this.state.categories})
                     }
                 }
             } else {
@@ -172,7 +175,7 @@ export default class GuestSession extends Component {
                         )
                     })}
                 </ScrollView>
-                <View style={LobbyStyles.bottomContainer}>
+                <View>
                     <Text style={InputStyles.buttonText}>Share Code</Text>
 
                     <View>
@@ -182,8 +185,9 @@ export default class GuestSession extends Component {
                         </TouchableOpacity>
                     </View>
 
-                    <TouchableOpacity onPress={()=>{this.leaveLobby()}}>
-                        <Text style={{marginTop:15}}>Leave Lobby</Text>
+                    <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={IconStyles.closeButton}>
+                        <Ionicons style={{fontSize:16}} name="close-circle-outline"/>
+                        <Text style={{fontSize:16}}>Leave Lobby</Text>
                     </TouchableOpacity>
                 </View>
             </View>

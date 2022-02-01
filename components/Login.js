@@ -1,5 +1,15 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, View, TextInput, Alert, ActivityIndicator, TouchableOpacity} from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TextInput,
+    Alert,
+    ActivityIndicator,
+    TouchableOpacity,
+    KeyboardAvoidingView,
+    Platform
+} from 'react-native';
 import firebase from "firebase";
 import "firebase/firestore";
 import {InputStyles,IconStyles} from "./InputStyles";
@@ -61,7 +71,7 @@ export default class Login extends Component {
             )
         }
         return (
-            <View style={InputStyles.container}>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
                 <TextInput
                     style={InputStyles.inputStyle}
                     placeholder="Email"
@@ -69,6 +79,8 @@ export default class Login extends Component {
                     keyboardType={'email-address'}
                     onChangeText={(val) => this.updateInputVal(val, 'email')}
                     windowSoftInputMode="adjustPan"
+                    autoComplete='email'
+                    autoCapitalize={'none'}
                 />
                 <TextInput
                     style={InputStyles.inputStyle}
@@ -94,7 +106,7 @@ export default class Login extends Component {
                     onPress={() => this.props.navigation.navigate('Forgot Password')}>
                     Forgot Password?
                 </Text>
-            </View>
+            </KeyboardAvoidingView>
         );
     }
 }

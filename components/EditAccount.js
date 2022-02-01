@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import {Text, View, TextInput, TouchableOpacity, Image} from 'react-native';
+import {
+    Text,
+    View,
+    TextInput,
+    TouchableOpacity,
+    Image,
+    Alert,
+    KeyboardAvoidingView,
+    Platform
+} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
@@ -22,6 +31,7 @@ export default function EditAccount(){
             //Then we update user profile picture
             firebase.auth().currentUser.updateProfile({
                 photoURL:newProfilePicture.photoURL
+
             }).then(()=>{
                 //then update the users firebase document and fields
                 firebase.firestore().collection('users').doc(currentUser.uid).set({
@@ -34,6 +44,7 @@ export default function EditAccount(){
             })
         }).catch(function(error) {
             //Catch any errors
+            console.log(newProfilePicture.photoURL)
             console.log(error)
             alert(error)
         })
@@ -49,9 +60,9 @@ export default function EditAccount(){
         if (!result.cancelled) {
             //uploads the image to firebase storage
             uploadImage(result.uri, "profilePicture")
-                .then(() => {
+                .then(setTimeout(() => {
                     setNewProfilePicture({photoURL:result.uri})
-                })
+                },100))
                 .catch((error) => {
                     Alert.alert("Error: ", error)
                 })
@@ -67,10 +78,10 @@ export default function EditAccount(){
     }
 
     return(
-        <View style={InputStyles.container}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
             <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
                 <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
-                    <Image source={{ uri: newProfilePicture.photoURL }} style={IconStyles.profilePicture} />
+                    <Image source={{ uri: newProfilePicture.photoURL }} style={{width:150, height:150, borderRadius:250}} />
                     <Ionicons style={IconStyles.addProfilePic} name="camera-outline"/>
                 </TouchableOpacity>
             </View>
@@ -83,6 +94,6 @@ export default function EditAccount(){
                 <Text style={InputStyles.buttonText}>Update</Text>
                 <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
             </TouchableOpacity>
-        </View>
+        </KeyboardAvoidingView>
     )
 }

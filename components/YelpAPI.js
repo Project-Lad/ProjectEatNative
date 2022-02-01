@@ -13,7 +13,7 @@ let longitude;
     let location;
     let locationSuccess = false;
     let count = 0;
-    let { status } = await Location.requestPermissionsAsync();
+    let { status } = await Location.requestForegroundPermissionsAsync();
     console.log(status)
 
     if (status === 'denied') {
@@ -47,6 +47,17 @@ let longitude;
 
 const Data = (props) => {
     let [restaurantData, setRestaurantData] = useState([]);
+    let apicategories = "";
+    let counter = 0;
+
+    while (props.categories[counter] != null) {
+        //add to the google URL
+        apicategories += props.categories[counter];
+        apicategories += ",";
+        counter++;
+    }
+
+    apicategories = apicategories.slice(0, -1)
 
     useEffect(() => {
         getData()
@@ -63,19 +74,20 @@ const Data = (props) => {
         };
 
         if (props.zip === null) {
-            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=${parseInt(props.distance * 1609)}&sort_by=distance`, requestOptions)
+            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=${parseInt(props.distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
-                    console.log("Latitude: " + latitude)
-                    console.log("Longitude: " + longitude)
-                    console.log("Offset: " + props.offset)
-                    console.log("Distance: " + parseInt((props.distance * 1609)))
+                    //console.log("Latitude: " + latitude)
+                    //console.log("Longitude: " + longitude)
+                    //console.log("Offset: " + props.offset)
+                    //console.log("Distance: " + parseInt((props.distance * 1609)))
+                    //console.log("Categories: " + apicategories)
                     setRestaurantData(result.businesses);
                     //console.log(result.businesses);
                 })
                 .catch(error => console.log('error', error));
         } else {
-            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&location=${props.zip}&limit=50&offset=${props.offset}&radius=${parseInt(props.distance * 1609)}&sort_by=distance`, requestOptions)
+            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&location=${props.zip}&limit=50&offset=${props.offset}&radius=${parseInt(props.distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     setRestaurantData(result.businesses);
@@ -87,7 +99,7 @@ const Data = (props) => {
 
     return(
             <View style={styles.container}>
-                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance} isHost={props.isHost}/>
+                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance} isHost={props.isHost} categories={props.categories}/>
             </View>
     )
 }

@@ -1,20 +1,10 @@
 import React, {Component} from 'react';
-import {
-    Text,
-    View,
-    Image,
-    Alert,
-    TextInput,
-    TouchableOpacity,
-    ScrollView,
-    Share
-} from 'react-native';
-import Slider from 'react-native-smooth-slider';
+import {Text, View, Image, Alert, TextInput, TouchableOpacity, ScrollView, Share, Pressable, Modal, Switch} from 'react-native';
+import Slider from '@react-native-community/slider';
 import firebase from "../firebase";
 import "firebase/firestore";
-import {InputStyles,IconStyles,LobbyStyles} from "./InputStyles";
+import {InputStyles, IconStyles, LobbyStyles, CardStyle} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
-import * as Linking from 'expo-linking';
 let TAG = "Console: ";
 
 export default class HostSession extends Component {
@@ -27,7 +17,20 @@ export default class HostSession extends Component {
         photoFound: 0,
         zip: null,
         distance: 1,
-        copyClipboard:''
+        copyClipboard:'',
+        categories: ['all'],
+        modalVisible: false,
+        isAll: true,
+        isAmerican: false,
+        isAfrican: false,
+        isItalian: false,
+        isCaribbean: false,
+        isAsian: false,
+        isEuropean: false,
+        isMexican: false,
+        isMiddleEast: false,
+        isSeafood: false,
+        isVegan: false
     }
 
     constructor(props) {
@@ -154,7 +157,7 @@ export default class HostSession extends Component {
             if(zipCodePattern.test(this.state.zip)) {
                 //updates the start field in the current session to true to send everyone to the swipe feature
                 firebase.firestore().collection('sessions')
-                    .doc(this.state.code).update({zip: this.state.zip, start: true, distance: this.state.distance})
+                    .doc(this.state.code).update({zip: this.state.zip, start: true, distance: this.state.distance, categories: this.state.categories})
                     .then(() => {
                         console.log("Session start updated to true, zipcode updated")
                     }).catch(error => {
@@ -162,7 +165,7 @@ export default class HostSession extends Component {
                 })
 
                 //navigate to the swipe page manually
-                this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance, isHost:true})
+                this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance, isHost:true, categories: this.state.categories})
             } else {
                 console.log("Zip Code: ", this.state.zip);
                 Alert.alert("Invalid ZipCode")
@@ -170,7 +173,7 @@ export default class HostSession extends Component {
         } else {
             //updates the start field in the current session to true to send everyone to the swipe feature
             firebase.firestore().collection('sessions')
-                .doc(this.state.code).update({start: true, distance: this.state.distance})
+                .doc(this.state.code).update({start: true, distance: this.state.distance, categories: this.state.categories})
                 .then(() => {
                     console.log("Session start updated to true")
                 }).catch(error => {
@@ -178,7 +181,7 @@ export default class HostSession extends Component {
             })
 
             //navigate to the swipe page manually
-            this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance, isHost:true})
+            this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance, isHost:true, categories: this.state.categories})
         }
     }
 
@@ -205,15 +208,222 @@ export default class HostSession extends Component {
         //host changes distance and zipcode (possible change in future for users to change themselves)
         return (
             <View style={LobbyStyles.container}>
+                <Modal
+                    animationType="slide"
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {
+                        this.setState({modalVisible: !this.state.modalVisible});
+                    }}>
+                    <View style={CardStyle.modalView}>
+                        <Text style={CardStyle.modalText}>Choose your Filter!</Text>
 
-                <TextInput
-                    onChangeText={(text) => {
-                        this.setState({zip: text})
-                    }}
-                    value={this.state.zip}
-                    placeholder="Enter Zipcode or Leave Blank for Current Location"
-                    style={InputStyles.zipInputStyle}
-                />
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>All Restaurants</Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isAll ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {
+                                    this.setState({isAfrican: false, isAmerican: false, isAsian: false, isCaribbean: false, isEuropean: false,
+                                        isItalian: false, isMexican: false, isMiddleEast: false, isSeafood: false, isVegan: false, isAll: !this.state.isAll})
+                                }}
+                                value={this.state.isAll}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>American: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isAmerican ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isAmerican: !this.state.isAmerican, isAll: false})}}
+                                value={this.state.isAmerican}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>African: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isAfrican ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isAfrican: !this.state.isAfrican, isAll: false})}}
+                                value={this.state.isAfrican}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Italian: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isItalian ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isItalian: !this.state.isItalian, isAll: false})}}
+                                value={this.state.isItalian}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Caribbean: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isCaribbean ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isCaribbean: !this.state.isCaribbean, isAll: false})}}
+                                value={this.state.isCaribbean}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Asian: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isAsian ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isAsian: !this.state.isAsian, isAll: false})}}
+                                value={this.state.isAsian}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>European: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isEuropean ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isEuropean: !this.state.isEuropean, isAll: false})}}
+                                value={this.state.isEuropean}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Mexican: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isMexican ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isMexican: !this.state.isMexican, isAll: false})}}
+                                value={this.state.isMexican}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Middle Eastern: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isMiddleEast ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isMiddleEast: !this.state.isMiddleEast, isAll: false})}}
+                                value={this.state.isMiddleEast}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Seafood/Sushi: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isSeafood ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isSeafood: !this.state.isSeafood, isAll: false})}}
+                                value={this.state.isSeafood}
+                            />
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                            <Text>Vegan: </Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                thumbColor={this.state.isVegan ? '#f5dd4b' : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => {this.setState({isVegan: !this.state.isVegan, isAll: false})}}
+                                value={this.state.isVegan}
+                            />
+                        </View>
+
+                        <Pressable style={InputStyles.buttons}
+                                   onPress={() => {
+                                       if(this.state.isAll === true) {
+                                           this.state.categories = ['all']
+                                           console.log(this.state.categories)
+                                           this.setState({modalVisible: !this.state.modalVisible})
+                                       } else if(this.state.isAll === false && this.state.isItalian === false && this.state.isAfrican === false &&
+                                           this.state.isAmerican === false && this.state.isAsian === false && this.state.isMiddleEast === false &&
+                                           this.state.isEuropean === false && this.state.isVegan === false && this.state.isCaribbean === false &&
+                                           this.state.isSeafood === false && this.state.isMexican === false) {
+                                           Alert.alert("Whoops!", "Must apply at least one filter!")
+                                       } else {
+                                           this.state.categories = [];
+                                           if(this.state.isAmerican === true) {
+                                               this.state.categories.push('newamerican', 'tradamerican', 'bbq', 'breakfast_brunch', 'cafeteria', 'cajun', 'steak', 'newcanadian')
+                                           }
+
+                                           if(this.state.isAfrican === true) {
+                                               this.state.categories.push('african')
+                                           }
+
+                                           if(this.state.isAsian === true) {
+                                               this.state.categories.push('chinese', 'japanese', 'korean', 'singaporean', 'thai', 'vietnamese', 'taiwanese')
+                                           }
+
+                                           if(this.state.isCaribbean === true) {
+                                               this.state.categories.push('caribbean', 'cuban', 'dominican', 'puertorican', 'filipino')
+                                           }
+
+                                           if(this.state.isEuropean === true) {
+                                               this.state.categories.push('danish', 'french', 'belgian', 'british', 'german', 'greek', 'irish', 'polish')
+                                           }
+
+                                           if(this.state.isItalian === true) {
+                                               this.state.categories.push('italian', 'pizza', 'mediterranean')
+                                           }
+
+                                           if(this.state.isMexican === true) {
+                                               this.state.categories.push('mexican', 'newmexican', 'spanish', 'latin')
+                                           }
+
+                                           if(this.state.isMiddleEast === true) {
+                                               this.state.categories.push('mideastern', 'egyptian', 'pakistani', 'persian', 'afghani', 'indpak')
+                                           }
+
+                                           if(this.state.isSeafood === true) {
+                                               this.state.categories.push('seafood', 'sushi')
+                                           }
+
+                                           if(this.state.isVegan === true) {
+                                               this.state.categories.push('vegan', 'vegetarian')
+                                           }
+
+                                           console.log(this.state.categories)
+                                           this.setState({modalVisible: !this.state.modalVisible})
+                                       }
+                                   }}>
+                            <Text style={InputStyles.buttonText}>Apply Filters</Text>
+                        </Pressable>
+
+                        <Pressable style={InputStyles.buttons}
+                                   onPress={() => {
+                                       this.setState({modalVisible: !this.state.modalVisible})
+                                   }}>
+                            <Text style={InputStyles.buttonText}>Close Modal</Text>
+                        </Pressable>
+                    </View>
+                </Modal>
+
+                <View style={{flexDirection: 'row'}}>
+                    <TextInput
+                        onChangeText={(text) => {
+                            this.setState({zip: text})
+                        }}
+                        value={this.state.zip}
+                        placeholder="Enter Zipcode or Leave Blank for Current Location"
+                        style={InputStyles.zipInputStyle}
+                    />
+
+                    <TouchableOpacity onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}>
+                        <Ionicons name="filter-sharp" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
 
                 <ScrollView>
                     {this.state.users.map(user=>{
@@ -226,20 +436,18 @@ export default class HostSession extends Component {
                     })}
                 </ScrollView>
                 <View style={LobbyStyles.sliderContainer}>
+                    <Text>Distance: {this.state.distance} mi</Text>
                     <Slider
                         value={this.state.distance}
                         useNativeDriver={true}
                         minimumValue={1}
-                        maximumValue={25}
-                        step={0.5}
+                        maximumValue={20}
+                        step={1}
                         onValueChange={value => this.setState({distance: value})}
-                        minimumTrackTintColor='#BC0B02'
-                        thumbStyle={LobbyStyles.sliderThumb}
-                        trackStyle={LobbyStyles.sliderTrack}
-                        />
-                    <Text>Distance: {this.state.distance} mi</Text>
-                </View>
+                        minimumTrackTintColor='#2decb4'
 
+                        />
+                </View>
 
                 <Text style={InputStyles.buttonText}>Share Code</Text>
 
@@ -256,8 +464,9 @@ export default class HostSession extends Component {
                     <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={()=>{this.endLobby()}}>
-                    <Text style={{marginTop:15}}>Close Lobby</Text>
+                <TouchableOpacity onPress={()=>{this.endLobby()}} style={IconStyles.closeButton}>
+                    <Ionicons style={{fontSize:16}} name="close-circle-outline"/>
+                    <Text style={{fontSize:16}}> Close Lobby</Text>
                 </TouchableOpacity>
             </View>
         )
