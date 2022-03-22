@@ -22,7 +22,6 @@ function AuthStack() {
                 headerTitleAlign: 'center',
                 headerStyle: {
                     backgroundColor: '#2decb4',
-
                 },
                 headerTitleStyle: {
                     fontWeight: 'bold',
@@ -84,7 +83,6 @@ function LoginSignup(){
             headerTitleAlign: 'center',
             headerStyle: {
                 backgroundColor: '#2decb4',
-
             },
             headerTitleStyle: {
                 fontWeight: 'bold',
