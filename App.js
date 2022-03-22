@@ -67,7 +67,10 @@ function AuthStack() {
             <Stack.Screen
                 name="Connect"
                 component={Connect}
-                options={{headerShown: false}}
+                options={{
+                    headerShown: true,
+                    headerTitle:'',
+                    }}
             />
         </Stack.Navigator>
     );
