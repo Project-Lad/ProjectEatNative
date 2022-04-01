@@ -338,11 +338,13 @@ const CardStyle = StyleSheet.create({
         flex:1,
         alignItems: 'center',
         justifyContent: 'center',
+        width:ScreenWidth * .95
     },
     card: {
         height:600,
         backgroundColor: '#2decb4',
         borderRadius:10,
+        width:ScreenWidth * .95
     },
     cardsText: {
         fontSize: 18,
