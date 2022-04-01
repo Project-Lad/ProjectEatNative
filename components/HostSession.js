@@ -1,5 +1,20 @@
 import React, {Component} from 'react';
-import {Text, View, Image, Alert, TextInput, TouchableOpacity, ScrollView, Share, Pressable, Modal, Switch, KeyboardAvoidingView, Platform} from 'react-native';
+import {
+    Text,
+    View,
+    Image,
+    Alert,
+    TextInput,
+    TouchableOpacity,
+    ScrollView,
+    Share,
+    Pressable,
+    Modal,
+    Switch,
+    KeyboardAvoidingView,
+    Platform,
+    BackHandler
+} from 'react-native';
 import Slider from '@react-native-community/slider';
 import firebase from "../firebase";
 import "firebase/firestore";

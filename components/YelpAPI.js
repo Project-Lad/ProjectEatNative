@@ -2,7 +2,7 @@
 import {YELP_API_KEY} from '@env'
 import Cards from "./Cards.js";
 import React, {useEffect, useState} from 'react';
-import {View, Alert, StyleSheet} from "react-native";
+import {View, Alert, StyleSheet, BackHandler} from "react-native";
 import * as Location from 'expo-location';
 
 //Declares lat and long vars

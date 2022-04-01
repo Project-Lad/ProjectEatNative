@@ -6,7 +6,7 @@ import {
     Alert,
     TouchableOpacity,
     Platform,
-    ToastAndroid, ScrollView, Share
+    ToastAndroid, ScrollView, Share, BackHandler
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -25,7 +25,17 @@ export default class GuestSession extends Component {
         photoFound: 0,
         categories: []
     }
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    }
 
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        return true;
+    }
      constructor(props) {
          super(props);
 
