@@ -1,9 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, View} from 'react-native';
+import React, {useEffect} from 'react';
+import {BackHandler, StyleSheet, View} from 'react-native';
 import Data from "./YelpAPI.js";
 
 export default function SwipeFeature({route}) {
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
+        return () => backHandler.remove()
+    }, [])
 
     return (
         <View style={styles.container}>

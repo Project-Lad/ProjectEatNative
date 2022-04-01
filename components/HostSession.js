@@ -24,7 +24,19 @@ let TAG = "Console: ";
 
 export default class HostSession extends Component {
 
-    state = {
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        return true;
+    }
+
+        state = {
         isLoading: true,
         users: [],
         code:0,
