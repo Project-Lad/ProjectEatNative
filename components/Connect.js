@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import { View, TextInput, TouchableOpacity, Text} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, TextInput, TouchableOpacity, Text, BackHandler} from 'react-native';
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import {IconStyles, InputStyles} from "./InputStyles";
@@ -8,6 +8,11 @@ import {Ionicons} from "@expo/vector-icons";
 export default function Connect() {
     const navigation = useNavigation()
     const [inputCode, setCode] = useState()
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
+        return () => backHandler.remove()
+    }, [])
 
     let convertUpper = () => {
         return inputCode.toString().toUpperCase()
