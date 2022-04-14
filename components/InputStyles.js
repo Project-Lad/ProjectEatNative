@@ -44,7 +44,7 @@ const InputStyles = StyleSheet.create({
         textAlign: 'center'
     },
     buttons:{
-        backgroundColor:"#2decb4",
+        backgroundColor:"#2e344f",
         padding: 15,
         display: 'flex',
         flexDirection: 'row',
@@ -62,7 +62,7 @@ const InputStyles = StyleSheet.create({
     },
     buttonText:{
         fontSize: 20,
-        color:"#5D737E"
+        color:"#e4e6e9"
     },
     preloader: {
         left: 0,
@@ -75,7 +75,7 @@ const InputStyles = StyleSheet.create({
         backgroundColor: '#fff'
     },
     userNameText:{
-        color:"#5D737E",
+        color:"#2e344f",
         fontSize:24,
     }
 });
@@ -83,11 +83,11 @@ const IconStyles = StyleSheet.create({
     arrowRight:{
         fontSize:20,
         alignSelf: 'center',
-        color:"#5D737E"
+        color:"#e4e6e9"
     },
     iconLeft:{
         fontSize:22,
-        color:"#5D737E",
+        color:"#e4e6e9",
         alignSelf: 'center'
     },
     closeButton:{
@@ -116,7 +116,7 @@ const IconStyles = StyleSheet.create({
         borderRadius:100
     },
     editIcon:{
-        color:"#5D737E",
+        color:"#e4e6e9",
         fontSize:26,
         justifyContent:'center'
     }
@@ -129,10 +129,10 @@ const ProfileStyles = StyleSheet.create({
         justifyContent:'center'
     },
     card:{
-        flexDirection:"row",
+        flexDirection:"column",
         justifyContent:'space-evenly',
         alignItems: 'center',
-        width:'100%',
+        width:'50%',
         padding:'2%',
         backgroundColor:'#fff',
         borderRadius:4,
@@ -140,14 +140,30 @@ const ProfileStyles = StyleSheet.create({
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.2,
         shadowRadius: 2,
-        elevation: 1,
+        elevation: 10,
+    },
+    editProfile:{
+        flexDirection:"row",
+        justifyContent:'space-evenly',
+        alignItems: 'center',
+        width:'50%',
+        padding:'2%',
+        backgroundColor:'#fff',
+        borderRadius:25,
+        borderColor:"#f97c4d",
+        borderWidth: 1.5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 10,
     },
     editButton:{
         fontSize:24,
         justifyContent:'center'
     },
     buttons:{
-        backgroundColor:"#2decb4",
+        backgroundColor:"#2e344f",
         padding: '5%',
         flexDirection: 'row',
         justifyContent:'space-between',
@@ -157,8 +173,8 @@ const ProfileStyles = StyleSheet.create({
             height: 2,
         },
         shadowOpacity: 0.5,
-        shadowRadius: 3.84,
-        elevation: 5,
+        shadowRadius: 2,
+        elevation: 10,
         borderRadius:25,
         marginTop:'5%'
     },

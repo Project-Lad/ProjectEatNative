@@ -33,13 +33,19 @@ export default function Dashboard(){
     return(
         <View style={ProfileStyles.container}>
             {/*Profile Card View*/}
-            <TouchableOpacity style = {ProfileStyles.card} onPress={() => navigation.navigate('Edit Account')}>
+            <View style={ProfileStyles.card}>
                 <View>
-                   {newProfilePicture && <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />}
+                    {newProfilePicture && <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />}
                 </View>
+                <Text style={InputStyles.userNameText}>
+                    {newProfileUsername}
+                </Text>
+            </View>
+
+            <TouchableOpacity style={ProfileStyles.editProfile} onPress={() => navigation.navigate('Edit Account')}>
                 <View>
                     <Text style={InputStyles.userNameText}>
-                        {newProfileUsername}
+                        Edit Profile
                     </Text>
                 </View>
                 <View style={ProfileStyles.editButton}>
@@ -66,9 +72,9 @@ export default function Dashboard(){
                         <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={deleteAccount} style = {ProfileStyles.buttons}>
+                    {/*<TouchableOpacity onPress={deleteAccount} style = {ProfileStyles.buttons}>
                         <Text style={InputStyles.buttonText}>delete</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity>*/}
                 </View>
         </View>
     )
