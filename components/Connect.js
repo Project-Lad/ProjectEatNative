@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, TextInput, TouchableOpacity, Text, BackHandler} from 'react-native';
+import {View, TextInput, TouchableOpacity, Text, BackHandler, Platform, KeyboardAvoidingView} from 'react-native';
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import {IconStyles, InputStyles} from "./InputStyles";
@@ -8,6 +8,7 @@ import {Ionicons} from "@expo/vector-icons";
 export default function Connect() {
     const navigation = useNavigation()
     const [inputCode, setCode] = useState()
+    const [isFocused, setFocus] = useState(false)
 
     useEffect(() => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
@@ -19,12 +20,15 @@ export default function Connect() {
     }
 
     return (
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
         <View style={InputStyles.container}>
             <TextInput
-                style={InputStyles.inputStyle}
+                style={isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                 placeholder="Enter Lobby Code"
                 value={inputCode}
                 onChangeText={setCode}
+                onFocus={() => setFocus(true)}
+                onBlur={() => setFocus(false)}
             />
             <TouchableOpacity
                 onPress={() => {
@@ -35,5 +39,6 @@ export default function Connect() {
                 <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
             </TouchableOpacity>
         </View>
+        </KeyboardAvoidingView>
     );
 }

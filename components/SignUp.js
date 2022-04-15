@@ -23,6 +23,11 @@ export default function Signup(){
     const [userEmail, setUserEmail] = useState({email:''})
     const [userPassword, setUserPassword] = useState({password:''})
     const [isLoading, setLoading] = useState(false)
+    const [isFocused, setFocused] = useState({
+        username:false,
+        email:false,
+        password:false,
+    })
 
     const DEFAULT_IMAGE = Image.resolveAssetSource(userPhoto).uri;
     const [image, setImage] = useState({photoURL:DEFAULT_IMAGE});
@@ -131,27 +136,33 @@ export default function Signup(){
                 </TouchableOpacity>
             </View>
             <TextInput
-                style={InputStyles.inputStyle}
+                style={isFocused.username ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                 placeholder="Username"
                 onChangeText={(username)=>setUserDisplayName(username.trim())}
                 value={userDisplayName}
+                onFocus={() => setFocused({username: true, email: false, password: false})}
+                onBlur={() => setFocused({username: false, email: false, password: false})}
             />
             <TextInput
-                style={InputStyles.inputStyle}
+                style={isFocused.email ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                 placeholder="Email"
                 keyboardType={'email-address'}
                 onChangeText={email => setUserEmail({email:email.trim()})}
                 value={userEmail.email.trim()}
                 autoComplete='email'
                 autoCapitalize={'none'}
+                onFocus={() => setFocused({username: false, email: true, password: false})}
+                onBlur={() => setFocused({username: false, email: false, password: false})}
             />
             <TextInput
-                style={InputStyles.inputStyle}
+                style={isFocused.password ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                 placeholder="Password"
                 onChangeText={password => setUserPassword({password:password})}
                 maxLength={15}
                 secureTextEntry={true}
                 value={userPassword.password}
+                onFocus={() => setFocused({username: false, email: false, password: true})}
+                onBlur={() => setFocused({username: false, email: false, password: false})}
             />
             <TouchableOpacity style={InputStyles.buttons} onPress={registerUser}>
                 <Text style={InputStyles.buttonText}>Sign Up</Text>

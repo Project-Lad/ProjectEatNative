@@ -81,7 +81,14 @@ export default function EditAccount(){
         let ref = firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/`+ imageName);
         return ref.put(blob)
     }
-
+    const [isFocused, setIsFocused] = useState(false)
+// handlers
+    const handleInputFocus = () => {
+        setIsFocused(true)
+    }
+    const handleInputBlur = () => {
+        setIsFocused(false)
+    }
     return(
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
             <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
@@ -91,7 +98,9 @@ export default function EditAccount(){
                 </TouchableOpacity>
             </View>
             <TextInput
-                style={InputStyles.inputStyle}
+                style={isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
+                onFocus={() => handleInputFocus(true)}
+                onBlur={() => handleInputBlur(false)}
                 value={newProfileUsername.displayName}
                 onChangeText={(text)=>setNewProfileUsername({displayName:text})}
             />

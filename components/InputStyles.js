@@ -17,13 +17,20 @@ const InputStyles = StyleSheet.create({
         marginBottom: 15,
         padding: '5%',
         alignSelf: "center",
-        borderColor: "#2decb4",
-        borderBottomWidth: 3,
-        borderRightWidth:3,
-        borderTopWidth:3,
-        borderLeftWidth:3,
+        backgroundColor:'#eee',
         fontSize:20,
-        borderRadius:25
+        borderRadius:10
+    },
+    focusInputStyle: {
+        width: '100%',
+        marginBottom: 15,
+        padding: '5%',
+        alignSelf: "center",
+        backgroundColor:'transparent',
+        borderColor: "#f97c4d",
+        borderWidth:2,
+        fontSize:20,
+        borderRadius:10
     },
     zipInputStyle: {
         width: '90%',
@@ -42,6 +49,11 @@ const InputStyles = StyleSheet.create({
         color: '#000',
         marginTop: 25,
         textAlign: 'center'
+    },
+    ForgotPasswordText:{
+        color: '#000',
+        paddingBottom:10,
+        textAlign: 'right'
     },
     buttons:{
         backgroundColor:"#2e344f",

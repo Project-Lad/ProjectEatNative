@@ -23,7 +23,8 @@ export default class GuestSession extends Component {
         code: 0,
         photoURL: "",
         photoFound: 0,
-        categories: []
+        categories: [],
+        isFocused:false
     }
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
