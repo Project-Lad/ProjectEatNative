@@ -20,11 +20,9 @@ function AuthStack() {
             initialRouteName="Profile"
             screenOptions={{
                 headerTitleAlign: 'center',
-                headerStyle: {
-                    backgroundColor: '#2decb4',
-                },
                 headerTitleStyle: {
                     fontWeight: 'bold',
+                    fontSize:24
                 },
                 gestureEnabled:false
             }}>
