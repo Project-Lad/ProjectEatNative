@@ -15,14 +15,12 @@ export default function Dashboard(){
     const isFocused = useIsFocused();
 
 
-       useEffect(()=>{
+    useEffect(()=>{
            firebase.firestore().collection('users').doc(user).get().then((doc)=>{
                setNewProfileUsername(doc.data().username)
                setNewProfilePicture(doc.data().photoURL)
            })
         },[isFocused])
-
-
     async function signOut(){
         await firebase.auth().signOut()
     }
@@ -40,18 +38,18 @@ export default function Dashboard(){
                 <Text style={InputStyles.userNameText}>
                     {newProfileUsername}
                 </Text>
+                <TouchableOpacity style={ProfileStyles.editProfile} onPress={() => navigation.navigate('Edit Account')}>
+                    <View>
+                        <Text style={InputStyles.editProfile}>
+                            Edit Profile
+                        </Text>
+                    </View>
+                    <View style={ProfileStyles.editButton}>
+                        <Ionicons style={IconStyles.editIcon} name="chevron-forward-outline"/>
+                    </View>
+                </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={ProfileStyles.editProfile} onPress={() => navigation.navigate('Edit Account')}>
-                <View>
-                    <Text style={InputStyles.userNameText}>
-                        Edit Profile
-                    </Text>
-                </View>
-                <View style={ProfileStyles.editButton}>
-                    <Ionicons style={IconStyles.editIcon} name="chevron-forward-outline"/>
-                </View>
-            </TouchableOpacity>
             {/*Button View*/}
             <View>
                     <TouchableOpacity onPress={() => navigation.navigate('HostSession')} style = {ProfileStyles.buttons}>

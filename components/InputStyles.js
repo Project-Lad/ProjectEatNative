@@ -76,6 +76,10 @@ const InputStyles = StyleSheet.create({
     },
     userNameText:{
         color:"#2e344f",
+        fontSize:36,
+    },
+    editProfile:{
+        color:"#2e344f",
         fontSize:24,
     }
 });
@@ -111,12 +115,12 @@ const IconStyles = StyleSheet.create({
         paddingBottom:10
     },
     profilePicture:{
-        width: 75,
-        height: 75,
+        width: 200,
+        height: 200,
         borderRadius:100
     },
     editIcon:{
-        color:"#e4e6e9",
+        color:"#000",
         fontSize:26,
         justifyContent:'center'
     }
@@ -126,48 +130,35 @@ const ProfileStyles = StyleSheet.create({
         padding:'5%',
         flex:1,
         alignContent: 'center',
-        justifyContent:'center'
+        justifyContent:'space-evenly'
     },
     card:{
         flexDirection:"column",
-        justifyContent:'space-evenly',
         alignItems: 'center',
-        width:'50%',
+        width:'100%',
         padding:'2%',
-        backgroundColor:'#fff',
-        borderRadius:4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-        elevation: 10,
     },
     editProfile:{
         flexDirection:"row",
         justifyContent:'space-evenly',
+        alignSelf:"center",
         alignItems: 'center',
-        width:'50%',
-        padding:'2%',
-        backgroundColor:'#fff',
+        width:'60%',
+        marginTop:'5%',
+        padding:'4%',
         borderRadius:25,
         borderColor:"#f97c4d",
-        borderWidth: 1.5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-        elevation: 10,
+        borderWidth: 1.5
     },
     editButton:{
         fontSize:24,
-        justifyContent:'center'
+        justifyContent:'space-between'
     },
     buttons:{
         backgroundColor:"#2e344f",
         padding: '5%',
         flexDirection: 'row',
         justifyContent:'space-between',
-        shadowColor: "#5D737E",
         shadowOffset: {
             width: 0,
             height: 2,
