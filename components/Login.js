@@ -8,7 +8,7 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     KeyboardAvoidingView,
-    Platform
+    Platform, Image
 } from 'react-native';
 import firebase from "firebase";
 import "firebase/firestore";
@@ -85,6 +85,7 @@ export default class Login extends Component {
         }
         return (
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
+                <Image source={require('../assets/branding/out2eat.png')}  style={{marginBottom:'5%'}}/>
                 <TextInput
                     style={this.state.isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                     placeholder="Email"

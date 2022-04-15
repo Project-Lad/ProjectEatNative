@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "scheme": "out2eat",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/branding/out2eat.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
