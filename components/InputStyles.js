@@ -72,6 +72,25 @@ const InputStyles = StyleSheet.create({
         elevation: 5,
         borderRadius:25
     },
+    updateButtons:{
+        backgroundColor:"#f97c4d",
+        width:'50%',
+        padding: 15,
+        display: 'flex',
+        flexDirection: 'row',
+        alignSelf:'flex-end',
+        justifyContent:'space-between',
+        marginBottom:10,
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderRadius:25
+    },
     buttonText:{
         fontSize: 20,
         color:"#e4e6e9"
@@ -100,6 +119,11 @@ const IconStyles = StyleSheet.create({
         fontSize:20,
         alignSelf: 'center',
         color:"#e4e6e9"
+    },
+    editArrowRight:{
+        fontSize:20,
+        alignSelf: 'center',
+        color:"#000"
     },
     iconLeft:{
         fontSize:22,
