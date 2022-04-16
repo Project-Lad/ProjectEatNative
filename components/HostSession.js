@@ -465,8 +465,8 @@ export default class HostSession extends Component {
                         onFocus={()=>{this.setState({isFocused:true})}}
                         onBlur={()=>{this.setState({isFocused:false})}}
                     />
-                    <TouchableOpacity onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}>
-                        <Ionicons style={IconStyles.iconLeft} name="filter-sharp" size={24} color="black" />
+                    <TouchableOpacity style={{alignSelf:'flex-start'}} onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}>
+                        <Ionicons name="filter-sharp" size={30} color="#2e344f" />
                     </TouchableOpacity>
                 </View>
 
@@ -493,7 +493,7 @@ export default class HostSession extends Component {
                         />
                 </View>
 
-                <Text style={InputStyles.buttonText}>Share Code</Text>
+                <Text style={{color:'#2e344f', fontSize:20, paddingBottom:10}}>Share Code</Text>
 
                 <View>
                     <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
@@ -507,8 +507,6 @@ export default class HostSession extends Component {
                         <Ionicons style={IconStyles.iconLeft} name="close-circle-outline"/>
                         <Text style={InputStyles.buttonText}> Close</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={this.changeScreens} style={LobbyStyles.buttons}>
-                <View>
                     <TouchableOpacity onPress={() => {
                         Alert.alert(
                             "Ready to Play?",
@@ -523,17 +521,12 @@ export default class HostSession extends Component {
                             ],
                             {cancelable: true}
                         )
-                    }} style={ProfileStyles.buttons}>
+                    }} style={LobbyStyles.buttons}>
                         <Ionicons style={IconStyles.iconLeft} name="play-circle-outline"/>
                         <Text style={InputStyles.buttonText}>Start</Text>
                         <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                     </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity onPress={()=>{this.endLobby()}} style={IconStyles.closeButton}>
-                    <Ionicons style={{fontSize:16}} name="close-circle-outline"/>
-                    <Text style={{fontSize:16}}> Close Lobby</Text>
-                </TouchableOpacity>
             </View>
         )
     }
