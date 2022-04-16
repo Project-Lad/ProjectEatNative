@@ -8,7 +8,8 @@ import {
     Alert,
     KeyboardAvoidingView,
     Platform,
-    BackHandler
+    BackHandler,
+    LogBox
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -16,7 +17,7 @@ import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
-
+LogBox.ignoreLogs(['Setting a timer']);
 export default function EditAccount(){
     const navigation = useNavigation()
     const currentUser = firebase.auth().currentUser

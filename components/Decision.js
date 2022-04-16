@@ -1,7 +1,7 @@
 //checks for location
 import {YELP_API_KEY} from '@env'
 import React, {useState, useEffect} from 'react';
-import {View, Text, Image, Platform, Linking, ScrollView, TouchableOpacity} from "react-native";
+import {View, Text, Image, Platform, Linking, ScrollView, TouchableOpacity,LogBox} from "react-native";
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
 import androidStar15 from '../assets/android/stars_regular_1_half.png'
@@ -28,7 +28,7 @@ import {useNavigation} from "@react-navigation/native";
 import YelpImage from "../assets/yelp_burst.png";
 import {IconStyles, InputStyles,DecisionStyle} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
-
+LogBox.ignoreLogs(['Setting a timer']);
 const Decision = ({route}) => {
     let [restaurant, setRestaurant] = useState({
         name: "",

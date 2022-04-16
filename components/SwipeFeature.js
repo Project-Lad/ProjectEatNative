@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useEffect} from 'react';
-import {BackHandler, StyleSheet, View} from 'react-native';
+import {BackHandler, StyleSheet, View, LogBox} from 'react-native';
 import Data from "./YelpAPI.js";
-
+LogBox.ignoreLogs(['Setting a timer']);
 export default function SwipeFeature({route}) {
 
     useEffect(() => {

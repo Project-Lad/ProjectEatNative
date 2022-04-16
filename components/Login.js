@@ -8,12 +8,13 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     KeyboardAvoidingView,
-    Platform, Image
+    Platform, Image,LogBox
 } from 'react-native';
 import firebase from "firebase";
 import "firebase/firestore";
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
+LogBox.ignoreLogs(['Setting a timer']);
 export default class Login extends Component {
 
     constructor() {

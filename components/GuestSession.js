@@ -5,8 +5,7 @@ import {
     Image,
     Alert,
     TouchableOpacity,
-    Platform,
-    ToastAndroid, ScrollView, Share, BackHandler
+    LogBox, ScrollView, Share, BackHandler
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -14,7 +13,7 @@ import {IconStyles, InputStyles, LobbyStyles} from "./InputStyles";
 import Clipboard from "expo-clipboard";
 import {Ionicons} from "@expo/vector-icons";
 let TAG = "Console: ";
-
+LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
 
     state = {

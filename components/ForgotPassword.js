@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import {Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native'
+import {Alert, LogBox, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native'
 import firebase from "firebase";
 import {IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
-
+LogBox.ignoreLogs(['Setting a timer']);
 class ForgotPassword extends Component {
     constructor() {
         super();
