@@ -186,7 +186,7 @@ export default class GuestSession extends Component {
                     })}
                 </ScrollView>
                 <View>
-                    <Text style={InputStyles.buttonText}>Share Code</Text>
+                    <Text style={{fontSize:18, color:'#2e344f'}}>Share Code</Text>
 
                     <View>
                         <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
@@ -194,11 +194,12 @@ export default class GuestSession extends Component {
                             <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
                         </TouchableOpacity>
                     </View>
-
-                    <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={IconStyles.closeButton}>
-                        <Ionicons style={{fontSize:16}} name="close-circle-outline"/>
-                        <Text style={{fontSize:16}}>Leave Lobby</Text>
+                    <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
+                    <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={LobbyStyles.leaveButton}>
+                        <Ionicons style={IconStyles.iconLeft}  name="close-circle-outline"/>
+                        <Text style={InputStyles.buttonText}>Leave Lobby</Text>
                     </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         );

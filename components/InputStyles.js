@@ -277,7 +277,26 @@ const LobbyStyles = StyleSheet.create({
     },
     closeButton:{
         width:'30%',
-        height:'75%',
+        height:'100%',
+        padding: 10,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems:'center',
+        alignSelf:'center',
+        backgroundColor:"#f97c4d",
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderRadius:10
+    },
+    leaveButton:{
+        width:'45%',
+        height:'100%',
         padding: 10,
         display: 'flex',
         flexDirection: 'row',
@@ -296,7 +315,7 @@ const LobbyStyles = StyleSheet.create({
     },
     buttons:{
         width:'65%',
-        height:'75%',
+        height:'100%',
         backgroundColor:"#2e344f",
         padding: 15,
         display: 'flex',
