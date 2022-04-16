@@ -501,7 +501,21 @@ export default class HostSession extends Component {
                 </View>
 
                 <View>
-                    <TouchableOpacity onPress={this.changeScreens} style={ProfileStyles.buttons}>
+                    <TouchableOpacity onPress={() => {
+                        Alert.alert(
+                            "Ready to Play?",
+                            "Is everyone in the lobby and ready to begin?",
+                            [
+                                {
+                                    text: "Wait, go back!",
+                                    onPress: () => console.log("Cancel Pressed"),
+                                    style: "cancel"
+                                },
+                                { text: "Let's Eat!!", onPress: () => {this.changeScreens()} }
+                            ],
+                            {cancelable: true}
+                        )
+                    }} style={ProfileStyles.buttons}>
                         <Ionicons style={IconStyles.iconLeft} name="play-circle-outline"/>
                         <Text style={InputStyles.buttonText}>Start</Text>
                         <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
