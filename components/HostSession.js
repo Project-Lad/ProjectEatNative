@@ -456,7 +456,7 @@ export default class HostSession extends Component {
                         </Pressable>
                     </KeyboardAvoidingView>
                 </Modal>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly'}}>
                     <TextInput
                         onChangeText={(text) => {this.setState({zip: text})}}
                         value={this.state.zip}
@@ -465,8 +465,8 @@ export default class HostSession extends Component {
                         onFocus={()=>{this.setState({isFocused:true})}}
                         onBlur={()=>{this.setState({isFocused:false})}}
                     />
-                    <TouchableOpacity onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}} style={{ alignSelf:'flex-start'}}>
-                        <Ionicons  name="filter-sharp" size={32 } color="#2e344f" />
+                    <TouchableOpacity onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}>
+                        <Ionicons style={IconStyles.iconLeft} name="filter-sharp" size={24} color="black" />
                     </TouchableOpacity>
                 </View>
 
@@ -488,14 +488,12 @@ export default class HostSession extends Component {
                         minimumValue={1}
                         maximumValue={20}
                         step={1}
-                        thumbTintColor='#2e344f'
                         onValueChange={value => this.setState({distance: value})}
-                        minimumTrackTintColor='#f97c4d'
-
+                        minimumTrackTintColor='#2decb4'
                         />
                 </View>
 
-                <Text style={{fontSize:18, color:'#2e344f'}}>Share Code</Text>
+                <Text style={InputStyles.buttonText}>Share Code</Text>
 
                 <View>
                     <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
@@ -510,11 +508,32 @@ export default class HostSession extends Component {
                         <Text style={InputStyles.buttonText}> Close</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={this.changeScreens} style={LobbyStyles.buttons}>
+                <View>
+                    <TouchableOpacity onPress={() => {
+                        Alert.alert(
+                            "Ready to Play?",
+                            "Is everyone in the lobby and ready to begin?",
+                            [
+                                {
+                                    text: "Wait, go back!",
+                                    onPress: () => console.log("Cancel Pressed"),
+                                    style: "cancel"
+                                },
+                                { text: "Let's Eat!!", onPress: () => {this.changeScreens()} }
+                            ],
+                            {cancelable: true}
+                        )
+                    }} style={ProfileStyles.buttons}>
                         <Ionicons style={IconStyles.iconLeft} name="play-circle-outline"/>
                         <Text style={InputStyles.buttonText}>Start</Text>
                         <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                     </TouchableOpacity>
                 </View>
+
+                <TouchableOpacity onPress={()=>{this.endLobby()}} style={IconStyles.closeButton}>
+                    <Ionicons style={{fontSize:16}} name="close-circle-outline"/>
+                    <Text style={{fontSize:16}}> Close Lobby</Text>
+                </TouchableOpacity>
             </View>
         )
     }
