@@ -28,6 +28,8 @@
     "react-native-gesture-handler": "^1.10.3",
     "react-native-reanimated": "^2.7.0",
     "react-native-screens": "^3.13.1",
+    "react-native-svg": "^12.3.0",
+    "react-native-svg-uri": "^1.2.3",
     "react-native-web": "^0.17.7",
     "unimodules-permissions-interface": "^6.1.0",
     "yelp-fusion": "^3.0.0"
