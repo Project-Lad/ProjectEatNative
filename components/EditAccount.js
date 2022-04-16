@@ -104,9 +104,9 @@ export default function EditAccount(){
                 value={newProfileUsername.displayName}
                 onChangeText={(text)=>setNewProfileUsername({displayName:text})}
             />
-            <TouchableOpacity style={InputStyles.buttons} onPress={userName}>
-                <Text style={InputStyles.buttonText}>Update</Text>
-                <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+            <TouchableOpacity style={InputStyles.updateButtons} onPress={userName}>
+                <Text style={{color:'#000', fontSize:20}}>Update</Text>
+                <Ionicons style={IconStyles.editArrowRight} name="chevron-forward-outline"/>
             </TouchableOpacity>
         </KeyboardAvoidingView>
     )
