@@ -18,7 +18,7 @@ import {
 import Slider from '@react-native-community/slider';
 import firebase from "../firebase";
 import "firebase/firestore";
-import {InputStyles, IconStyles, LobbyStyles, CardStyle} from "./InputStyles";
+import {InputStyles, IconStyles, LobbyStyles, CardStyle, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 let TAG = "Console: ";
 
@@ -36,8 +36,10 @@ export default class HostSession extends Component {
         return true;
     }
 
-        state = {
+    state = {
         isLoading: true,
+        isFocused: false,
+        onFocus: false,
         users: [],
         code:0,
         photoURL: "",
@@ -58,6 +60,17 @@ export default class HostSession extends Component {
         isMiddleEast: false,
         isSeafood: false,
         isVegan: false
+    }
+
+    onFocus() {
+        this.setState({
+            onFocus: true
+        })
+    }
+    onBlur() {
+        this.setState({
+            onFocus:false
+        })
     }
 
     constructor(props) {
@@ -242,12 +255,6 @@ export default class HostSession extends Component {
                         this.setState({modalVisible: !this.state.modalVisible});
                     }}>
                     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={LobbyStyles.modalView}>
-                        <TextInput
-                            onChangeText={(text) => {this.setState({zip: text})}}
-                            value={this.state.zip}
-                            placeholder="Enter Zipcode or Leave Blank for Current Location"
-                            style={LobbyStyles.zipInputStyle}
-                        />
                         <Text style={CardStyle.modalText}>Choose your Filter!</Text>
 
                         <View style={{flexDirection: 'row'}}>
@@ -310,7 +317,6 @@ export default class HostSession extends Component {
                                     />
                                 </View>
                             </View>
-
                             <View style={{flexDirection: 'column', width: '50%'}}>
                                 <View style={LobbyStyles.modalSlider}>
                                     <Text>Asian: </Text>
@@ -448,6 +454,19 @@ export default class HostSession extends Component {
                         </Pressable>
                     </KeyboardAvoidingView>
                 </Modal>
+                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly'}}>
+                    <TextInput
+                        onChangeText={(text) => {this.setState({zip: text})}}
+                        value={this.state.zip}
+                        placeholder="Enter Zipcode or Leave Blank for Current Location"
+                        style={this.state.isFocused ? InputStyles.focusZipInputStyle : InputStyles.zipInputStyle}
+                        onFocus={()=>{this.setState({isFocused:true})}}
+                        onBlur={()=>{this.setState({isFocused:false})}}
+                    />
+                    <TouchableOpacity onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}>
+                        <Ionicons style={IconStyles.iconLeft} name="filter-sharp" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
 
                 <ScrollView>
                     {this.state.users.map(user=>{
@@ -469,7 +488,6 @@ export default class HostSession extends Component {
                         step={1}
                         onValueChange={value => this.setState({distance: value})}
                         minimumTrackTintColor='#2decb4'
-
                         />
                 </View>
 
@@ -482,13 +500,8 @@ export default class HostSession extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <TouchableOpacity style={LobbyStyles.filterButton} onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}>
-                        <Ionicons style={IconStyles.iconLeft} name="filter-sharp" size={24} color="black" />
-                        <Text style={InputStyles.buttonText}>Filter</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={this.changeScreens} style={LobbyStyles.startButton}>
+                <View>
+                    <TouchableOpacity onPress={this.changeScreens} style={ProfileStyles.buttons}>
                         <Ionicons style={IconStyles.iconLeft} name="play-circle-outline"/>
                         <Text style={InputStyles.buttonText}>Start</Text>
                         <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>

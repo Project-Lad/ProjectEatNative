@@ -32,6 +32,17 @@ const InputStyles = StyleSheet.create({
         fontSize:20,
         borderRadius:10
     },
+    focusZipInputStyle: {
+        width: '90%',
+        marginBottom: 15,
+        padding: Platform.OS === 'ios'?'5%':10,
+        alignSelf: "center",
+        backgroundColor:'transparent',
+        borderColor: "#f97c4d",
+        borderWidth:3,
+        fontSize:12,
+        borderRadius:25
+    },
     zipInputStyle: {
         width: '90%',
         marginBottom: 15,
@@ -127,7 +138,7 @@ const IconStyles = StyleSheet.create({
     },
     iconLeft:{
         fontSize:22,
-        color:"#e4e6e9",
+        color:"#2e344f",
         alignSelf: 'center'
     },
     closeButton:{
@@ -258,7 +269,8 @@ const LobbyStyles = StyleSheet.create({
     shareCodeText:{
         fontSize:18,
         textAlign:'center',
-        letterSpacing:5
+        letterSpacing:5,
+        color: '#2e344f'
     },
     sliderContainer:{
         flex: 1,
