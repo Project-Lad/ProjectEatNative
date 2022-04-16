@@ -13,7 +13,8 @@ import {
     Switch,
     KeyboardAvoidingView,
     Platform,
-    BackHandler
+    BackHandler,
+    LogBox
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import firebase from "../firebase";
@@ -21,8 +22,9 @@ import "firebase/firestore";
 import {InputStyles, IconStyles, LobbyStyles, CardStyle, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 let TAG = "Console: ";
-
+LogBox.ignoreLogs(['Setting a timer']);
 export default class HostSession extends Component {
+
 
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
@@ -454,7 +456,7 @@ export default class HostSession extends Component {
                         </Pressable>
                     </KeyboardAvoidingView>
                 </Modal>
-                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly'}}>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                     <TextInput
                         onChangeText={(text) => {this.setState({zip: text})}}
                         value={this.state.zip}
@@ -463,8 +465,8 @@ export default class HostSession extends Component {
                         onFocus={()=>{this.setState({isFocused:true})}}
                         onBlur={()=>{this.setState({isFocused:false})}}
                     />
-                    <TouchableOpacity onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}>
-                        <Ionicons style={IconStyles.iconLeft} name="filter-sharp" size={24} color="black" />
+                    <TouchableOpacity onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}} style={{ alignSelf:'flex-start'}}>
+                        <Ionicons  name="filter-sharp" size={32 } color="#2e344f" />
                     </TouchableOpacity>
                 </View>
 
@@ -486,12 +488,14 @@ export default class HostSession extends Component {
                         minimumValue={1}
                         maximumValue={20}
                         step={1}
+                        thumbTintColor='#2e344f'
                         onValueChange={value => this.setState({distance: value})}
-                        minimumTrackTintColor='#2decb4'
+                        minimumTrackTintColor='#f97c4d'
+
                         />
                 </View>
 
-                <Text style={InputStyles.buttonText}>Share Code</Text>
+                <Text style={{fontSize:18, color:'#2e344f'}}>Share Code</Text>
 
                 <View>
                     <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
@@ -500,18 +504,17 @@ export default class HostSession extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <View>
-                    <TouchableOpacity onPress={this.changeScreens} style={ProfileStyles.buttons}>
+                <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
+                    <TouchableOpacity onPress={()=>{this.endLobby()}} style={LobbyStyles.closeButton}>
+                        <Ionicons style={IconStyles.iconLeft} name="close-circle-outline"/>
+                        <Text style={InputStyles.buttonText}> Close</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this.changeScreens} style={LobbyStyles.buttons}>
                         <Ionicons style={IconStyles.iconLeft} name="play-circle-outline"/>
                         <Text style={InputStyles.buttonText}>Start</Text>
                         <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                     </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity onPress={()=>{this.endLobby()}} style={IconStyles.closeButton}>
-                    <Ionicons style={{fontSize:16}} name="close-circle-outline"/>
-                    <Text style={{fontSize:16}}> Close Lobby</Text>
-                </TouchableOpacity>
             </View>
         )
     }

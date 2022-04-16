@@ -54,7 +54,7 @@ function AuthStack() {
             <Stack.Screen
                 name="HostSession"
                 component={HostSession}
-                options={{ title: 'Lobby', headerLeft:null}}
+                options={{ headerShown:true,title: 'Lobby', headerLeft:null}}
             />
             <Stack.Screen
                 name="Guest Session"
