@@ -421,7 +421,7 @@ const Cards = (props) => {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
                     data = []
-                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs})
+                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs, isHost: props.isHost})
                     console.log("Majority Rule")
                 }
             })

@@ -205,30 +205,43 @@ const Decision = ({route}) => {
     function deleteDocument() {
         let currentSession = firebase.firestore().collection('sessions').doc(route.params.code)
 
-        currentSession.collection('matched').get().then(snapshot => {
-            snapshot.forEach(doc => {
-                currentSession.collection('matched').doc(doc.id).delete().then(() => {
-                    console.log("Deleted match restaurant number: ", doc.id)
-                }).catch((error) => {
-                    console.log("Error deleting matched restaurant: ", error)
+        if(route.params.isHost) {
+            currentSession.collection('matched').get().then(snapshot => {
+                snapshot.forEach(doc => {
+                    currentSession.collection('matched').doc(doc.id).delete().then(() => {
+                        console.log("Deleted match restaurant number: ", doc.id)
+                    }).catch((error) => {
+                        console.log("Error deleting matched restaurant: ", error)
+                    })
                 })
             })
-        })
 
-        currentSession.collection('users').get().then(snapshot => {
-            snapshot.forEach(doc => {
-                currentSession.collection('users').doc(doc.id).delete().then(() => {
-                    console.log("Deleted user: ", doc.id)
-                }).catch((error) => {
-                    console.log("Error deleting user: ", error)
+            currentSession.collection('users').get().then(snapshot => {
+                snapshot.forEach(doc => {
+                    currentSession.collection('users').doc(doc.id).delete().then(() => {
+                        console.log("Deleted user: ", doc.id)
+                    }).catch((error) => {
+                        console.log("Error deleting user: ", error)
+                    })
                 })
             })
-        })
 
-        //delete the firebase document
-        firebase.firestore().collection('sessions').doc(route.params.code).delete()
-            .then(() => {navigation.navigate('Profile')})
-            .catch((e) => console.log("Error deleting document session: ", e))
+            //delete the firebase document
+            firebase.firestore().collection('sessions').doc(route.params.code).delete()
+                .then(() => {navigation.navigate('Profile')})
+                .catch((e) => console.log("Error deleting document session: ", e))
+
+            console.log("WE ARE CURRENTLY IN THE TOP OF THE IF")
+        } else {
+            console.log("MADE IT DOWN HERE TO ELSE")
+
+            currentSession.collection('users').doc(firebase.auth().currentUser.uid).delete().then(() => {
+                console.log("Deleted user: ", firebase.auth().currentUser.uid)
+                navigation.navigate('Profile')
+            }).catch((error) => {
+                console.log("Error deleting user: ", error)
+            })
+        }
     }
 
     function callRestaurant(number) {
