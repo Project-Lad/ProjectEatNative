@@ -6,7 +6,7 @@ let ScreenWidth = Dimensions.get("window").width;
 const InputStyles = StyleSheet.create({
     container: {
         height:ScreenHeight,
-        display: "flex",
+        flex:1,
         flexDirection: "column",
         justifyContent: "center",
         padding: '10%',
