@@ -33,6 +33,7 @@ import firebase from "../firebase";
 import "firebase/firestore"
 import {CardStyle, IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
+import YelpAPI from "./YelpAPI.js";
 
 class Card extends React.Component {
     constructor(props) {
@@ -182,7 +183,7 @@ const Cards = (props) => {
     let counter = 0;
     let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users')
 
-    setData(props.restaurantData)
+    setData(YelpAPI(props.zip, props.categories, props.offset, props.distance));
 
     function setData(restaurantData) {
         try{
@@ -514,7 +515,7 @@ const Cards = (props) => {
                         renderNoMoreCards={() => {
                             let size = data.length
                             data=[]
-                            return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories}/>)
+                            return (<Cards code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories}/>)
                             }
                         }
 

@@ -1,8 +1,7 @@
 //checks for location
 import {YELP_API_KEY} from '@env'
-import Cards from "./Cards.js";
 import React, {useEffect, useState} from 'react';
-import {View, Alert, StyleSheet, BackHandler} from "react-native";
+import {Alert} from "react-native";
 import * as Location from 'expo-location';
 
 //Declares lat and long vars
@@ -45,14 +44,14 @@ let longitude;
     console.log(latitude + ", " + longitude)
 })();
 
-const Data = (props) => {
+const Data = (zip, categories, offset, distance) => {
     let [restaurantData, setRestaurantData] = useState([]);
     let apicategories = "";
     let counter = 0;
 
-    while (props.categories[counter] != null) {
+    while (categories[counter] != null) {
         //add to the api categories
-        apicategories += props.categories[counter];
+        apicategories += categories[counter];
         apicategories += ",";
         counter++;
     }
@@ -60,6 +59,7 @@ const Data = (props) => {
     apicategories = apicategories.slice(0, -1)
 
     useEffect(() => {
+        console.log(zip, categories, offset, distance);
         getData()
     }, [])
 
@@ -73,8 +73,8 @@ const Data = (props) => {
             redirect: 'follow'
         };
 
-        if (props.zip === null) {
-            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=${parseInt(props.distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
+        if (zip === null) {
+            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${offset}&radius=${parseInt(distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     //console.log("Latitude: " + latitude)
@@ -87,7 +87,7 @@ const Data = (props) => {
                 })
                 .catch(error => console.log('error', error));
         } else {
-            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&location=${props.zip}&limit=50&offset=${props.offset}&radius=${parseInt(props.distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
+            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&location=${zip}&limit=50&offset=${offset}&radius=${parseInt(distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     setRestaurantData(result.businesses);
@@ -97,16 +97,7 @@ const Data = (props) => {
         }
     }
 
-    return(
-            <View style={styles.container}>
-                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance} isHost={props.isHost} categories={props.categories}/>
-            </View>
-    )
+    return restaurantData;
 }
-const styles = StyleSheet.create({
-    container:{
-        height:'100%',
-        width:'100%',
-    },
-})
+
 export default Data;
