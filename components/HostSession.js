@@ -489,7 +489,8 @@ export default class HostSession extends Component {
                         maximumValue={20}
                         step={1}
                         onValueChange={value => this.setState({distance: value})}
-                        minimumTrackTintColor='#2decb4'
+                        minimumTrackTintColor='#2e344f'
+                        thumbTintColor='#f97c4d'
                         />
                 </View>
 
