@@ -64,26 +64,26 @@ class Card extends React.Component {
             )
         }else {
             return (
-                    <View style={CardStyle.card}>
-                        <Image source={{uri: `${this.props.imageURL}`}} style={CardStyle.cardImage}/>
-                        <View style={CardStyle.yelpInfo}>
-                            <Text style={CardStyle.cardsText}>{this.props.name}</Text>
-                            <View>
-                                <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
-                                <Text style={CardStyle.yelpText}>{this.props.address}</Text>
-                            </View>
+                <View style={CardStyle.card}>
+                    <Image source={{uri: `${this.props.imageURL}`}} style={CardStyle.cardImage}/>
+                    <View style={CardStyle.yelpInfo}>
+                        <Text style={CardStyle.cardsText}>{this.props.name}</Text>
+                        <View>
+                            <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
+                            <Text style={CardStyle.yelpText}>{this.props.address}</Text>
+                        </View>
 
-                            <View style={CardStyle.yelpReview}>
-                                <View style={{width:'90%'}}>
-                                    <Image style={CardStyle.yelpStars} source={this.props.rating} />
-                                    <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
-                                </View>
-                                <TouchableOpacity style={{width:'10%'}} onPress={() => Linking.openURL(this.props.businessURL)}>
-                                    <Image style={CardStyle.yelpImage} source={YelpBurst}/>
-                                </TouchableOpacity>
+                        <View style={CardStyle.yelpReview}>
+                            <View style={{width:'90%'}}>
+                                <Image style={CardStyle.yelpStars} source={this.props.rating} />
+                                <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
                             </View>
+                            <TouchableOpacity style={{width:'10%'}} onPress={() => Linking.openURL(this.props.businessURL)}>
+                                <Image style={CardStyle.yelpImage} source={YelpBurst}/>
+                            </TouchableOpacity>
                         </View>
                     </View>
+                </View>
             )
         }
     }
@@ -95,16 +95,16 @@ class LoadingCard extends React.Component {
     }
 
     updateLobby = () => {
-        //updates the start field in the current session to true to send everyone to the swipe feature
-        firebase.firestore().collection('sessions')
-            .doc(this.props.code).update({zip: null, start: false, distance: null})
-            .then(() => {
-                console.log("Reset lobby data.")
-            }).catch(error => {
-            console.log(`Encountered Update Error: ${error}`)
-        })
-
         if (this.props.isHost === true) {
+            //updates the start field in the current session to true to send everyone to the swipe feature
+            firebase.firestore().collection('sessions')
+                .doc(this.props.code).update({zip: null, start: false, distance: null})
+                .then(() => {
+                    console.log("Reset lobby data.")
+                }).catch(error => {
+                console.log(`Encountered Update Error: ${error}`)
+            })
+
             //if user is the host
             console.log(this.props.isHost)
             this.props.navigation.navigate('HostSession', {code: this.props.code, zip: null, distance: null})
@@ -476,55 +476,54 @@ const Cards = (props) => {
     } else {
         return (
             <View style={CardStyle.container}>
-                    <Modal
-                        style={{flex:1, justifyContent:'center'}}
-                        animationType="slide"
-                        visible={modalVisible}
-                        onRequestClose={() => {
-                            setModalVisible(!modalVisible);
-                        }}>
-                        <View style={CardStyle.modalView}>
-                            <Text style={CardStyle.modalText}>Let's Eat!</Text>
-                            <Image source={{uri: `${cardState.imageURL}`}} style={CardStyle.cardImageModal}/>
-                            <Text style={CardStyle.modalText}>The group chose {'\n' + cardState.name}</Text>
-                            <Pressable style={InputStyles.buttons}
-                                       onPress={() => {
-                                           loveIt(cardState)
-                                           setModalVisible(!modalVisible)
-                                       }}>
-                                <Ionicons style={IconStyles.iconLeft} name="heart"/>
-                                <Text style={InputStyles.buttonText}>Love It!</Text>
-                                <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
-                            </Pressable>
-                            <Pressable style={InputStyles.buttons}
-                                       onPress={() => {
-                                           hateIt(cardState)
-                                           setModalVisible(!modalVisible)
-                                       }}>
-                                <Ionicons style={IconStyles.iconLeft} name="heart-dislike"/>
-                                <Text style={InputStyles.buttonText}>Keep Swiping</Text>
-                                <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
-                            </Pressable>
-                        </View>
-                    </Modal>
-                    <SwipeCards
-                        cards={data}
-                        renderCard={(cardData) => <Card {...cardData} />}
-                        keyExtractor={(cardData) => String(cardData.id)}
-                        renderNoMoreCards={() => {
-                            let size = data.length
-                            data=[]
-                            return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories}/>)
-                            }
+                <Modal
+                    style={{flex:1, justifyContent:'center'}}
+                    animationType="slide"
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        setModalVisible(!modalVisible);
+                    }}>
+                    <View style={CardStyle.modalView}>
+                        <Text style={CardStyle.modalText}>Let's Eat!</Text>
+                        <Image source={{uri: `${cardState.imageURL}`}} style={CardStyle.cardImageModal}/>
+                        <Text style={CardStyle.modalText}>The group chose {'\n' + cardState.name}</Text>
+                        <Pressable style={InputStyles.buttons}
+                                   onPress={() => {
+                                       loveIt(cardState)
+                                       setModalVisible(!modalVisible)
+                                   }}>
+                            <Ionicons style={IconStyles.iconLeft} name="heart"/>
+                            <Text style={InputStyles.buttonText}>Love It!</Text>
+                            <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
+                        </Pressable>
+                        <Pressable style={InputStyles.buttons}
+                                   onPress={() => {
+                                       hateIt(cardState)
+                                       setModalVisible(!modalVisible)
+                                   }}>
+                            <Ionicons style={IconStyles.iconLeft} name="heart-dislike"/>
+                            <Text style={InputStyles.buttonText}>Keep Swiping</Text>
+                            <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
+                        </Pressable>
+                    </View>
+                </Modal>
+                <SwipeCards
+                    cards={data}
+                    renderCard={(cardData) => <Card {...cardData} />}
+                    keyExtractor={(cardData) => String(cardData.id)}
+                    renderNoMoreCards={() => {
+                        let size = data.length
+                        data=[]
+                        return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories}/>)
                         }
+                    }
 
-                        actions={{
-                            nope: {onAction: handleNope},
-                            yup: {onAction: handleYup}
-                        }}
-                    />
-                </View>
-
+                    actions={{
+                        nope: {onAction: handleNope},
+                        yup: {onAction: handleYup}
+                    }}
+                />
+            </View>
         )
     }
 }

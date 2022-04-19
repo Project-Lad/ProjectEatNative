@@ -112,6 +112,7 @@ export default class GuestSession extends Component {
                 if (start === false) {                        //MIGHT NOT NEED THIS IF STATEMENT
                     //if start is true on firebase, then
                     if(documentSnapshot.data().start) {
+                        this.setState({categories: []})
                         //set start to true and navigate
                         documentSnapshot.data().categories.forEach(category => {
                             this.state.categories.push(category)
