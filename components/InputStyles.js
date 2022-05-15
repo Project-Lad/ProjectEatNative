@@ -337,7 +337,7 @@ const LobbyStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding:'2%'
+        padding: Platform.OS === 'ios'?'5%':10
     },
     modalView: {
         backgroundColor: 'rgba(46, 53, 78, 0.5)',
@@ -352,8 +352,9 @@ const LobbyStyles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 20,
-        height:'60%',
-        marginTop:'15%'
+        height: Platform.OS === 'ios'?'60%':'65%',
+        marginTop:'15%',
+        justifyContent:'space-between'
     },
     zipInputStyle: {
         width: '85%',
