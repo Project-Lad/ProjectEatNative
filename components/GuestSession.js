@@ -214,11 +214,10 @@ export default class GuestSession extends Component {
                         </TouchableOpacity>
                     </View>
                     <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
-                        <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={LobbyStyles.leaveButton}>
+                        <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={LobbyStyles.closeButton}>
                             <Ionicons style={IconStyles.iconLeft}  name="close-circle-outline"/>
-                            <Text style={InputStyles.buttonText}>Leave Lobby</Text>
+                            <Text style={InputStyles.buttonText}>Leave</Text>
                         </TouchableOpacity>
-
                         {this.state.start ?
                                 <TouchableOpacity
                                     onPress={() =>
@@ -232,7 +231,7 @@ export default class GuestSession extends Component {
                                             longitude: this.state.longitude
                                         })
                                     }
-                                    style={LobbyStyles.leaveButton}
+                                    style={LobbyStyles.buttons}
                                 >
                                     <Text style={InputStyles.buttonText}>Back 2 Swiping</Text>
                                 </TouchableOpacity>

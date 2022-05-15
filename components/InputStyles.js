@@ -337,7 +337,7 @@ const LobbyStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding:5
+        padding:'2%'
     },
     modalView: {
         backgroundColor: 'rgba(46, 53, 78, 0.5)',
