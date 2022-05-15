@@ -21,11 +21,51 @@ import firebase from "../firebase";
 import "firebase/firestore";
 import {InputStyles, IconStyles, LobbyStyles, CardStyle, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from "expo-location";
 let TAG = "Console: ";
 LogBox.ignoreLogs(['Setting a timer']);
+
+//Declares lat and long vars
+let latitude;
+let longitude;
+
+(async () => {
+    let location;
+    let locationSuccess = false;
+    let count = 0;
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    console.log(status)
+
+    if (status === 'denied') {
+        Alert.alert('Please enable Location Services in your Settings');
+    } else {
+        while (!locationSuccess) {
+            try {
+                location = await Location.getCurrentPositionAsync({
+                    accuracy: Location.Accuracy.Lowest,
+                });
+                locationSuccess = true;
+            } catch (ex) {
+                //console.log(ex)
+                count++;
+                console.log(count);
+                console.log("retrying....");
+
+                if (count === 500) {
+                    Alert.alert("Location Unreachable", "Your location cannot be found.", ["Cancel", "OK"])
+                    locationSuccess = true;
+                }
+            }
+        }
+    }
+
+    latitude = location.coords.latitude;
+    longitude = location.coords.longitude;
+
+    console.log(latitude + ", " + longitude)
+})();
+
 export default class HostSession extends Component {
-
-
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     }
@@ -77,16 +117,13 @@ export default class HostSession extends Component {
 
     constructor(props) {
         super(props);
-
         let counter = 0
 
         //counter cycles until it creates a valid code
         while (counter === 0) {
-
             //updates current code state to current code
-            this.state.code = this.createCode()
-
-            counter = this.checkForDocument(this.state.code)
+            this.state.code = this.createCode();
+            counter = this.checkForDocument(this.state.code);
         }
 
         let displayName = firebase.auth().currentUser.displayName
@@ -95,7 +132,7 @@ export default class HostSession extends Component {
         firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL()
             .then((url) => {
                 //creates session using the newly generated code
-                firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false})
+                firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false, latitude: latitude, longitude: longitude})
                     .then(() => {
                         //adds the current host user to the document
                         firebase.firestore().collection('sessions').doc(this.state.code)
@@ -133,17 +170,20 @@ export default class HostSession extends Component {
 
     checkForDocument = (code) => {
         const sessionsRef = firebase.firestore().collection('sessions').doc(code)
+        let result;
 
         sessionsRef.get()
             .then((docSnapshot) => {
                 if (docSnapshot.exists) {
                     console.log('That session currently exists')
-                    return 0
+                    result = 0
                 } else {
                     console.log('That session slot is open for use')
-                    return 1
+                    result = 1
                 }
             })
+
+        return result;
     }
 
     checkForUsers = () => {
@@ -223,7 +263,7 @@ export default class HostSession extends Component {
             })
 
             //navigate to the swipe page manually
-            this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance, isHost:true, categories: this.state.categories})
+            this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance, isHost:true, categories: this.state.categories, latitude: latitude, longitude: longitude})
         }
     }
 
@@ -247,7 +287,6 @@ export default class HostSession extends Component {
     };
 
     render() {
-        //host changes distance and zipcode (possible change in future for users to change themselves)
         return (
             <View style={LobbyStyles.container}>
                 <Modal

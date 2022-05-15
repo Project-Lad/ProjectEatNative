@@ -2,48 +2,7 @@
 import {YELP_API_KEY} from '@env'
 import Cards from "./Cards.js";
 import React, {useEffect, useState} from 'react';
-import {View, Alert, StyleSheet, BackHandler} from "react-native";
-import * as Location from 'expo-location';
-
-//Declares lat and long vars
-let latitude;
-let longitude;
-
-(async () => {
-    let location;
-    let locationSuccess = false;
-    let count = 0;
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    console.log(status)
-
-    if (status === 'denied') {
-        Alert.alert('Please enable Location Services in your Settings');
-    } else {
-        while (!locationSuccess) {
-            try {
-                location = await Location.getCurrentPositionAsync({
-                    accuracy: Location.Accuracy.Lowest,
-                });
-                locationSuccess = true;
-            } catch (ex) {
-                //console.log(ex)
-                count++;
-                console.log(count);
-                console.log("retrying....");
-
-                if (count === 500) {
-                    Alert.alert("Location Unreachable", "Your location cannot be found.", ["Cancel", "OK"])
-                    locationSuccess = true;
-                }
-            }
-        }
-    }
-
-    latitude = location.coords.latitude;
-    longitude = location.coords.longitude;
-
-    console.log(latitude + ", " + longitude)
-})();
+import {View, StyleSheet} from "react-native";
 
 const Data = (props) => {
     let [restaurantData, setRestaurantData] = useState([]);
@@ -74,7 +33,7 @@ const Data = (props) => {
         };
 
         if (props.zip === null) {
-            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${props.offset}&radius=${parseInt(props.distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
+            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${props.latitude}&longitude=${props.longitude}&limit=50&offset=${props.offset}&radius=${parseInt(props.distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     //console.log("Latitude: " + latitude)
@@ -99,7 +58,7 @@ const Data = (props) => {
 
     return(
             <View style={styles.container}>
-                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={latitude} lon={longitude} offset={props.offset} distance={props.distance} isHost={props.isHost} categories={props.categories}/>
+                <Cards restaurantData={restaurantData} code={props.code} zip={props.zip} lat={props.latitude} lon={props.longitude} offset={props.offset} distance={props.distance} isHost={props.isHost} categories={props.categories}/>
             </View>
     )
 }

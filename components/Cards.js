@@ -514,7 +514,18 @@ const Cards = (props) => {
                     renderNoMoreCards={() => {
                         let size = data.length
                         data=[]
-                        return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories}/>)
+                        return (
+                            <Data
+                                code={props.code}
+                                zip={props.zip}
+                                offset={props.offset+size}
+                                distance={props.distance}
+                                isHost={props.isHost}
+                                categories={props.categories}
+                                latitude={props.lat}
+                                longitude={props.lon}
+                            />
+                        )
                         }
                     }
 
