@@ -264,8 +264,8 @@ export default class HostSession extends Component {
                                 <View style={LobbyStyles.modalSlider}>
                                     <Text>All Restaurants</Text>
                                     <Switch
-                                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                        thumbColor={this.state.isAll ? '#f5dd4b' : '#f4f3f4'}
+                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
                                         ios_backgroundColor="#3e3e3e"
                                         onValueChange={() => {
                                             this.setState({isAfrican: false, isAmerican: false, isAsian: false, isCaribbean: false, isEuropean: false,
@@ -278,8 +278,8 @@ export default class HostSession extends Component {
                                 <View style={LobbyStyles.modalSlider}>
                                     <Text>American: </Text>
                                     <Switch
-                                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                        thumbColor={this.state.isAmerican ? '#f5dd4b' : '#f4f3f4'}
+                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
                                         ios_backgroundColor="#3e3e3e"
                                         onValueChange={() => {this.setState({isAmerican: !this.state.isAmerican, isAll: false})}}
                                         value={this.state.isAmerican}
@@ -289,8 +289,8 @@ export default class HostSession extends Component {
                                 <View style={LobbyStyles.modalSlider}>
                                     <Text>African: </Text>
                                     <Switch
-                                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                        thumbColor={this.state.isAfrican ? '#f5dd4b' : '#f4f3f4'}
+                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
                                         ios_backgroundColor="#3e3e3e"
                                         onValueChange={() => {this.setState({isAfrican: !this.state.isAfrican, isAll: false})}}
                                         value={this.state.isAfrican}
@@ -300,8 +300,8 @@ export default class HostSession extends Component {
                                 <View style={LobbyStyles.modalSlider}>
                                     <Text>Italian: </Text>
                                     <Switch
-                                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                        thumbColor={this.state.isItalian ? '#f5dd4b' : '#f4f3f4'}
+                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
                                         ios_backgroundColor="#3e3e3e"
                                         onValueChange={() => {this.setState({isItalian: !this.state.isItalian, isAll: false})}}
                                         value={this.state.isItalian}
@@ -311,8 +311,8 @@ export default class HostSession extends Component {
                                 <View style={LobbyStyles.modalSlider}>
                                     <Text>Caribbean: </Text>
                                     <Switch
-                                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                        thumbColor={this.state.isCaribbean ? '#f5dd4b' : '#f4f3f4'}
+                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
                                         ios_backgroundColor="#3e3e3e"
                                         onValueChange={() => {this.setState({isCaribbean: !this.state.isCaribbean, isAll: false})}}
                                         value={this.state.isCaribbean}
@@ -323,8 +323,8 @@ export default class HostSession extends Component {
                                 <View style={LobbyStyles.modalSlider}>
                                     <Text>Asian: </Text>
                                     <Switch
-                                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                        thumbColor={this.state.isAsian ? '#f5dd4b' : '#f4f3f4'}
+                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
                                         ios_backgroundColor="#3e3e3e"
                                         onValueChange={() => {this.setState({isAsian: !this.state.isAsian, isAll: false})}}
                                         value={this.state.isAsian}
@@ -334,8 +334,8 @@ export default class HostSession extends Component {
                                 <View style={LobbyStyles.modalSlider}>
                                     <Text>European: </Text>
                                     <Switch
-                                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                        thumbColor={this.state.isEuropean ? '#f5dd4b' : '#f4f3f4'}
+                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
                                         ios_backgroundColor="#3e3e3e"
                                         onValueChange={() => {this.setState({isEuropean: !this.state.isEuropean, isAll: false})}}
                                         value={this.state.isEuropean}
@@ -345,8 +345,8 @@ export default class HostSession extends Component {
                                 <View style={LobbyStyles.modalSlider}>
                                     <Text>Mexican: </Text>
                                     <Switch
-                                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                        thumbColor={this.state.isMexican ? '#f5dd4b' : '#f4f3f4'}
+                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
                                         ios_backgroundColor="#3e3e3e"
                                         onValueChange={() => {this.setState({isMexican: !this.state.isMexican, isAll: false})}}
                                         value={this.state.isMexican}
@@ -356,8 +356,8 @@ export default class HostSession extends Component {
                                 <View style={LobbyStyles.modalSlider}>
                                     <Text>Middle Eastern: </Text>
                                     <Switch
-                                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                        thumbColor={this.state.isMiddleEast ? '#f5dd4b' : '#f4f3f4'}
+                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
                                         ios_backgroundColor="#3e3e3e"
                                         onValueChange={() => {this.setState({isMiddleEast: !this.state.isMiddleEast, isAll: false})}}
                                         value={this.state.isMiddleEast}
@@ -367,8 +367,8 @@ export default class HostSession extends Component {
                                 <View style={LobbyStyles.modalSlider}>
                                     <Text>Seafood/Sushi: </Text>
                                     <Switch
-                                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                        thumbColor={this.state.isSeafood ? '#f5dd4b' : '#f4f3f4'}
+                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
                                         ios_backgroundColor="#3e3e3e"
                                         onValueChange={() => {this.setState({isSeafood: !this.state.isSeafood, isAll: false})}}
                                         value={this.state.isSeafood}
@@ -378,8 +378,8 @@ export default class HostSession extends Component {
                                 <View style={LobbyStyles.modalSlider}>
                                     <Text>Vegan: </Text>
                                     <Switch
-                                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                        thumbColor={this.state.isVegan ? '#f5dd4b' : '#f4f3f4'}
+                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
                                         ios_backgroundColor="#3e3e3e"
                                         onValueChange={() => {this.setState({isVegan: !this.state.isVegan, isAll: false})}}
                                         value={this.state.isVegan}
@@ -460,7 +460,8 @@ export default class HostSession extends Component {
                     <TextInput
                         onChangeText={(text) => {this.setState({zip: text})}}
                         value={this.state.zip}
-                        placeholder="Enter Zipcode or Leave Blank for Current Location"
+                        placeholder="Enter Zipcode"
+                        placeholderTextColor={"#000"}
                         style={this.state.isFocused ? InputStyles.focusZipInputStyle : InputStyles.zipInputStyle}
                         onFocus={()=>{this.setState({isFocused:true})}}
                         onBlur={()=>{this.setState({isFocused:false})}}
@@ -489,7 +490,7 @@ export default class HostSession extends Component {
                         maximumValue={20}
                         step={1}
                         onValueChange={value => this.setState({distance: value})}
-                        minimumTrackTintColor='#2e344f'
+                        minimumTrackTintColor='#f97c4d'
                         thumbTintColor='#f97c4d'
                         />
                 </View>

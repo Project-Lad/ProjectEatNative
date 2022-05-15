@@ -36,18 +36,18 @@ const InputStyles = StyleSheet.create({
         width: '85%',
         marginBottom: 15,
         padding: Platform.OS === 'ios'?'5%':'2%',
-        backgroundColor:'transparent',
+        backgroundColor:'#fff',
         borderColor: "#f97c4d",
         borderWidth:2,
-        fontSize:11,
-        borderRadius:10
+        fontSize:14,
+        borderRadius:10,
     },
     zipInputStyle: {
         width: '85%',
         marginBottom: 15,
         padding:  Platform.OS === 'ios'?'5%':'2%',
         backgroundColor:'#eee',
-        fontSize:11,
+        fontSize:14,
         borderRadius:10,
         shadowColor: "#5D737E",
         shadowOffset: {
@@ -83,7 +83,7 @@ const InputStyles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 3.84,
         elevation: 5,
-        borderRadius:25
+        borderRadius:10
     },
     updateButtons:{
         backgroundColor:"#f97c4d",
@@ -316,7 +316,7 @@ const LobbyStyles = StyleSheet.create({
     buttons:{
         width:'65%',
         height:'100%',
-        backgroundColor:"#2e344f",
+        backgroundColor:"#2E354E",
         padding: 15,
         display: 'flex',
         flexDirection: 'row',
@@ -336,10 +336,11 @@ const LobbyStyles = StyleSheet.create({
     modalSlider: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        padding:5
     },
     modalView: {
-        backgroundColor: '#5D737E',
+        backgroundColor: 'rgba(46, 53, 78, 0.5)',
         borderRadius: 20,
         padding: 10,
         margin:10,
@@ -350,21 +351,23 @@ const LobbyStyles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 20
+        elevation: 20,
+        height:'60%',
+        marginTop:'15%'
     },
     zipInputStyle: {
         width: '85%',
         marginBottom: 15,
         padding:  Platform.OS === 'ios'?'5%':10,
         alignSelf: "center",
-        borderColor: "#eee",
+        borderColor: "#f1f1f1",
         backgroundColor: 'white',
         borderBottomWidth: 3,
         borderRightWidth:3,
         borderTopWidth:3,
         borderLeftWidth:3,
-        fontSize:12,
-        borderRadius:25
+        fontSize:18,
+        borderRadius:10
     },
     modalLobby: {
         backgroundColor: '#5D737E',
