@@ -189,7 +189,7 @@ const ProfileStyles = StyleSheet.create({
         width:'60%',
         marginTop:'5%',
         padding:'4%',
-        borderRadius:25,
+        borderRadius:15,
         borderColor:"#f97c4d",
         borderWidth: 1.5
     },
