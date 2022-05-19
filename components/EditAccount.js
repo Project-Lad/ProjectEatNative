@@ -9,7 +9,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     BackHandler,
-    LogBox
+    LogBox, Linking
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -91,24 +91,61 @@ export default function EditAccount(){
         setIsFocused(false)
     }
     return(
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
-            <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
-                <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
-                    <Image source={{ uri: newProfilePicture.photoURL }} style={{width:150, height:150, borderRadius:250}} />
-                    <Ionicons style={IconStyles.addProfilePic} name="camera-outline"/>
+        <View  style={{
+            flex:1,
+            flexDirection: "column",
+            justifyContent: "center",
+            backgroundColor: '#fff'
+        }}>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{
+                flex:.5,
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: '10%',
+                backgroundColor: '#fff'
+            }}>
+                <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
+                    <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
+                        <Image source={{ uri: newProfilePicture.photoURL }} style={{width:150, height:150, borderRadius:250}} />
+                        <Ionicons style={IconStyles.addProfilePic} name="camera-outline"/>
+                    </TouchableOpacity>
+                </View>
+                <TextInput
+                    style={isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
+                    onFocus={() => handleInputFocus(true)}
+                    onBlur={() => handleInputBlur(false)}
+                    value={newProfileUsername.displayName}
+                    onChangeText={(text)=>setNewProfileUsername({displayName:text})}
+                />
+                <TouchableOpacity style={InputStyles.updateButtons} onPress={userName}>
+                    <Text style={{color:'#e4e6e9', fontSize:20}}>Update</Text>
+                    <Ionicons style={IconStyles.editArrowRight} name="chevron-forward-outline"/>
                 </TouchableOpacity>
+            </KeyboardAvoidingView>
+            <View style={{
+                backgroundColor:'#fff',
+                width:'100%',
+                flex:.5,
+                flexDirection: "column",
+                justifyContent: "flex-start",
+                marginTop:'10%'
+            }}>
+                <View style={{backgroundColor:'#2e344f', padding:'4%'}}>
+                    <Text style={{fontSize:18, color:'#e4e6e9'}}>Documents</Text>
+                </View>
+                <View style={{
+                    flexDirection:"column",
+                    justifyContent:"space-between",
+                    paddingLeft:'4%'
+                }}>
+                    <TouchableOpacity onPress={() => Linking.openURL('https://out2eat.app')}>
+                        <Text style={{fontSize:18, paddingTop:'4%'}}>Privacy Policy <Ionicons style={{fontSize:16, alignItems:'center'}} name="chevron-forward-outline"/></Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => Linking.openURL('https://out2eat.app')}>
+                        <Text style={{fontSize:18, paddingTop:'4%'}}>Terms of Service <Ionicons style={{fontSize:16}} name="chevron-forward-outline"/></Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-            <TextInput
-                style={isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
-                onFocus={() => handleInputFocus(true)}
-                onBlur={() => handleInputBlur(false)}
-                value={newProfileUsername.displayName}
-                onChangeText={(text)=>setNewProfileUsername({displayName:text})}
-            />
-            <TouchableOpacity style={InputStyles.updateButtons} onPress={userName}>
-                <Text style={{color:'#e4e6e9', fontSize:20}}>Update</Text>
-                <Ionicons style={IconStyles.editArrowRight} name="chevron-forward-outline"/>
-            </TouchableOpacity>
-        </KeyboardAvoidingView>
+        </View>
     )
 }
