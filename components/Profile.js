@@ -51,7 +51,7 @@ export default function Dashboard(){
             </View>
 
             {/*Button View*/}
-            <View>
+            <View style={{flexDirection:"column", justifyContent:"space-between", width:"100%"}}>
                     <TouchableOpacity onPress={() => navigation.navigate('HostSession')} style = {ProfileStyles.buttons}>
                         <Ionicons style={IconStyles.iconLeft} name="fast-food-outline"/>
                         <Text style={InputStyles.buttonText}>Create Lobby</Text>

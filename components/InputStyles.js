@@ -102,7 +102,7 @@ const InputStyles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 3.84,
         elevation: 5,
-        borderRadius:25
+        borderRadius:10
     },
     buttonText:{
         fontSize: 20,
@@ -136,7 +136,7 @@ const IconStyles = StyleSheet.create({
     editArrowRight:{
         fontSize:20,
         alignSelf: 'center',
-        color:"#000"
+        color:"#e4e6e9"
     },
     iconLeft:{
         fontSize:22,
@@ -209,7 +209,7 @@ const ProfileStyles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 2,
         elevation: 10,
-        borderRadius:25,
+        borderRadius:10,
         marginTop:'5%'
     },
 })
