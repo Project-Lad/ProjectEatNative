@@ -340,7 +340,7 @@ const LobbyStyles = StyleSheet.create({
         padding: Platform.OS === 'ios'?'5%':'2%'
     },
     modalView: {
-        backgroundColor: 'rgba(46, 53, 78, 0.5)',
+        backgroundColor: 'rgba(46, 53, 78,.95)',
         borderRadius: 20,
         padding: 10,
         margin:10,
@@ -352,7 +352,7 @@ const LobbyStyles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 20,
-        height: Platform.OS === 'ios'?'60%':'65%',
+        height: Platform.OS === 'ios'?'65%':'65%',
         marginTop:'15%',
         justifyContent:'space-between'
     },
@@ -386,25 +386,19 @@ const LobbyStyles = StyleSheet.create({
         flex:1, justifyContent:'center'
     },
     filterButton: {
-        backgroundColor:"#2decb4",
-        padding: 15,
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent:'space-between',
-        marginBottom:10,
-        shadowColor: "#5D737E",
+        backgroundColor:"#f97c4d",
+        padding: '4%',
         shadowOffset: {
             width: 0,
             height: 2,
         },
         shadowOpacity: 0.5,
-        shadowRadius: 3.84,
-        elevation: 5,
-        borderBottomLeftRadius:25,
-        borderTopLeftRadius:25,
-        width: '30%'
+        shadowRadius: 2,
+        elevation: 10,
+        borderRadius:10,
+        marginBottom:'3%'
     },
-    startButton: {
+/*    startButton: {
         backgroundColor:"#2decb4",
         padding: 15,
         display: 'flex',
@@ -423,7 +417,7 @@ const LobbyStyles = StyleSheet.create({
         borderTopRightRadius:25,
         borderLeftWidth: 1,
         width: '70%'
-    }
+    }*/
 })
 const CardStyle = StyleSheet.create({
     container:{

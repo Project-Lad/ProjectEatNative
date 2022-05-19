@@ -292,6 +292,7 @@ export default class HostSession extends Component {
                 <Modal
                     animationType="slide"
                     visible={this.state.modalVisible}
+                    transparent={true}
                     onRequestClose={() => {
                         this.setState({modalVisible: !this.state.modalVisible});
                     }}>
@@ -301,7 +302,7 @@ export default class HostSession extends Component {
                         <View style={{flexDirection: 'row'}}>
                             <View style={{flexDirection: 'column', width: '50%'}}>
                                 <View style={LobbyStyles.modalSlider}>
-                                    <Text>All Restaurants</Text>
+                                    <Text style={{color:'#eee'}}>All Restaurants</Text>
                                     <Switch
                                         trackColor={{ false: '#767577', true: '#f97c4d' }}
                                         thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
@@ -315,7 +316,7 @@ export default class HostSession extends Component {
                                 </View>
 
                                 <View style={LobbyStyles.modalSlider}>
-                                    <Text>American: </Text>
+                                    <Text style={{color:'#eee'}}>American: </Text>
                                     <Switch
                                         trackColor={{ false: '#767577', true: '#f97c4d' }}
                                         thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
@@ -326,7 +327,7 @@ export default class HostSession extends Component {
                                 </View>
 
                                 <View style={LobbyStyles.modalSlider}>
-                                    <Text>African: </Text>
+                                    <Text style={{color:'#eee'}}>African: </Text>
                                     <Switch
                                         trackColor={{ false: '#767577', true: '#f97c4d' }}
                                         thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
@@ -337,7 +338,7 @@ export default class HostSession extends Component {
                                 </View>
 
                                 <View style={LobbyStyles.modalSlider}>
-                                    <Text>Italian: </Text>
+                                    <Text style={{color:'#eee'}}>Italian: </Text>
                                     <Switch
                                         trackColor={{ false: '#767577', true: '#f97c4d' }}
                                         thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
@@ -348,7 +349,7 @@ export default class HostSession extends Component {
                                 </View>
 
                                 <View style={LobbyStyles.modalSlider}>
-                                    <Text>Caribbean: </Text>
+                                    <Text style={{color:'#eee'}}>Caribbean: </Text>
                                     <Switch
                                         trackColor={{ false: '#767577', true: '#f97c4d' }}
                                         thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
@@ -360,7 +361,7 @@ export default class HostSession extends Component {
                             </View>
                             <View style={{flexDirection: 'column', width: '50%'}}>
                                 <View style={LobbyStyles.modalSlider}>
-                                    <Text>Asian: </Text>
+                                    <Text style={{color:'#eee'}}>Asian: </Text>
                                     <Switch
                                         trackColor={{ false: '#767577', true: '#f97c4d' }}
                                         thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
@@ -371,7 +372,7 @@ export default class HostSession extends Component {
                                 </View>
 
                                 <View style={LobbyStyles.modalSlider}>
-                                    <Text>European: </Text>
+                                    <Text style={{color:'#eee'}}>European: </Text>
                                     <Switch
                                         trackColor={{ false: '#767577', true: '#f97c4d' }}
                                         thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
@@ -382,7 +383,7 @@ export default class HostSession extends Component {
                                 </View>
 
                                 <View style={LobbyStyles.modalSlider}>
-                                    <Text>Mexican: </Text>
+                                    <Text style={{color:'#eee'}}>Mexican: </Text>
                                     <Switch
                                         trackColor={{ false: '#767577', true: '#f97c4d' }}
                                         thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
@@ -393,7 +394,7 @@ export default class HostSession extends Component {
                                 </View>
 
                                 <View style={LobbyStyles.modalSlider}>
-                                    <Text>Middle Eastern: </Text>
+                                    <Text style={{color:'#eee'}}>Middle Eastern: </Text>
                                     <Switch
                                         trackColor={{ false: '#767577', true: '#f97c4d' }}
                                         thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
@@ -404,7 +405,7 @@ export default class HostSession extends Component {
                                 </View>
 
                                 <View style={LobbyStyles.modalSlider}>
-                                    <Text>Seafood/Sushi: </Text>
+                                    <Text style={{color:'#eee'}}>Seafood/Sushi: </Text>
                                     <Switch
                                         trackColor={{ false: '#767577', true: '#f97c4d' }}
                                         thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
@@ -415,7 +416,7 @@ export default class HostSession extends Component {
                                 </View>
 
                                 <View style={LobbyStyles.modalSlider}>
-                                    <Text>Vegan: </Text>
+                                    <Text style={{color:'#eee'}}>Vegan: </Text>
                                     <Switch
                                         trackColor={{ false: '#767577', true: '#f97c4d' }}
                                         thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
@@ -427,7 +428,7 @@ export default class HostSession extends Component {
                             </View>
                         </View>
 
-                        <Pressable style={InputStyles.buttons}
+                        <Pressable style={LobbyStyles.filterButton}
                                    onPress={() => {
                                        if(this.state.isAll === true) {
                                            this.state.categories = ['all']
@@ -486,8 +487,7 @@ export default class HostSession extends Component {
                                    }}>
                             <Text style={InputStyles.buttonText}>Apply Filters</Text>
                         </Pressable>
-
-                        <Pressable style={InputStyles.buttons}
+                        <Pressable style={LobbyStyles.filterButton}
                                    onPress={() => {
                                        this.setState({modalVisible: !this.state.modalVisible})
                                    }}>
