@@ -21,10 +21,10 @@ export default function Connect() {
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
-        <View style={InputStyles.container}>
             <TextInput
                 style={isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                 placeholder="Enter Lobby Code"
+                placeholderTextColor={"#000"}
                 value={inputCode}
                 onChangeText={setCode}
                 onFocus={() => setFocus(true)}
@@ -38,7 +38,6 @@ export default function Connect() {
                 <Text style={InputStyles.buttonText}>Connect to Lobby</Text>
                 <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
             </TouchableOpacity>
-        </View>
         </KeyboardAvoidingView>
     );
 }
