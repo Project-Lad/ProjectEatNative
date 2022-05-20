@@ -6,7 +6,7 @@ let ScreenWidth = Dimensions.get("window").width;
 const InputStyles = StyleSheet.create({
     container: {
         height:ScreenHeight,
-        display: "flex",
+        flex:1,
         flexDirection: "column",
         justifyContent: "center",
         padding: '10%',
@@ -33,28 +33,30 @@ const InputStyles = StyleSheet.create({
         borderRadius:10
     },
     focusZipInputStyle: {
-        width: '90%',
+        width: '85%',
         marginBottom: 15,
-        padding: Platform.OS === 'ios'?'5%':10,
-        alignSelf: "center",
-        backgroundColor:'transparent',
+        padding: Platform.OS === 'ios'?'5%':'2%',
+        backgroundColor:'#fff',
         borderColor: "#f97c4d",
-        borderWidth:3,
-        fontSize:12,
-        borderRadius:25
+        borderWidth:2,
+        fontSize:14,
+        borderRadius:10,
     },
     zipInputStyle: {
-        width: '90%',
+        width: '85%',
         marginBottom: 15,
-        padding:  Platform.OS === 'ios'?'5%':10,
-        alignSelf: "center",
-        borderColor: "#5D737E",
-        borderBottomWidth: 3,
-        borderRightWidth:3,
-        borderTopWidth:3,
-        borderLeftWidth:3,
-        fontSize:12,
-        borderRadius:25
+        padding:  Platform.OS === 'ios'?'5%':'2%',
+        backgroundColor:'#eee',
+        fontSize:14,
+        borderRadius:10,
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     loginText: {
         color: '#000',
@@ -81,7 +83,7 @@ const InputStyles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 3.84,
         elevation: 5,
-        borderRadius:25
+        borderRadius:10
     },
     updateButtons:{
         backgroundColor:"#f97c4d",
@@ -100,7 +102,7 @@ const InputStyles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 3.84,
         elevation: 5,
-        borderRadius:25
+        borderRadius:10
     },
     buttonText:{
         fontSize: 20,
@@ -134,18 +136,12 @@ const IconStyles = StyleSheet.create({
     editArrowRight:{
         fontSize:20,
         alignSelf: 'center',
-        color:"#000"
+        color:"#e4e6e9"
     },
     iconLeft:{
         fontSize:22,
-        color:"#2e344f",
+        color:"#e4e6e9",
         alignSelf: 'center'
-    },
-    closeButton:{
-        padding: "2%",
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems:'center'
     },
     iconShare:{
         fontSize:22,
@@ -193,7 +189,7 @@ const ProfileStyles = StyleSheet.create({
         width:'60%',
         marginTop:'5%',
         padding:'4%',
-        borderRadius:25,
+        borderRadius:15,
         borderColor:"#f97c4d",
         borderWidth: 1.5
     },
@@ -213,7 +209,7 @@ const ProfileStyles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 2,
         elevation: 10,
-        borderRadius:25,
+        borderRadius:10,
         marginTop:'5%'
     },
 })
@@ -279,24 +275,72 @@ const LobbyStyles = StyleSheet.create({
         alignItems: "stretch",
         justifyContent: "center",
     },
-    sliderTrack:{
-        height: 25,
-        borderRadius: 25,
-        backgroundColor:'#5D737E'
+    closeButton:{
+        width:'30%',
+        height:'100%',
+        padding: 10,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems:'center',
+        alignSelf:'center',
+        backgroundColor:"#f97c4d",
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderRadius:10
     },
-    sliderThumb:{
-        height: 25,
-        width:25,
-        borderRadius: 20,
-        backgroundColor:'#2decb4'
+    leaveButton:{
+        width:'45%',
+        height:'100%',
+        padding: 10,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems:'center',
+        alignSelf:'center',
+        backgroundColor:"#f97c4d",
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderRadius:10
+    },
+    buttons:{
+        width:'65%',
+        height:'100%',
+        backgroundColor:"#2E354E",
+        padding: 15,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent:'space-between',
+        alignItems:'center',
+        alignSelf:'center',
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderRadius:10
     },
     modalSlider: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        padding: Platform.OS === 'ios'?'5%':'2%'
     },
     modalView: {
-        backgroundColor: '#5D737E',
+        backgroundColor: 'rgba(46, 53, 78,.95)',
         borderRadius: 20,
         padding: 10,
         margin:10,
@@ -307,21 +351,24 @@ const LobbyStyles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 20
+        elevation: 20,
+        height: Platform.OS === 'ios'?'65%':'65%',
+        marginTop:'15%',
+        justifyContent:'space-between'
     },
     zipInputStyle: {
-        width: '90%',
+        width: '85%',
         marginBottom: 15,
         padding:  Platform.OS === 'ios'?'5%':10,
         alignSelf: "center",
-        borderColor: "#eee",
+        borderColor: "#f1f1f1",
         backgroundColor: 'white',
         borderBottomWidth: 3,
         borderRightWidth:3,
         borderTopWidth:3,
         borderLeftWidth:3,
-        fontSize:12,
-        borderRadius:25
+        fontSize:18,
+        borderRadius:10
     },
     modalLobby: {
         backgroundColor: '#5D737E',
@@ -339,25 +386,19 @@ const LobbyStyles = StyleSheet.create({
         flex:1, justifyContent:'center'
     },
     filterButton: {
-        backgroundColor:"#2decb4",
-        padding: 15,
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent:'space-between',
-        marginBottom:10,
-        shadowColor: "#5D737E",
+        backgroundColor:"#f97c4d",
+        padding: '4%',
         shadowOffset: {
             width: 0,
             height: 2,
         },
         shadowOpacity: 0.5,
-        shadowRadius: 3.84,
-        elevation: 5,
-        borderBottomLeftRadius:25,
-        borderTopLeftRadius:25,
-        width: '30%'
+        shadowRadius: 2,
+        elevation: 10,
+        borderRadius:10,
+        marginBottom:'3%'
     },
-    startButton: {
+/*    startButton: {
         backgroundColor:"#2decb4",
         padding: 15,
         display: 'flex',
@@ -376,7 +417,7 @@ const LobbyStyles = StyleSheet.create({
         borderTopRightRadius:25,
         borderLeftWidth: 1,
         width: '70%'
-    }
+    }*/
 })
 const CardStyle = StyleSheet.create({
     container:{

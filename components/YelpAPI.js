@@ -1,7 +1,7 @@
 //checks for location
 import {YELP_API_KEY} from '@env'
 import React, {useEffect, useState} from 'react';
-import {Alert} from "react-native";
+import {Alert, View, Stylesheet} from "react-native";
 import * as Location from 'expo-location';
 
 //Declares lat and long vars
@@ -43,6 +43,7 @@ let longitude;
 
     console.log(latitude + ", " + longitude)
 })();
+import {View, StyleSheet} from "react-native";
 
 const Data = (zip, categories, offset, distance) => {
     let [restaurantData, setRestaurantData] = useState([]);

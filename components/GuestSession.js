@@ -5,18 +5,15 @@ import {
     Image,
     Alert,
     TouchableOpacity,
-    Platform,
-    ToastAndroid, ScrollView, Share, BackHandler
+    LogBox, ScrollView, Share, BackHandler
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {IconStyles, InputStyles, LobbyStyles} from "./InputStyles";
-import Clipboard from "expo-clipboard";
 import {Ionicons} from "@expo/vector-icons";
 let TAG = "Console: ";
-
+LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
-
     state = {
         isLoading: true,
         users: [],
@@ -24,7 +21,12 @@ export default class GuestSession extends Component {
         photoURL: "",
         photoFound: 0,
         categories: [],
-        isFocused:false
+        isFocused:false,
+        start: false,
+        zip: "0",
+        distance: 1,
+        latitude: 0,
+        longitude: 0
     }
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
@@ -37,7 +39,7 @@ export default class GuestSession extends Component {
     handleBackButton() {
         return true;
     }
-     constructor(props) {
+    constructor(props) {
          super(props);
 
          let displayName = firebase.auth().currentUser.displayName
@@ -101,7 +103,6 @@ export default class GuestSession extends Component {
     }
 
     checkForSessionStart = () => {
-        let start = false
         //document reference to current session created
         const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
 
@@ -110,15 +111,31 @@ export default class GuestSession extends Component {
             //if document exists
             if (documentSnapshot.exists) {
                 //and lobby has not started
-                if (start === false) {                        //MIGHT NOT NEED THIS IF STATEMENT
-                    //if start is true on firebase, then
-                    if(documentSnapshot.data().start) {
-                        //set start to true and navigate
-                        documentSnapshot.data().categories.forEach(category => {
-                            this.state.categories.push(category)
-                        })
-                        this.props.navigation.navigate('Swipe Feature',{code:this.state.code, zip:documentSnapshot.data().zip, distance: documentSnapshot.data().distance, isHost:false, categories: this.state.categories})
-                    }
+                if(documentSnapshot.data().start) {
+                    this.setState({
+                        categories: [],
+                        start: true,
+                        distance: documentSnapshot.data().distance,
+                        zip: documentSnapshot.data().zip,
+                        latitude: documentSnapshot.data().latitude,
+                        longitude: documentSnapshot.data().longitude
+                    })
+                    //set start to true and navigate
+                    documentSnapshot.data().categories.forEach(category => {
+                        this.state.categories.push(category)
+                    })
+
+                    this.props.navigation.navigate('Swipe Feature',{
+                        code:this.state.code,
+                        zip:this.state.zip,
+                        distance: this.state.distance,
+                        isHost:false,
+                        categories: this.state.categories,
+                        latitude: this.state.latitude,
+                        longitude: this.state.longitude
+                    })
+                } else {
+                    this.setState({start: false})
                 }
             } else {
                 //if lobby no longer exists, display lobby closed alert and return to main page
@@ -173,6 +190,7 @@ export default class GuestSession extends Component {
             alert(error.message);
         }
     };
+
     render() {
         return (
             <View style={LobbyStyles.container}>
@@ -187,7 +205,7 @@ export default class GuestSession extends Component {
                     })}
                 </ScrollView>
                 <View>
-                    <Text style={InputStyles.buttonText}>Share Code</Text>
+                    <Text style={{fontSize:18, color:'#2e344f'}}>Share Code</Text>
 
                     <View>
                         <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
@@ -195,11 +213,32 @@ export default class GuestSession extends Component {
                             <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
                         </TouchableOpacity>
                     </View>
-
-                    <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={IconStyles.closeButton}>
-                        <Ionicons style={{fontSize:16}} name="close-circle-outline"/>
-                        <Text style={{fontSize:16}}>Leave Lobby</Text>
-                    </TouchableOpacity>
+                    <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
+                        <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={LobbyStyles.closeButton}>
+                            <Ionicons style={IconStyles.iconLeft}  name="close-circle-outline"/>
+                            <Text style={InputStyles.buttonText}>Leave</Text>
+                        </TouchableOpacity>
+                        {this.state.start ?
+                                <TouchableOpacity
+                                    onPress={() =>
+                                        this.props.navigation.navigate('Swipe Feature',{
+                                            code:this.state.code,
+                                            zip:this.state.zip,
+                                            distance: this.state.distance,
+                                            isHost:false,
+                                            categories: this.state.categories,
+                                            latitude: this.state.latitude,
+                                            longitude: this.state.longitude
+                                        })
+                                    }
+                                    style={LobbyStyles.buttons}
+                                >
+                                    <Text style={InputStyles.buttonText}>Back 2 Swiping</Text>
+                                </TouchableOpacity>
+                            :
+                                null
+                        }
+                    </View>
                 </View>
             </View>
         );

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity} from "react-native";
+import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity,LogBox} from "react-native";
 import {useNavigation} from '@react-navigation/native'
 import burgerGIF from '../assets/burger.gif';
 import burgerJPG from '../assets/burger.jpg';
@@ -33,6 +33,7 @@ import firebase from "../firebase";
 import "firebase/firestore"
 import {CardStyle, IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
+LogBox.ignoreLogs(['Setting a timer']);
 import YelpAPI from "./YelpAPI.js";
 
 class Card extends React.Component {
@@ -65,26 +66,26 @@ class Card extends React.Component {
             )
         }else {
             return (
-                    <View style={CardStyle.card}>
-                        <Image source={{uri: `${this.props.imageURL}`}} style={CardStyle.cardImage}/>
-                        <View style={CardStyle.yelpInfo}>
-                            <Text style={CardStyle.cardsText}>{this.props.name}</Text>
-                            <View>
-                                <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
-                                <Text style={CardStyle.yelpText}>{this.props.address}</Text>
-                            </View>
+                <View style={CardStyle.card}>
+                    <Image source={{uri: `${this.props.imageURL}`}} style={CardStyle.cardImage}/>
+                    <View style={CardStyle.yelpInfo}>
+                        <Text style={CardStyle.cardsText}>{this.props.name}</Text>
+                        <View>
+                            <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
+                            <Text style={CardStyle.yelpText}>{this.props.address}</Text>
+                        </View>
 
-                            <View style={CardStyle.yelpReview}>
-                                <View style={{width:'90%'}}>
-                                    <Image style={CardStyle.yelpStars} source={this.props.rating} />
-                                    <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
-                                </View>
-                                <TouchableOpacity style={{width:'10%'}} onPress={() => Linking.openURL(this.props.businessURL)}>
-                                    <Image style={CardStyle.yelpImage} source={YelpBurst}/>
-                                </TouchableOpacity>
+                        <View style={CardStyle.yelpReview}>
+                            <View style={{width:'90%'}}>
+                                <Image style={CardStyle.yelpStars} source={this.props.rating} />
+                                <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
                             </View>
+                            <TouchableOpacity style={{width:'10%'}} onPress={() => Linking.openURL(this.props.businessURL)}>
+                                <Image style={CardStyle.yelpImage} source={YelpBurst}/>
+                            </TouchableOpacity>
                         </View>
                     </View>
+                </View>
             )
         }
     }
@@ -96,16 +97,16 @@ class LoadingCard extends React.Component {
     }
 
     updateLobby = () => {
-        //updates the start field in the current session to true to send everyone to the swipe feature
-        firebase.firestore().collection('sessions')
-            .doc(this.props.code).update({zip: null, start: false, distance: null})
-            .then(() => {
-                console.log("Reset lobby data.")
-            }).catch(error => {
-            console.log(`Encountered Update Error: ${error}`)
-        })
-
         if (this.props.isHost === true) {
+            //updates the start field in the current session to true to send everyone to the swipe feature
+            firebase.firestore().collection('sessions')
+                .doc(this.props.code).update({zip: null, start: false, distance: null})
+                .then(() => {
+                    console.log("Reset lobby data.")
+                }).catch(error => {
+                console.log(`Encountered Update Error: ${error}`)
+            })
+
             //if user is the host
             console.log(this.props.isHost)
             this.props.navigation.navigate('HostSession', {code: this.props.code, zip: null, distance: null})
@@ -422,7 +423,7 @@ const Cards = (props) => {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
                     data = []
-                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs})
+                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs, isHost: props.isHost})
                     console.log("Majority Rule")
                 }
             })
@@ -515,17 +516,16 @@ const Cards = (props) => {
                         renderNoMoreCards={() => {
                             let size = data.length
                             data=[]
-                            return (<Cards code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories}/>)
+                            return (<Cards code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories} latitude={props.lat} longitude={props.lon}/>)
                             }
                         }
 
-                        actions={{
-                            nope: {onAction: handleNope},
-                            yup: {onAction: handleYup}
-                        }}
-                    />
-                </View>
-
+                    actions={{
+                        nope: {onAction: handleNope},
+                        yup: {onAction: handleYup}
+                    }}
+                />
+            </View>
         )
     }
 }

@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {Image, Text, TouchableOpacity, TouchableOpacityComponent, View} from 'react-native';
+import {Image, Text, TouchableOpacity, LogBox, View} from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {useIsFocused, useNavigation} from '@react-navigation/native'
 import {InputStyles,IconStyles,ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
-
+LogBox.ignoreLogs(['Setting a timer']);
 
 export default function Dashboard(){
     const user = firebase.auth().currentUser.uid
@@ -51,7 +51,7 @@ export default function Dashboard(){
             </View>
 
             {/*Button View*/}
-            <View>
+            <View style={{flexDirection:"column", justifyContent:"space-between", width:"100%"}}>
                     <TouchableOpacity onPress={() => navigation.navigate('HostSession')} style = {ProfileStyles.buttons}>
                         <Ionicons style={IconStyles.iconLeft} name="fast-food-outline"/>
                         <Text style={InputStyles.buttonText}>Create Lobby</Text>

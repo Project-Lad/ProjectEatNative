@@ -7,7 +7,7 @@ import {
     ActivityIndicator,
     Platform,
     Image, TouchableOpacity,
-    KeyboardAvoidingView
+    KeyboardAvoidingView, LogBox
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -16,7 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import userPhoto from '../assets/user-placeholder.png'
-
+LogBox.ignoreLogs(['Setting a timer']);
 export default function Signup(){
     const navigation = useNavigation()
     const [userDisplayName, setUserDisplayName] = useState()
