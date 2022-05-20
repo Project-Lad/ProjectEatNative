@@ -18,11 +18,13 @@ import * as ImagePicker from "expo-image-picker";
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 LogBox.ignoreLogs(['Setting a timer']);
+import * as WebBrowser from 'expo-web-browser';
 export default function EditAccount(){
     const navigation = useNavigation()
     const currentUser = firebase.auth().currentUser
     const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName})
     const [newProfilePicture, setNewProfilePicture] = useState({photoURL: currentUser.photoURL})
+    const [result, setResult] = useState(null);
 
     useEffect(() => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
@@ -83,13 +85,22 @@ export default function EditAccount(){
         return ref.put(blob)
     }
     const [isFocused, setIsFocused] = useState(false)
-// handlers
+// handlers for onPress TextInput style change
     const handleInputFocus = () => {
         setIsFocused(true)
     }
     const handleInputBlur = () => {
         setIsFocused(false)
     }
+
+    const handlePrivacyPolicy = async () => {
+        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/privacy-policy');
+        setResult(result);
+    };
+    const handleToS = async () => {
+        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
+        setResult(result);
+    };
     return(
         <View  style={{
             flex:1,
@@ -138,10 +149,10 @@ export default function EditAccount(){
                     justifyContent:"space-between",
                     paddingLeft:'4%'
                 }}>
-                    <TouchableOpacity onPress={() => Linking.openURL('https://out2eat.app')}>
+                    <TouchableOpacity onPress={handlePrivacyPolicy}>
                         <Text style={{fontSize:18, paddingTop:'4%'}}>Privacy Policy <Ionicons style={{fontSize:16, alignItems:'center'}} name="chevron-forward-outline"/></Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => Linking.openURL('https://out2eat.app')}>
+                    <TouchableOpacity onPress={handleToS}>
                         <Text style={{fontSize:18, paddingTop:'4%'}}>Terms of Service <Ionicons style={{fontSize:16}} name="chevron-forward-outline"/></Text>
                     </TouchableOpacity>
                 </View>
