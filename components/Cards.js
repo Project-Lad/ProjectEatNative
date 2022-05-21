@@ -34,6 +34,7 @@ import "firebase/firestore"
 import {CardStyle, IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 LogBox.ignoreLogs(['Setting a timer']);
+
 class Card extends React.Component {
     constructor(props) {
         super(props);
@@ -180,6 +181,7 @@ const Cards = (props) => {
     let address = [];
     let name = [];
     let counter = 0;
+    let swipeCardRef = React.createRef();
     let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users')
 
     setData(props.restaurantData)
@@ -315,9 +317,6 @@ const Cards = (props) => {
         let match = false
         let counter = 1
         let restaurantID = card.id
-
-        console.log(props.code)
-
 
         usersRef.doc(firebase.auth().currentUser.uid).set({
             [resCounter]: restaurantID
@@ -508,6 +507,7 @@ const Cards = (props) => {
                     </View>
                 </Modal>
                 <SwipeCards
+                    ref={swipeCardRef}
                     cards={data}
                     renderCard={(cardData) => <Card {...cardData} />}
                     keyExtractor={(cardData) => String(cardData.id)}
@@ -534,6 +534,23 @@ const Cards = (props) => {
                         yup: {onAction: handleYup}
                     }}
                 />
+
+                <TouchableOpacity style={InputStyles.updateButtons} onPress={() => {
+                    swipeCardRef.current.swipeYup()
+                    handleYup(swipeCardRef.current.state.card)
+                }}>
+                    <Text>
+                        Yep
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={InputStyles.updateButtons} onPress={() => {
+                    swipeCardRef.current.swipeNope()
+                    handleNope(swipeCardRef.current.state.card)
+                }}>
+                    <Text>
+                        Nope
+                    </Text>
+                </TouchableOpacity>
             </View>
         )
     }
