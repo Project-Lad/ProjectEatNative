@@ -540,6 +540,23 @@ const Cards = (props) => {
                         yup: {onAction: handleYup}
                     }}
                 />
+
+                <TouchableOpacity style={InputStyles.updateButtons} onPress={() => {
+                    swipeCardRef.current.swipeYup()
+                    handleYup(swipeCardRef.current.state.card)
+                }}>
+                    <Text>
+                        Yep
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={InputStyles.updateButtons} onPress={() => {
+                    swipeCardRef.current.swipeNope()
+                    handleNope(swipeCardRef.current.state.card)
+                }}>
+                    <Text>
+                        Nope
+                    </Text>
+                </TouchableOpacity>
             </View>
         )
     }
