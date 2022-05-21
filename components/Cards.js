@@ -182,6 +182,7 @@ const Cards = (props) => {
     let address = [];
     let name = [];
     let counter = 0;
+    let swipeCardRef = React.createRef();
     let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users')
 
     setData(YelpAPI(props.zip, props.categories, props.offset, props.distance));
@@ -317,9 +318,6 @@ const Cards = (props) => {
         let match = false
         let counter = 1
         let restaurantID = card.id
-
-        console.log(props.code)
-
 
         usersRef.doc(firebase.auth().currentUser.uid).set({
             [resCounter]: restaurantID
@@ -510,6 +508,7 @@ const Cards = (props) => {
                         </View>
                     </Modal>
                     <SwipeCards
+                        ref={swipeCardRef}
                         cards={data}
                         renderCard={(cardData) => <Card {...cardData} />}
                         keyExtractor={(cardData) => String(cardData.id)}
