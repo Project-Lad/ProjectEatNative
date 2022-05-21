@@ -43,7 +43,6 @@ let longitude;
 
     console.log(latitude + ", " + longitude)
 })();
-import {View, StyleSheet} from "react-native";
 
 const Data = (zip, categories, offset, distance) => {
     let [restaurantData, setRestaurantData] = useState([]);
