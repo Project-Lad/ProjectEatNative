@@ -185,7 +185,11 @@ const Cards = (props) => {
     let swipeCardRef = React.createRef();
     let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users')
 
-    setData(YelpAPI(props.zip, props.categories, props.offset, props.distance));
+    props.unsubs.forEach(unsub => {
+        unsubs.push(unsub);
+    })
+
+    setData(YelpAPI(props.zip, props.categories, props.offset, props.distance, props.latitude, props.longitude));
 
     function setData(restaurantData) {
         try{
@@ -294,6 +298,7 @@ const Cards = (props) => {
                             break;
                     }
                 }
+
                 data.push({
                     id: id,
                     name: name,
@@ -515,7 +520,18 @@ const Cards = (props) => {
                         renderNoMoreCards={() => {
                             let size = data.length
                             data=[]
-                            return (<Cards code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories} latitude={props.lat} longitude={props.lon}/>)
+                            return (
+                                <Cards
+                                    code={props.code}
+                                    zip={props.zip}
+                                    offset={props.offset+size}
+                                    distance={props.distance}
+                                    isHost={props.isHost}
+                                    categories={props.categories}
+                                    latitude={props.lat}
+                                    longitude={props.lon}
+                                    unsubs={unsubs}
+                                />)
                             }
                         }
 

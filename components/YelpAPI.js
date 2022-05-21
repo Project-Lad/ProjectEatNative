@@ -1,50 +1,8 @@
-//checks for location
+
 import {YELP_API_KEY} from '@env'
 import React, {useEffect, useState} from 'react';
-import {Alert, View, Stylesheet} from "react-native";
-import * as Location from 'expo-location';
 
-//Declares lat and long vars
-let latitude;
-let longitude;
-
-(async () => {
-    let location;
-    let locationSuccess = false;
-    let count = 0;
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    console.log(status)
-
-    if (status === 'denied') {
-        Alert.alert('Please enable Location Services in your Settings');
-    } else {
-        while (!locationSuccess) {
-            try {
-                location = await Location.getCurrentPositionAsync({
-                    accuracy: Location.Accuracy.Lowest,
-                });
-                locationSuccess = true;
-            } catch (ex) {
-                //console.log(ex)
-                count++;
-                console.log(count);
-                console.log("retrying....");
-
-                if (count === 500) {
-                    Alert.alert("Location Unreachable", "Your location cannot be found.", ["Cancel", "OK"])
-                    locationSuccess = true;
-                }
-            }
-        }
-    }
-
-    latitude = location.coords.latitude;
-    longitude = location.coords.longitude;
-
-    console.log(latitude + ", " + longitude)
-})();
-
-const Data = (zip, categories, offset, distance) => {
+const Data = (zip, categories, offset, distance, latitude, longitude) => {
     let [restaurantData, setRestaurantData] = useState([]);
     let apicategories = "";
     let counter = 0;
