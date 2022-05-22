@@ -17,7 +17,7 @@ const Data = (zip, categories, offset, distance, latitude, longitude) => {
     apicategories = apicategories.slice(0, -1)
 
     useEffect(() => {
-        console.log(zip, categories, offset, distance);
+        console.log(zip, latitude, longitude, categories, offset, distance);
         getData()
     }, [])
 
@@ -32,7 +32,7 @@ const Data = (zip, categories, offset, distance, latitude, longitude) => {
         };
 
         if (zip === null) {
-            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${offset}&radius=${parseInt(distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
+            fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=25&offset=${offset}&radius=${parseInt(distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     //console.log("Latitude: " + latitude)

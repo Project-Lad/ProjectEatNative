@@ -192,7 +192,7 @@ const Cards = (props) => {
     setData(YelpAPI(props.zip, props.categories, props.offset, props.distance, props.latitude, props.longitude));
 
     function setData(restaurantData) {
-        try{
+        try {
             for (let i = 0; i < restaurantData.length; i++) {
                 const current = restaurantData[i];
 
@@ -200,14 +200,14 @@ const Cards = (props) => {
                 name = current.name;
                 const price_range = current.price;
                 address = current.location.address1;
-                if(current.location.address2 === '' || current.location.address2 === null) {
+                if (current.location.address2 === '' || current.location.address2 === null) {
                     //console.log("Address 2: Null")
                 } else {
                     address += ', ';
                     address += current.location.address2;
                 }
 
-                if(current.location.address3 === '' || current.location.address3 === null) {
+                if (current.location.address3 === '' || current.location.address3 === null) {
                     //console.log("Address 3: Null")
                 } else {
                     address += ', ';
@@ -222,7 +222,7 @@ const Cards = (props) => {
                 const businessURL = current.url;
                 let imageURL;
 
-                if(current.image_url === '') {
+                if (current.image_url === '') {
                     imageURL = burgerJPG;
                 } else {
                     imageURL = current.image_url;
@@ -231,8 +231,8 @@ const Cards = (props) => {
                 const distance = current.distance;
                 const review_count = current.review_count;
 
-                if(Platform.OS === 'android') {
-                    switch(rating) {
+                if (Platform.OS === 'android') {
+                    switch (rating) {
                         case 0:
                             rating = androidStar0
                             break;
@@ -265,7 +265,7 @@ const Cards = (props) => {
                             break;
                     }
                 } else {
-                    switch(rating) {
+                    switch (rating) {
                         case 0:
                             rating = iosStar0
                             break;
@@ -374,12 +374,12 @@ const Cards = (props) => {
         return true;
     }
 
-    function handleNope (card) {
+    function handleNope(card) {
         console.log(`Nope for ${card.id}`)
         return true;
     }
 
-    function loveIt () {
+    function loveIt() {
         const increment = 1;
         let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
             .collection('matched').doc(cardState.id)
@@ -392,7 +392,7 @@ const Cards = (props) => {
         //retrieve document
         matchedRef.get().then((doc) => {
             //if the document data isn't null
-            if(doc.data() === undefined) {
+            if (doc.data() === undefined) {
                 //console log that the document doesn't exist
                 console.log("Document Doesn't Exist, Creating Document")
                 //set the document counter to 1 for this user
@@ -408,7 +408,7 @@ const Cards = (props) => {
             }
 
             //if the data isn't null
-            if(doc.data() !== undefined) {
+            if (doc.data() !== undefined) {
                 //update current document
                 matchedRef.update({
                     counter: doc.data().counter + increment
@@ -422,11 +422,16 @@ const Cards = (props) => {
             unsub = matchedRef.onSnapshot(docSnapshot => {
                 console.log(docSnapshot.data())
                 //if majority of the group wants this
-                if((docSnapshot.data().counter / sessionSize) > 0.50) {
+                if ((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
                     data = []
-                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs, isHost: props.isHost})
+                    navigation.navigate('Final Decision', {
+                        id: docSnapshot.id,
+                        code: props.code,
+                        unsubs: unsubs,
+                        isHost: props.isHost
+                    })
                     console.log("Majority Rule")
                 }
             })
@@ -446,7 +451,7 @@ const Cards = (props) => {
         })
 
         matchedRef.get().then((doc) => {
-            if(doc.data() === undefined) {
+            if (doc.data() === undefined) {
                 console.log("Document Doesn't Exist, Creating Document")
                 matchedRef.set({
                     counter: 0
@@ -459,11 +464,11 @@ const Cards = (props) => {
 
             unsub = matchedRef.onSnapshot(docSnapshot => {
                 console.log(docSnapshot.data())
-                if((docSnapshot.data().counter / sessionSize) > 0.50) {
+                if ((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
                     data = []
-                    navigation.navigate('Final Decision',{id: docSnapshot.id, code: props.code, unsubs: unsubs})
+                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs})
                     console.log("Majority Rule")
                 }
             })
@@ -481,82 +486,85 @@ const Cards = (props) => {
     } else {
         return (
             <View style={CardStyle.container}>
-                    <Modal
-                        style={{flex:1, justifyContent:'center'}}
-                        animationType="slide"
-                        visible={modalVisible}
-                        onRequestClose={() => {
-                            setModalVisible(!modalVisible);
-                        }}>
-                        <View style={CardStyle.modalView}>
-                            <Text style={CardStyle.modalText}>Let's Eat!</Text>
-                            <Image source={{uri: `${cardState.imageURL}`}} style={CardStyle.cardImageModal}/>
-                            <Text style={CardStyle.modalText}>The group chose {'\n' + cardState.name}</Text>
-                            <Pressable style={InputStyles.buttons}
-                                       onPress={() => {
-                                           loveIt(cardState)
-                                           setModalVisible(!modalVisible)
-                                       }}>
-                                <Ionicons style={IconStyles.iconLeft} name="heart"/>
-                                <Text style={InputStyles.buttonText}>Love It!</Text>
-                                <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
-                            </Pressable>
-                            <Pressable style={InputStyles.buttons}
-                                       onPress={() => {
-                                           hateIt(cardState)
-                                           setModalVisible(!modalVisible)
-                                       }}>
-                                <Ionicons style={IconStyles.iconLeft} name="heart-dislike"/>
-                                <Text style={InputStyles.buttonText}>Keep Swiping</Text>
-                                <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
-                            </Pressable>
-                        </View>
-                    </Modal>
-                    <SwipeCards
-                        ref={swipeCardRef}
-                        cards={data}
-                        renderCard={(cardData) => <Card {...cardData} />}
-                        keyExtractor={(cardData) => String(cardData.id)}
-                        renderNoMoreCards={() => {
-                            let size = data.length
-                            data=[]
-                            return (
-                                <Cards
-                                    code={props.code}
-                                    zip={props.zip}
-                                    offset={props.offset+size}
-                                    distance={props.distance}
-                                    isHost={props.isHost}
-                                    categories={props.categories}
-                                    latitude={props.lat}
-                                    longitude={props.lon}
-                                    unsubs={unsubs}
-                                />)
-                            }
+                <Modal
+                    style={{flex: 1, justifyContent: 'center'}}
+                    animationType="slide"
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        setModalVisible(!modalVisible);
+                    }}>
+                    <View style={CardStyle.modalView}>
+                        <Text style={CardStyle.modalText}>Let's Eat!</Text>
+                        <Image source={{uri: `${cardState.imageURL}`}} style={CardStyle.cardImageModal}/>
+                        <Text style={CardStyle.modalText}>The group chose {'\n' + cardState.name}</Text>
+                        <Pressable style={InputStyles.buttons}
+                                   onPress={() => {
+                                       loveIt(cardState)
+                                       setModalVisible(!modalVisible)
+                                   }}>
+                            <Ionicons style={IconStyles.iconLeft} name="heart"/>
+                            <Text style={InputStyles.buttonText}>Love It!</Text>
+                            <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
+                        </Pressable>
+                        <Pressable style={InputStyles.buttons}
+                                   onPress={() => {
+                                       hateIt(cardState)
+                                       setModalVisible(!modalVisible)
+                                   }}>
+                            <Ionicons style={IconStyles.iconLeft} name="heart-dislike"/>
+                            <Text style={InputStyles.buttonText}>Keep Swiping</Text>
+                            <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
+                        </Pressable>
+                    </View>
+                </Modal>
+                <SwipeCards
+                    ref={swipeCardRef}
+                    cards={data}
+                    renderCard={(cardData) => (
+                        <>
+                            <Card {...cardData} />
+                            <TouchableOpacity style={InputStyles.updateButtons} onPress={() => {
+                                swipeCardRef.current.swipeYup()
+                                handleYup(swipeCardRef.current.state.card)
+                            }}>
+                                <Text>
+                                    Yep
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={InputStyles.updateButtons} onPress={() => {
+                                swipeCardRef.current.swipeNope()
+                                handleNope(swipeCardRef.current.state.card)
+                            }}>
+                                <Text>
+                                    Nope
+                                </Text>
+                            </TouchableOpacity>
+                        </>)
+                    }
+                    keyExtractor={(cardData) => String(cardData.id)}
+                    renderNoMoreCards={() => {
+                        let size = data.length
+                        data = []
+                        return (
+                            <Cards
+                                code={props.code}
+                                zip={props.zip}
+                                offset={props.offset + size}
+                                distance={props.distance}
+                                isHost={props.isHost}
+                                categories={props.categories}
+                                latitude={props.latitude}
+                                longitude={props.longitude}
+                                unsubs={unsubs}
+                            />)
                         }
+                    }
 
                     actions={{
                         nope: {onAction: handleNope},
                         yup: {onAction: handleYup}
                     }}
                 />
-
-                <TouchableOpacity style={InputStyles.updateButtons} onPress={() => {
-                    swipeCardRef.current.swipeYup()
-                    handleYup(swipeCardRef.current.state.card)
-                }}>
-                    <Text>
-                        Yep
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={InputStyles.updateButtons} onPress={() => {
-                    swipeCardRef.current.swipeNope()
-                    handleNope(swipeCardRef.current.state.card)
-                }}>
-                    <Text>
-                        Nope
-                    </Text>
-                </TouchableOpacity>
             </View>
         )
     }
