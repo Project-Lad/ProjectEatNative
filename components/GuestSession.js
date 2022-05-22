@@ -12,6 +12,7 @@ import "firebase/firestore";
 import {IconStyles, InputStyles, LobbyStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 let TAG = "Console: ";
+let unsubscribe;
 LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
     state = {
@@ -107,7 +108,7 @@ export default class GuestSession extends Component {
         const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
 
         //observer is created that when .start changes to true, it navigates to the swipe feature
-        docRef.onSnapshot((documentSnapshot) => {
+        unsubscribe = docRef.onSnapshot((documentSnapshot) => {
             //if document exists
             if (documentSnapshot.exists) {
                 //and lobby has not started
@@ -158,6 +159,7 @@ export default class GuestSession extends Component {
                 {
                     text:"Yes",
                     onPress:() => {
+                        unsubscribe();
                         //if yes, delete the user and navigate back to connection page
                         firebase.firestore().collection('sessions').doc(this.state.code)
                             .collection('users').doc(firebase.auth().currentUser.uid).delete()
