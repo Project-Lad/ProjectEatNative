@@ -230,11 +230,7 @@ const Decision = ({route}) => {
             firebase.firestore().collection('sessions').doc(route.params.code).delete()
                 .then(() => {navigation.navigate('Profile')})
                 .catch((e) => console.log("Error deleting document session: ", e))
-
-            console.log("WE ARE CURRENTLY IN THE TOP OF THE IF")
         } else {
-            console.log("MADE IT DOWN HERE TO ELSE")
-
             currentSession.collection('users').doc(firebase.auth().currentUser.uid).delete().then(() => {
                 console.log("Deleted user: ", firebase.auth().currentUser.uid)
                 navigation.navigate('Profile')

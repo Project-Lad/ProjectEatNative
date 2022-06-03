@@ -221,8 +221,24 @@ export default class HostSession extends Component {
                 {
                     text:"Yes",
                     onPress:() => {
+                        firebase.firestore()
+                            .collection('sessions').doc(this.state.code)
+                            .collection('users').get().then(snapshot => {
+                                snapshot.forEach(doc => {
+                                    firebase.firestore()
+                                        .collection('sessions').doc(this.state.code)
+                                        .collection('users').doc(doc.id).delete().then(() => {
+                                            console.log("Deleted user: ", doc.id)
+                                        })
+                                        .catch((error) => {
+                                            console.log("Error deleting user: ", error)
+                                        })
+                                })
+                        })
+
+                        //delete the firebase document
                         firebase.firestore().collection('sessions').doc(this.state.code).delete()
-                            .then(this.props.navigation.navigate('Profile'))
+                            .then(() => {this.props.navigation.navigate('Profile')})
                             .catch((error) => {
                                 console.log("End Lobby Error: ", error)
                                 this.props.navigation.navigate('Profile')})

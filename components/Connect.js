@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, TextInput, TouchableOpacity, Text, BackHandler, Platform, KeyboardAvoidingView,LogBox} from 'react-native';
+import {Alert, TextInput, TouchableOpacity, Text, BackHandler, Platform, KeyboardAvoidingView,LogBox} from 'react-native';
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import {IconStyles, InputStyles} from "./InputStyles";
@@ -32,7 +32,11 @@ export default function Connect() {
             />
             <TouchableOpacity
                 onPress={() => {
-                navigation.navigate('Guest Session', {code: convertUpper()})
+                    if(!!inputCode && inputCode !== "") {
+                        navigation.navigate('Guest Session', {code: convertUpper()});
+                    } else {
+                        Alert.alert("Empty Session Code", "Cannot Leave the Session Code Blank");
+                    }
                 }}
                 style = {InputStyles.buttons}>
                 <Text style={InputStyles.buttonText}>Connect to Lobby</Text>

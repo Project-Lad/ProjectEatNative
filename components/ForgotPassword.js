@@ -28,7 +28,7 @@ class ForgotPassword extends Component {
             })
             firebase.auth().sendPasswordResetEmail(this.state.email)
                 .then(() => {
-                    console.log('Email Sent')
+                    Alert.alert("Forgot Password Email", "An email containing a reset link has been sent to the provided email address if the account exists.");
                     this.setState({
                         isLoading: false,
                         email: '',
@@ -36,7 +36,11 @@ class ForgotPassword extends Component {
                     })
                     this.props.navigation.navigate('Login')
                 })
-                .catch(error => this.setState({ errorMessage: error.message }))
+                .catch(error => {
+                    Alert.alert("Forgot Password Email", "An email containing a reset link has been sent to the provided email address if the account exists.");
+                    this.setState({ errorMessage: error.message })
+                    this.props.navigation.navigate('Login')
+                })
         }
     }
     render() {
