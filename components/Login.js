@@ -100,6 +100,7 @@ export default class Login extends Component {
                     autoCapitalize={'none'}
                     onFocus={()=>{this.setState({isFocused:true})}}
                     onBlur={()=>{this.setState({isFocused:false})}}
+                    placeholderTextColor={"#000"}
                 />
                 <TextInput
                     style={this.state.onFocus ? InputStyles.focusInputStyle : InputStyles.inputStyle}
@@ -110,6 +111,7 @@ export default class Login extends Component {
                     secureTextEntry={true}
                     onFocus={()=>this.onFocus()}
                     onBlur={()=>this.onBlur()}
+                    placeholderTextColor={"#000"}
                 />
                 <Text
                     style={InputStyles.ForgotPasswordText}

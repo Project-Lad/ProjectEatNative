@@ -142,6 +142,7 @@ export default function Signup(){
                 value={userDisplayName}
                 onFocus={() => setFocused({username: true, email: false, password: false})}
                 onBlur={() => setFocused({username: false, email: false, password: false})}
+                placeholderTextColor={"#000"}
             />
             <TextInput
                 style={isFocused.email ? InputStyles.focusInputStyle : InputStyles.inputStyle}
@@ -153,6 +154,7 @@ export default function Signup(){
                 autoCapitalize={'none'}
                 onFocus={() => setFocused({username: false, email: true, password: false})}
                 onBlur={() => setFocused({username: false, email: false, password: false})}
+                placeholderTextColor={"#000"}
             />
             <TextInput
                 style={isFocused.password ? InputStyles.focusInputStyle : InputStyles.inputStyle}
@@ -163,6 +165,7 @@ export default function Signup(){
                 value={userPassword.password}
                 onFocus={() => setFocused({username: false, email: false, password: true})}
                 onBlur={() => setFocused({username: false, email: false, password: false})}
+                placeholderTextColor={"#000"}
             />
             <TouchableOpacity style={InputStyles.buttons} onPress={registerUser}>
                 <Text style={InputStyles.buttonText}>Sign Up</Text>
