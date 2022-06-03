@@ -521,22 +521,21 @@ const Cards = (props) => {
                     renderCard={(cardData) => (
                         <>
                             <Card {...cardData} />
-                            <TouchableOpacity style={InputStyles.updateButtons} onPress={() => {
-                                swipeCardRef.current.swipeYup()
-                                handleYup(swipeCardRef.current.state.card)
-                            }}>
-                                <Text>
-                                    Yep
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={InputStyles.updateButtons} onPress={() => {
-                                swipeCardRef.current.swipeNope()
-                                handleNope(swipeCardRef.current.state.card)
-                            }}>
-                                <Text>
-                                    Nope
-                                </Text>
-                            </TouchableOpacity>
+                            <View style={CardStyle.yupNopeView}>
+                                <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
+                                    swipeCardRef.current.swipeYup()
+                                    handleYup(swipeCardRef.current.state.card)
+                                }}>
+                                      <Ionicons style={{fontSize:48}} name={"thumbs-up-outline"}/>
+
+                                </TouchableOpacity>
+                                <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
+                                    swipeCardRef.current.swipeNope()
+                                    handleNope(swipeCardRef.current.state.card)
+                                }}>
+                                    <Ionicons style={{fontSize:48}} name={"thumbs-down-outline"}/>
+                                </TouchableOpacity>
+                            </View>
                         </>)
                     }
                     keyExtractor={(cardData) => String(cardData.id)}

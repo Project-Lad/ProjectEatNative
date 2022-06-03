@@ -427,7 +427,7 @@ const CardStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding:10,
-        marginTop:"75%"
+        marginTop:"60%"
     },
     loadContainer:{
         backgroundColor:'#eee',
@@ -442,11 +442,11 @@ const CardStyle = StyleSheet.create({
         width:ScreenWidth * .95,
     },
     cardTitle: {
-        fontSize: 28,
+        fontSize: 24,
         textAlign:'center',
         fontWeight: "bold",
         color: '#fff',
-        position:'absolute',
+        position:'relative',
         top:0,
         left:0,
         textShadowColor: 'rgba(0, 0, 0, 0.75)',
@@ -469,9 +469,8 @@ const CardStyle = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-end',
         justifyContent:'space-between',
-        marginTop:'2%',
         position:'relative',
-        top:425,
+        top:380,
         left:0
     },
     yelpStars:{
@@ -527,7 +526,24 @@ const CardStyle = StyleSheet.create({
         left:10,
         right:10
     },
-
+    yupNopeView:{
+        position:'relative',
+        flexDirection:'row-reverse',
+        bottom:200,
+        justifyContent:"space-evenly"
+    },
+    yupNopeButtons:{
+        borderRadius:100,
+        backgroundColor:"#fff",
+        width:65,
+        height:65,
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 0},
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        alignItems:'center',
+        padding:5
+    }
 
 })
 const DecisionStyle = StyleSheet.create({
