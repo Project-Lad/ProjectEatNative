@@ -427,6 +427,7 @@ const CardStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding:10,
+        marginTop:"75%"
     },
     loadContainer:{
         backgroundColor:'#eee',
@@ -437,51 +438,60 @@ const CardStyle = StyleSheet.create({
         width:ScreenWidth * .95
     },
     card: {
-        height:600,
-        backgroundColor: '#2decb4',
-        borderRadius:10,
-        width:ScreenWidth * .95
+        height:ScreenHeight,
+        width:ScreenWidth * .95,
     },
-    cardsText: {
-        fontSize: 18,
+    cardTitle: {
+        fontSize: 28,
+        textAlign:'center',
         fontWeight: "bold",
-        color: '#010001',
+        color: '#fff',
+        position:'absolute',
+        top:0,
+        left:0,
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: {width: 0, height: 0},
+        textShadowRadius: 5
     },
     yelpText: {
-        fontSize: 16,
-        color: '#010001'
+        fontSize: 18,
+        color: '#fff',
+        fontWeight:'600',
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: {width: -1, height: 0},
+        textShadowRadius: 5
     },
     yelpInfo: {
-        margin:20
+        margin:20,
+        position:'absolute'
     },
     yelpReview:{
         flexDirection: 'row',
-        alignItems: 'flex-start',
+        alignItems: 'flex-end',
         justifyContent:'space-between',
         marginTop:'2%',
-        height:'50%',
-
+        position:'relative',
+        top:425,
+        left:0
     },
     yelpStars:{
-        width:'90%',
-        height:'22%'
+        width:'60%',
+        height:'25%',
     },
     yelpImage: {
-        width:45,
-        height:50,
+        width:50,
+        height:55,
     },
     cardImage: {
-        width: '100%',
         height: undefined,
-        aspectRatio: 1,
-        borderTopLeftRadius:10,
-        borderTopRightRadius:10
+        aspectRatio: .6,
+        width:"100%",
+        borderRadius:10,
     },
     modalView: {
         backgroundColor: '#5D737E',
         borderRadius: 20,
         padding: 10,
-
         margin:10,
         marginTop:Platform.OS === 'ios' ? 50 : 20,
         shadowColor: "#eee",

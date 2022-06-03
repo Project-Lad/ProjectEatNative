@@ -46,14 +46,13 @@ class Card extends React.Component {
                 <View style={CardStyle.card}>
                     <Image source={this.props.imageURL} style={CardStyle.cardImage} />
                     <View style={CardStyle.yelpInfo}>
-                        <Text style={CardStyle.cardsText}>{this.props.name}</Text>
-                        <View>
-                            <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
-                            <Text style={CardStyle.yelpText}>{this.props.address}</Text>
-                        </View>
-
+                        <Text style={CardStyle.cardTitle}>{this.props.name}</Text>
                         <View style={CardStyle.yelpReview}>
                             <View style={{width:'85%'}}>
+                                <View>
+                                    <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
+                                    <Text style={CardStyle.yelpText}>{this.props.address}</Text>
+                                </View>
                                 <Image style={CardStyle.yelpStars} source={this.props.rating} />
                                 <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
                             </View>
@@ -69,14 +68,13 @@ class Card extends React.Component {
                 <View style={CardStyle.card}>
                     <Image source={{uri: `${this.props.imageURL}`}} style={CardStyle.cardImage}/>
                     <View style={CardStyle.yelpInfo}>
-                        <Text style={CardStyle.cardsText}>{this.props.name}</Text>
-                        <View>
-                            <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
-                            <Text style={CardStyle.yelpText}>{this.props.address}</Text>
-                        </View>
-
+                        <Text style={CardStyle.cardTitle}>{this.props.name}</Text>
                         <View style={CardStyle.yelpReview}>
                             <View style={{width:'90%'}}>
+                                <View>
+                                    <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
+                                    <Text style={CardStyle.yelpText}>{this.props.address}</Text>
+                                </View>
                                 <Image style={CardStyle.yelpStars} source={this.props.rating} />
                                 <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
                             </View>
