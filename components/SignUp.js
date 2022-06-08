@@ -12,10 +12,12 @@ import {
 import firebase from "../firebase";
 import "firebase/firestore";
 import { useNavigation} from '@react-navigation/native'
+import {CheckBox} from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import userPhoto from '../assets/user-placeholder.png'
+import * as WebBrowser from 'expo-web-browser';
 LogBox.ignoreLogs(['Setting a timer']);
 export default function Signup(){
     const navigation = useNavigation()
@@ -28,6 +30,8 @@ export default function Signup(){
         email:false,
         password:false,
     })
+    const [toggleCheckbox, setToggleCheckbox] = useState(false);
+    const [result, setResult] = useState(null);
 
     const DEFAULT_IMAGE = Image.resolveAssetSource(userPhoto).uri;
     const [image, setImage] = useState({photoURL:DEFAULT_IMAGE});
@@ -66,8 +70,20 @@ export default function Signup(){
         return ref.put(blob)
     }
 
+    const handlePrivacyPolicy = async () => {
+        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/privacy-policy');
+        setResult(result);
+    };
+    const handleToS = async () => {
+        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
+        setResult(result);
+    };
+
     async function registerUser(){
-        if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '') {
+        if(toggleCheckbox === false) {
+            Alert.alert('Terms of Service and Privacy Policy', 'You must accept the Terms of Service and Privacy Policy before registering.')
+        }
+        else if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '') {
             Alert.alert('Fill in all fields', 'One of the fields have been left empty')
         }else if(userPassword.password.length < 8){
             alert('Password not long enough')
@@ -167,6 +183,21 @@ export default function Signup(){
                 onBlur={() => setFocused({username: false, email: false, password: false})}
                 placeholderTextColor={"#000"}
             />
+
+            <View style={{flexDirection: 'row', alignItems:'center', paddingBottom: '3%'}}>
+                <CheckBox
+                    containerStyle={{margin: 0, padding: 0}}
+                    checked={toggleCheckbox}
+                    onPress={() => {
+                        setToggleCheckbox(!toggleCheckbox)
+                    }}
+                />
+
+                <Text style={{fontSize: 12}}>
+                    I agree to the <Text style={{color: 'blue'}} onPress={handleToS}>Terms of Service</Text> and the <Text style={{color: 'blue'}} onPress={handlePrivacyPolicy}>Privacy Policy</Text>
+                </Text>
+            </View>
+
             <TouchableOpacity style={InputStyles.buttons} onPress={registerUser}>
                 <Text style={InputStyles.buttonText}>Sign Up</Text>
                 <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
