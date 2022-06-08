@@ -143,6 +143,11 @@ const IconStyles = StyleSheet.create({
         color:"#e4e6e9",
         alignSelf: 'center'
     },
+    iconBackLobby:{
+        fontSize:22,
+        color:'rgba(46, 53, 78,.95)',
+        alignSelf: 'center'
+    },
     iconShare:{
         fontSize:22,
         color:"#000",
