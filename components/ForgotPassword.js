@@ -55,6 +55,7 @@ class ForgotPassword extends Component {
                     onChangeText={(val) => this.updateInputVal(val, 'email')}
                     onFocus={()=>{this.setState({isFocused:true})}}
                     onBlur={()=>{this.setState({isFocused:false})}}
+                    placeholderTextColor={"#000"}
                 />
                 <TouchableOpacity style={InputStyles.buttons} onPress={() => this.forgotPassword()}>
                     <Text style={InputStyles.buttonText}>Reset Password</Text>

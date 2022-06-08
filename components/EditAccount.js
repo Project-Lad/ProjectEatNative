@@ -152,11 +152,15 @@ export default function EditAccount(){
                     justifyContent:"space-between",
                     paddingLeft:'4%'
                 }}>
-                    <TouchableOpacity onPress={handlePrivacyPolicy}>
-                        <Text style={{fontSize:18, paddingTop:'4%'}}>Privacy Policy <Ionicons style={{fontSize:16, alignItems:'center'}} name="chevron-forward-outline"/></Text>
+                    <TouchableOpacity onPress={handlePrivacyPolicy} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
+                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="document-text-outline"/>
+                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Privacy Policy </Text>
+                        <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={handleToS}>
-                        <Text style={{fontSize:18, paddingTop:'4%'}}>Terms of Service <Ionicons style={{fontSize:16}} name="chevron-forward-outline"/></Text>
+                    <TouchableOpacity onPress={handleToS} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
+                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="document-text-outline"/>
+                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Terms of Service </Text>
+                        <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
                     </TouchableOpacity>
                 </View>
                 <View style={ProfileStyles.container}>
