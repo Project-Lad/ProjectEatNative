@@ -24,11 +24,13 @@ export default function Signup(){
     const [userDisplayName, setUserDisplayName] = useState()
     const [userEmail, setUserEmail] = useState({email:''})
     const [userPassword, setUserPassword] = useState({password:''})
+    const [retypedPassword, setRetypedPassword] = useState({password:''})
     const [isLoading, setLoading] = useState(false)
     const [isFocused, setFocused] = useState({
         username:false,
         email:false,
         password:false,
+        retypedPassword:false
     })
     const [toggleCheckbox, setToggleCheckbox] = useState(false);
     const [result, setResult] = useState(null);
@@ -82,11 +84,12 @@ export default function Signup(){
     async function registerUser(){
         if(toggleCheckbox === false) {
             Alert.alert('Terms of Service and Privacy Policy', 'You must accept the Terms of Service and Privacy Policy before registering.')
-        }
-        else if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '') {
+        }else if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '') {
             Alert.alert('Fill in all fields', 'One of the fields have been left empty')
-        }else if(userPassword.password.length < 8){
-            alert('Password not long enough')
+        }else if(userPassword.password.length < 8) {
+            Alert.alert('Password Length', 'Password does not meet minimum required length of 8 characters')
+        }else if(userPassword.password !== retypedPassword.password) {
+            Alert.alert('Password Mismatch', 'Password entered does not match original password')
         }else{
             setLoading({
                 isLoading: true,
@@ -156,8 +159,8 @@ export default function Signup(){
                 placeholder="Username"
                 onChangeText={(username)=>setUserDisplayName(username.trim())}
                 value={userDisplayName}
-                onFocus={() => setFocused({username: true, email: false, password: false})}
-                onBlur={() => setFocused({username: false, email: false, password: false})}
+                onFocus={() => setFocused({username: true, email: false, password: false, retypedPassword: false})}
+                onBlur={() => setFocused({username: false, email: false, password: false, retypedPassword: false})}
                 placeholderTextColor={"#000"}
             />
             <TextInput
@@ -168,19 +171,30 @@ export default function Signup(){
                 value={userEmail.email.trim()}
                 autoComplete='email'
                 autoCapitalize={'none'}
-                onFocus={() => setFocused({username: false, email: true, password: false})}
-                onBlur={() => setFocused({username: false, email: false, password: false})}
+                onFocus={() => setFocused({username: false, email: true, password: false, retypedPassword: false})}
+                onBlur={() => setFocused({username: false, email: false, password: false, retypedPassword: false})}
                 placeholderTextColor={"#000"}
             />
             <TextInput
                 style={isFocused.password ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                 placeholder="Password"
                 onChangeText={password => setUserPassword({password:password})}
-                maxLength={15}
+                maxLength={200}
                 secureTextEntry={true}
                 value={userPassword.password}
-                onFocus={() => setFocused({username: false, email: false, password: true})}
-                onBlur={() => setFocused({username: false, email: false, password: false})}
+                onFocus={() => setFocused({username: false, email: false, password: true, retypedPassword: false})}
+                onBlur={() => setFocused({username: false, email: false, password: false, retypedPassword: false})}
+                placeholderTextColor={"#000"}
+            />
+            <TextInput
+                style={isFocused.password ? InputStyles.focusInputStyle : InputStyles.inputStyle}
+                placeholder="Re-type Password"
+                onChangeText={password => setRetypedPassword({password:password})}
+                maxLength={200}
+                secureTextEntry={true}
+                value={retypedPassword.password}
+                onFocus={() => setFocused({username: false, email: false, password: false, retypedPassword: true})}
+                onBlur={() => setFocused({username: false, email: false, password: false, retypedPassword: false})}
                 placeholderTextColor={"#000"}
             />
 
