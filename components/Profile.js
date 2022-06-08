@@ -21,9 +21,9 @@ export default function Dashboard(){
                setNewProfilePicture(doc.data().photoURL)
            })
         },[isFocused])
-    async function signOut(){
+/*    async function signOut(){
         await firebase.auth().signOut()
-    }
+    }*/
     async function deleteAccount(){
         await firebase.auth().currentUser.delete()
         await firebase.firestore().collection('users').doc(user).delete()
@@ -64,11 +64,11 @@ export default function Dashboard(){
                         <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={signOut} style = {ProfileStyles.buttons}>
+{/*                    <TouchableOpacity onPress={signOut} style = {ProfileStyles.buttons}>
                         <Ionicons style={IconStyles.iconLeft} name="log-out-outline"/>
                         <Text style={InputStyles.buttonText}>Logout</Text>
                         <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
-                    </TouchableOpacity>
+                    </TouchableOpacity>*/}
 
                     {/*<TouchableOpacity onPress={deleteAccount} style = {ProfileStyles.buttons}>
                         <Text style={InputStyles.buttonText}>delete</Text>

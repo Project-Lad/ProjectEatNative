@@ -15,7 +15,7 @@ import firebase from "../firebase";
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
-import {InputStyles,IconStyles} from "./InputStyles";
+import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 LogBox.ignoreLogs(['Setting a timer']);
 import * as WebBrowser from 'expo-web-browser';
@@ -101,6 +101,9 @@ export default function EditAccount(){
         let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
         setResult(result);
     };
+    async function signOut(){
+        await firebase.auth().signOut()
+    }
     return(
         <View  style={{
             flex:1,
@@ -154,6 +157,13 @@ export default function EditAccount(){
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleToS}>
                         <Text style={{fontSize:18, paddingTop:'4%'}}>Terms of Service <Ionicons style={{fontSize:16}} name="chevron-forward-outline"/></Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={ProfileStyles.container}>
+                    <TouchableOpacity onPress={signOut} style = {ProfileStyles.buttons}>
+                        <Ionicons style={IconStyles.iconLeft} name="log-out-outline"/>
+                        <Text style={InputStyles.buttonText}>Logout</Text>
+                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                     </TouchableOpacity>
                 </View>
             </View>
