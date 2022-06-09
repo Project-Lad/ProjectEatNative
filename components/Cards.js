@@ -134,7 +134,7 @@ class LoadingCard extends React.Component {
                         overlayColor: 'white'
                     }}/>
                     <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
-                        <Text style={CardStyle.cardsText}>Finding Local Restaurants...</Text>
+                        <Text style={CardStyle.yelpText}>Finding Local Restaurants...</Text>
                         <Text style={CardStyle.yelpText}>Please remember, if you are waiting a long time
                             for the restaurants to load, there may be no restaurants nearby or your connection was lost.
                             If this is the case,please head back to the lobby and increase the distance or establish a connection.</Text>
@@ -142,13 +142,7 @@ class LoadingCard extends React.Component {
                     <TouchableOpacity style={CardStyle.backButton} onPress={() => {
                         this.updateLobby();
                     }}>
-                        <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
-                        {/*                            <Text style={{
-                                color:'#EEEEEE',
-                                fontWeight: "400",
-                                fontSize: 20,
-                                paddingLeft:10,
-                            }}>Back to Lobby</Text>*/}
+                        <Ionicons style={IconStyles.iconBackLobby} name="arrow-undo-outline"/>
                     </TouchableOpacity>
                 </View>
             </View>

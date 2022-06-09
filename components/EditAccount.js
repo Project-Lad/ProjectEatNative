@@ -15,7 +15,7 @@ import firebase from "../firebase";
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
-import {InputStyles,IconStyles} from "./InputStyles";
+import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 LogBox.ignoreLogs(['Setting a timer']);
 import * as WebBrowser from 'expo-web-browser';
@@ -101,6 +101,9 @@ export default function EditAccount(){
         let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
         setResult(result);
     };
+    async function signOut(){
+        await firebase.auth().signOut()
+    }
     return(
         <View  style={{
             flex:1,
@@ -149,11 +152,22 @@ export default function EditAccount(){
                     justifyContent:"space-between",
                     paddingLeft:'4%'
                 }}>
-                    <TouchableOpacity onPress={handlePrivacyPolicy}>
-                        <Text style={{fontSize:18, paddingTop:'4%'}}>Privacy Policy <Ionicons style={{fontSize:16, alignItems:'center'}} name="chevron-forward-outline"/></Text>
+                    <TouchableOpacity onPress={handlePrivacyPolicy} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
+                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="document-text-outline"/>
+                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Privacy Policy </Text>
+                        <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={handleToS}>
-                        <Text style={{fontSize:18, paddingTop:'4%'}}>Terms of Service <Ionicons style={{fontSize:16}} name="chevron-forward-outline"/></Text>
+                    <TouchableOpacity onPress={handleToS} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
+                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="document-text-outline"/>
+                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Terms of Service </Text>
+                        <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
+                </View>
+                <View style={ProfileStyles.container}>
+                    <TouchableOpacity onPress={signOut} style = {ProfileStyles.buttons}>
+                        <Ionicons style={IconStyles.iconLeft} name="log-out-outline"/>
+                        <Text style={InputStyles.buttonText}>Logout</Text>
+                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                     </TouchableOpacity>
                 </View>
             </View>
