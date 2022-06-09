@@ -12,22 +12,28 @@ import {
 import firebase from "../firebase";
 import "firebase/firestore";
 import { useNavigation} from '@react-navigation/native'
+import {CheckBox} from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import userPhoto from '../assets/user-placeholder.png'
+import * as WebBrowser from 'expo-web-browser';
 LogBox.ignoreLogs(['Setting a timer']);
 export default function Signup(){
     const navigation = useNavigation()
     const [userDisplayName, setUserDisplayName] = useState()
     const [userEmail, setUserEmail] = useState({email:''})
     const [userPassword, setUserPassword] = useState({password:''})
+    const [retypedPassword, setRetypedPassword] = useState({password:''})
     const [isLoading, setLoading] = useState(false)
     const [isFocused, setFocused] = useState({
         username:false,
         email:false,
         password:false,
+        retypedPassword:false
     })
+    const [toggleCheckbox, setToggleCheckbox] = useState(false);
+    const [result, setResult] = useState(null);
 
     const DEFAULT_IMAGE = Image.resolveAssetSource(userPhoto).uri;
     const [image, setImage] = useState({photoURL:DEFAULT_IMAGE});
@@ -66,11 +72,24 @@ export default function Signup(){
         return ref.put(blob)
     }
 
+    const handlePrivacyPolicy = async () => {
+        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/privacy-policy');
+        setResult(result);
+    };
+    const handleToS = async () => {
+        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
+        setResult(result);
+    };
+
     async function registerUser(){
-        if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '') {
+        if(toggleCheckbox === false) {
+            Alert.alert('Terms of Service and Privacy Policy', 'You must accept the Terms of Service and Privacy Policy before registering.')
+        }else if (userEmail.email === '' || userPassword.password === '' || userDisplayName === '') {
             Alert.alert('Fill in all fields', 'One of the fields have been left empty')
-        }else if(userPassword.password.length < 8){
-            alert('Password not long enough')
+        }else if(userPassword.password.length < 8) {
+            Alert.alert('Password Length', 'Password does not meet minimum required length of 8 characters')
+        }else if(userPassword.password !== retypedPassword.password) {
+            Alert.alert('Password Mismatch', 'Password entered does not match original password')
         }else{
             setLoading({
                 isLoading: true,
@@ -140,8 +159,8 @@ export default function Signup(){
                 placeholder="Username"
                 onChangeText={(username)=>setUserDisplayName(username.trim())}
                 value={userDisplayName}
-                onFocus={() => setFocused({username: true, email: false, password: false})}
-                onBlur={() => setFocused({username: false, email: false, password: false})}
+                onFocus={() => setFocused({username: true, email: false, password: false, retypedPassword: false})}
+                onBlur={() => setFocused({username: false, email: false, password: false, retypedPassword: false})}
                 placeholderTextColor={"#000"}
             />
             <TextInput
@@ -152,21 +171,47 @@ export default function Signup(){
                 value={userEmail.email.trim()}
                 autoComplete='email'
                 autoCapitalize={'none'}
-                onFocus={() => setFocused({username: false, email: true, password: false})}
-                onBlur={() => setFocused({username: false, email: false, password: false})}
+                onFocus={() => setFocused({username: false, email: true, password: false, retypedPassword: false})}
+                onBlur={() => setFocused({username: false, email: false, password: false, retypedPassword: false})}
                 placeholderTextColor={"#000"}
             />
             <TextInput
                 style={isFocused.password ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                 placeholder="Password"
                 onChangeText={password => setUserPassword({password:password})}
-                maxLength={15}
+                maxLength={200}
                 secureTextEntry={true}
                 value={userPassword.password}
-                onFocus={() => setFocused({username: false, email: false, password: true})}
-                onBlur={() => setFocused({username: false, email: false, password: false})}
+                onFocus={() => setFocused({username: false, email: false, password: true, retypedPassword: false})}
+                onBlur={() => setFocused({username: false, email: false, password: false, retypedPassword: false})}
                 placeholderTextColor={"#000"}
             />
+            <TextInput
+                style={isFocused.password ? InputStyles.focusInputStyle : InputStyles.inputStyle}
+                placeholder="Re-type Password"
+                onChangeText={password => setRetypedPassword({password:password})}
+                maxLength={200}
+                secureTextEntry={true}
+                value={retypedPassword.password}
+                onFocus={() => setFocused({username: false, email: false, password: false, retypedPassword: true})}
+                onBlur={() => setFocused({username: false, email: false, password: false, retypedPassword: false})}
+                placeholderTextColor={"#000"}
+            />
+
+            <View style={{flexDirection: 'row', alignItems:'center', paddingBottom: '3%'}}>
+                <CheckBox
+                    containerStyle={{margin: 0, padding: 0}}
+                    checked={toggleCheckbox}
+                    onPress={() => {
+                        setToggleCheckbox(!toggleCheckbox)
+                    }}
+                />
+
+                <Text style={{fontSize: 12}}>
+                    I agree to the <Text style={{color: 'blue'}} onPress={handleToS}>Terms of Service</Text> and the <Text style={{color: 'blue'}} onPress={handlePrivacyPolicy}>Privacy Policy</Text>
+                </Text>
+            </View>
+
             <TouchableOpacity style={InputStyles.buttons} onPress={registerUser}>
                 <Text style={InputStyles.buttonText}>Sign Up</Text>
                 <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
