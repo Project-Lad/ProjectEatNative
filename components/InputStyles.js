@@ -432,19 +432,19 @@ const CardStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding:10,
-        marginTop:"60%"
     },
     loadContainer:{
         backgroundColor:'#eee',
         height:ScreenHeight,
-        flex:1,
         alignItems: 'center',
         justifyContent: 'center',
-        width:ScreenWidth * .95
+        width:ScreenWidth * .95,
+        marginTop:"5%"
     },
     card: {
         height:ScreenHeight,
         width:ScreenWidth * .95,
+        marginTop:"60%"
     },
     cardTitle: {
         fontSize: 24,
@@ -475,7 +475,7 @@ const CardStyle = StyleSheet.create({
         alignItems: 'flex-end',
         justifyContent:'space-between',
         position:'relative',
-        top:380,
+        top:'125%',
         left:0
     },
     yelpStars:{
@@ -534,20 +534,21 @@ const CardStyle = StyleSheet.create({
     yupNopeView:{
         position:'relative',
         flexDirection:'row-reverse',
-        bottom:200,
-        justifyContent:"space-evenly"
+        bottom:180,
+        justifyContent:"space-evenly",
     },
     yupNopeButtons:{
         borderRadius:100,
         backgroundColor:"#fff",
-        width:65,
-        height:65,
+        width:75,
+        height:75,
         shadowColor: '#000',
         shadowOffset: {width: 0, height: 0},
         shadowOpacity: 0.2,
         shadowRadius: 3,
-        alignItems:'center',
-        padding:5
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding:1
     }
 
 })

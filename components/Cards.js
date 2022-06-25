@@ -122,8 +122,11 @@ class LoadingCard extends React.Component {
                 <View style={{
                     borderTopLeftRadius:10,
                     borderTopRightRadius:10,
+                    borderBottomRightRadius:10,
+                    borderBottomLeftRadius:10,
                     overflow: 'hidden',
                     width: "100%",
+                    backgroundColor:"#fff"
                 }}>
                     <Image source={burgerGIF} style={{
                         width: "100%",
@@ -131,13 +134,14 @@ class LoadingCard extends React.Component {
                         aspectRatio: 1,
                         borderTopLeftRadius:10,
                         borderTopRightRadius:10,
-                        overlayColor: 'white'
+                        overlayColor: 'white',
+
                     }}/>
                     <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
-                        <Text style={CardStyle.yelpText}>Finding Local Restaurants...</Text>
-                        <Text style={CardStyle.yelpText}>Please remember, if you are waiting a long time
+                        <Text style={{color:"#000", fontSize:18}}>Finding Local Restaurants...</Text>
+                        <Text style={{color:"#000", fontSize:18}}>Please remember, if you are waiting a long time
                             for the restaurants to load, there may be no restaurants nearby or your connection was lost.
-                            If this is the case,please head back to the lobby and increase the distance or establish a connection.</Text>
+                            If this is the case, please head back to the lobby and increase the distance or establish a connection.</Text>
                     </View>
                     <TouchableOpacity style={CardStyle.backButton} onPress={() => {
                         this.updateLobby();
