@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity,LogBox} from "react-native";
 import {useNavigation} from '@react-navigation/native'
 import burgerGIF from '../assets/burger.gif';
@@ -162,6 +162,8 @@ let unsubs = [];
 const Cards = (props) => {
     let [resCounter, setCounter] = useState(0);
     let [modalVisible, setModalVisible] = useState(false);
+    let [yelpData, setYelpData] = useState([]);
+    let [offsetState, setOffsetState] = useState(props.offset);
     const navigation = useNavigation();
     let [cardState, setCardState] = useState({
         id: "0",
@@ -179,13 +181,23 @@ const Cards = (props) => {
     let name = [];
     let counter = 0;
     let swipeCardRef = React.createRef();
-    let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users')
+    let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users');
 
-    props.unsubs.forEach(unsub => {
-        unsubs.push(unsub);
-    })
+    useEffect(() => {
+        if(yelpData.length === 0) {
+            getYelpData().then(r => {
+                console.log("hit api")
+                setData(r)
+                setYelpData(r)
+            })
+        } else {
+            console.log("Render Again");
+        }
+    }, [yelpData]);
 
-    setData(YelpAPI(props.zip, props.categories, props.offset, props.distance, props.latitude, props.longitude));
+    async function getYelpData() {
+        return await YelpAPI(props.zip, props.categories, offsetState, props.distance, props.latitude, props.longitude)
+    }
 
     function setData(restaurantData) {
         try {
@@ -330,7 +342,7 @@ const Cards = (props) => {
         });
 
         unsub = usersRef.onSnapshot(querySnapshot => {
-            console.log(querySnapshot.size)
+            //console.log(querySnapshot.size)
             querySnapshot.forEach(documentSnapshot => {
                 if (querySnapshot.size === 1) {
                     //sets card state and shows modal when solo
