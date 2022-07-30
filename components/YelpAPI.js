@@ -26,7 +26,7 @@ const Data = async (zip, categories, offset, distance, latitude, longitude) => {
     };
 
     if (zip === null) {
-        await fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=25&offset=${offset}&radius=${parseInt(distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
+        await fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${offset}&radius=${parseInt(distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
             .then(response => response.json())
             .then(result => {
                 //console.log("Latitude: " + latitude)
