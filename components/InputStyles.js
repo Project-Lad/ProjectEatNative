@@ -144,7 +144,7 @@ const InputStyles = StyleSheet.create({
     userNameText:{
         color:"#2e344f",
         fontSize:28,
-        marginTop:"-3%"
+        marginTop:"-7%"
     },
     editProfile:{
         color:"#2e344f",
@@ -197,6 +197,11 @@ const IconStyles = StyleSheet.create({
         borderRadius:100,
         zIndex: 0,
         elevation: 0,
+    },
+    signUpPicture:{
+        width:150,
+        height:150,
+        borderRadius:250
     },
     editIcon:{
         color:"#000",
