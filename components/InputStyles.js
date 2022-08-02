@@ -104,9 +104,32 @@ const InputStyles = StyleSheet.create({
         elevation: 5,
         borderRadius:10
     },
+    disabledUpdateButtons:{
+        backgroundColor:"#eee",
+        width:'50%',
+        padding: 15,
+        display: 'flex',
+        flexDirection: 'row',
+        alignSelf:'flex-end',
+        justifyContent:'space-between',
+        marginBottom:10,
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderRadius:10
+    },
     buttonText:{
         fontSize: 20,
         color:"#e4e6e9"
+    },
+    disabledButtonText:{
+        fontSize: 20,
+        color:"#333"
     },
     preloader: {
         left: 0,
@@ -138,6 +161,11 @@ const IconStyles = StyleSheet.create({
         alignSelf: 'center',
         color:"#e4e6e9"
     },
+    disabledEditArrowRight:{
+        fontSize:20,
+        alignSelf: 'center',
+        color:"#333"
+    },
     iconLeft:{
         fontSize:22,
         color:"#e4e6e9",
@@ -158,9 +186,9 @@ const IconStyles = StyleSheet.create({
         flexDirection:'column'
     },
     addProfilePic:{
-        fontSize:24,
-        alignSelf:'flex-end',
-        paddingBottom:10
+        color:"#e4e6e9",
+        fontSize:22,
+        textAlign:'center'
     },
     profilePicture:{
         width: 75,
@@ -216,7 +244,22 @@ const ProfileStyles = StyleSheet.create({
         shadowRadius: 2,
         backgroundColor:'#2e344f',
         borderRadius:25,
-
+    },
+    editCameraContainer:{
+        position:"relative",
+        justifyContent:'center',
+        top:-25,
+        left:100,
+        width:40,
+        height:40,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        backgroundColor:'#2e344f',
+        borderRadius:25,
     },
     profilePen:{
         color:"#e4e6e9",
