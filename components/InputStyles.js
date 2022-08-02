@@ -120,11 +120,11 @@ const InputStyles = StyleSheet.create({
     },
     userNameText:{
         color:"#2e344f",
-        fontSize:36,
+        fontSize:20,
     },
     editProfile:{
         color:"#2e344f",
-        fontSize:24,
+        fontSize:15,
     }
 });
 const IconStyles = StyleSheet.create({
@@ -163,8 +163,8 @@ const IconStyles = StyleSheet.create({
         paddingBottom:10
     },
     profilePicture:{
-        width: 200,
-        height: 200,
+        width: 50,
+        height: 50,
         borderRadius:100
     },
     editIcon:{
@@ -181,19 +181,20 @@ const ProfileStyles = StyleSheet.create({
         justifyContent:'space-evenly'
     },
     card:{
-        flexDirection:"column",
+        flexDirection:"row",
         alignItems: 'center',
+        justifyContent:'space-between',
         width:'100%',
-        padding:'2%',
+        padding:'2%'
     },
     editProfile:{
         flexDirection:"row",
         justifyContent:'space-evenly',
         alignSelf:"center",
         alignItems: 'center',
-        width:'60%',
-        marginTop:'5%',
-        padding:'4%',
+        width:'35%',
+        marginTop:'1%',
+        padding:'1%',
         borderRadius:15,
         borderColor:"#f97c4d",
         borderWidth: 1.5

@@ -1,7 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {BackHandler, StyleSheet, View, LogBox} from 'react-native';
-import Data from "./YelpAPI.js";
 import firebase from "../firebase";
 import {useNavigation} from "@react-navigation/native";
 LogBox.ignoreLogs(['Setting a timer']);
