@@ -143,7 +143,8 @@ const InputStyles = StyleSheet.create({
     },
     userNameText:{
         color:"#2e344f",
-        fontSize:20,
+        fontSize:28,
+        marginTop:"-3%"
     },
     editProfile:{
         color:"#2e344f",

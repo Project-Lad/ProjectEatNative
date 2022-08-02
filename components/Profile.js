@@ -33,16 +33,16 @@ export default function Dashboard(){
         <View style={ProfileStyles.container}>
             {/*Profile Card View*/}
             <View style={ProfileStyles.card}>
-                <View style={{flexDirection: "column", alignItems: "center", position:"absolute", marginTop:"-25%"}}>
+                <View style={{flexDirection: "row", alignItems: "center", justifyContent:'space-between', position:"absolute", width:'100%'}}>
                     <TouchableOpacity onPress={() => navigation.navigate('Edit Account')}>
                         {newProfilePicture && <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />}
                         <View style={ProfileStyles.profilePenContainer}>
                             <Ionicons style={ProfileStyles.profilePen} name="pencil-outline"/>
                         </View>
                     </TouchableOpacity>
-                    {/*<Text style={InputStyles.userNameText}>
+                    <Text style={InputStyles.userNameText}>
                         {newProfileUsername}
-                    </Text>*/}
+                    </Text>
                 </View>
 {/*                <TouchableOpacity style={ProfileStyles.editProfile} onPress={() => navigation.navigate('Edit Account')}>
                     <View>
