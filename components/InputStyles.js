@@ -163,9 +163,11 @@ const IconStyles = StyleSheet.create({
         paddingBottom:10
     },
     profilePicture:{
-        width: 50,
-        height: 50,
-        borderRadius:100
+        width: 75,
+        height: 75,
+        borderRadius:100,
+        zIndex: 0,
+        elevation: 0,
     },
     editIcon:{
         color:"#000",
@@ -198,6 +200,28 @@ const ProfileStyles = StyleSheet.create({
         borderRadius:15,
         borderColor:"#f97c4d",
         borderWidth: 1.5
+    },
+    profilePenContainer:{
+        position:"relative",
+        justifyContent:'center',
+        top:-25,
+        left:45,
+        width:30,
+        height:30,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        backgroundColor:'#2e344f',
+        borderRadius:25,
+
+    },
+    profilePen:{
+        color:"#e4e6e9",
+        fontSize:22,
+        textAlign:'center'
     },
     editButton:{
         fontSize:24,
