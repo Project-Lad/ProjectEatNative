@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Text,
     View,
@@ -8,22 +8,28 @@ import {
     Alert,
     KeyboardAvoidingView,
     Platform,
-    Keyboard
+    BackHandler,
+    LogBox, Linking
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
-import {InputStyles,IconStyles} from "./InputStyles";
+import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
-import {TouchableWithoutFeedback} from "react-native-gesture-handler";
-
+LogBox.ignoreLogs(['Setting a timer']);
+import * as WebBrowser from 'expo-web-browser';
 export default function EditAccount(){
     const navigation = useNavigation()
     const currentUser = firebase.auth().currentUser
     const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName})
     const [newProfilePicture, setNewProfilePicture] = useState({photoURL: currentUser.photoURL})
+    const [result, setResult] = useState(null);
 
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
+        return () => backHandler.remove()
+    }, [])
 
     function userName() {
         //updates users displayName
@@ -33,6 +39,7 @@ export default function EditAccount(){
             //Then we update user profile picture
             firebase.auth().currentUser.updateProfile({
                 photoURL:newProfilePicture.photoURL
+
             }).then(()=>{
                 //then update the users firebase document and fields
                 firebase.firestore().collection('users').doc(currentUser.uid).set({
@@ -45,6 +52,7 @@ export default function EditAccount(){
             })
         }).catch(function(error) {
             //Catch any errors
+            console.log(newProfilePicture.photoURL)
             console.log(error)
             alert(error)
         })
@@ -60,9 +68,9 @@ export default function EditAccount(){
         if (!result.cancelled) {
             //uploads the image to firebase storage
             uploadImage(result.uri, "profilePicture")
-                .then(() => {
+                .then(setTimeout(() => {
                     setNewProfilePicture({photoURL:result.uri})
-                })
+                },100))
                 .catch((error) => {
                     Alert.alert("Error: ", error)
                 })
@@ -76,24 +84,93 @@ export default function EditAccount(){
         let ref = firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/`+ imageName);
         return ref.put(blob)
     }
+    const [isFocused, setIsFocused] = useState(false)
+// handlers for onPress TextInput style change
+    const handleInputFocus = () => {
+        setIsFocused(true)
+    }
+    const handleInputBlur = () => {
+        setIsFocused(false)
+    }
 
+    const handlePrivacyPolicy = async () => {
+        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/privacy-policy');
+        setResult(result);
+    };
+    const handleToS = async () => {
+        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
+        setResult(result);
+    };
+    async function signOut(){
+        await firebase.auth().signOut()
+    }
     return(
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
-            <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
-                <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
-                    <Image source={{ uri: newProfilePicture.photoURL }} style={IconStyles.profilePicture} />
-                    <Ionicons style={IconStyles.addProfilePic} name="camera-outline"/>
+        <View  style={{
+            flex:1,
+            flexDirection: "column",
+            justifyContent: "center",
+            backgroundColor: '#fff'
+        }}>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{
+                flex:.5,
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: '10%',
+                backgroundColor: '#fff'
+            }}>
+                <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
+                    <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
+                        <Image source={{ uri: newProfilePicture.photoURL }} style={{width:150, height:150, borderRadius:250}} />
+                        <Ionicons style={IconStyles.addProfilePic} name="camera-outline"/>
+                    </TouchableOpacity>
+                </View>
+                <TextInput
+                    style={isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
+                    onFocus={() => handleInputFocus(true)}
+                    onBlur={() => handleInputBlur(false)}
+                    value={newProfileUsername.displayName}
+                    onChangeText={(text)=>setNewProfileUsername({displayName:text})}
+                />
+                <TouchableOpacity style={InputStyles.updateButtons} onPress={userName}>
+                    <Text style={{color:'#e4e6e9', fontSize:20}}>Update</Text>
+                    <Ionicons style={IconStyles.editArrowRight} name="chevron-forward-outline"/>
                 </TouchableOpacity>
+            </KeyboardAvoidingView>
+            <View style={{
+                backgroundColor:'#fff',
+                width:'100%',
+                flex:.5,
+                flexDirection: "column",
+                justifyContent: "flex-start",
+                marginTop:'10%'
+            }}>
+                <View style={{backgroundColor:'#2e344f', padding:'4%'}}>
+                    <Text style={{fontSize:18, color:'#e4e6e9'}}>Documents</Text>
+                </View>
+                <View style={{
+                    flexDirection:"column",
+                    justifyContent:"space-between",
+                    paddingLeft:'4%'
+                }}>
+                    <TouchableOpacity onPress={handlePrivacyPolicy} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
+                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="document-text-outline"/>
+                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Privacy Policy </Text>
+                        <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleToS} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
+                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="document-text-outline"/>
+                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Terms of Service </Text>
+                        <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
+                </View>
+                <View style={ProfileStyles.container}>
+                    <TouchableOpacity onPress={signOut} style = {ProfileStyles.buttons}>
+                        <Ionicons style={IconStyles.iconLeft} name="log-out-outline"/>
+                        <Text style={InputStyles.buttonText}>Logout</Text>
+                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
+                </View>
             </View>
-            <TextInput
-                style={InputStyles.inputStyle}
-                value={newProfileUsername.displayName}
-                onChangeText={(text)=>setNewProfileUsername({displayName:text})}
-            />
-            <TouchableOpacity style={InputStyles.buttons} onPress={userName}>
-                <Text style={InputStyles.buttonText}>Update</Text>
-                <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
-            </TouchableOpacity>
-        </KeyboardAvoidingView>
+        </View>
     )
 }
