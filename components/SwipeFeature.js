@@ -1,7 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {BackHandler, StyleSheet, View, LogBox} from 'react-native';
-import Data from "./YelpAPI.js";
 import firebase from "../firebase";
 import {useNavigation} from "@react-navigation/native";
 LogBox.ignoreLogs(['Setting a timer']);
@@ -12,6 +11,20 @@ export default function SwipeFeature({route}) {
     let currentSession = firebase.firestore().collection('sessions').doc(route.params.code)
     let unsub;
     let unsubs = [];
+    let [cardState, setCardState] = useState({
+        id: "0",
+        name: "name",
+        price_range: "price_range",
+        address: "address",
+        rating: "rating",
+        review_count: "0",
+        distance: "0",
+        phone_numbers: "phone_number",
+        imageURL: "imageURL",
+        businessURL: ""
+    });
+    let [modalVisible, setModalVisible] = useState(false);
+    let [resCounter, setCounter] = useState(0);
 
     useEffect(() => {
         unsub = currentSession.onSnapshot(docSnapshot => {
@@ -39,6 +52,12 @@ export default function SwipeFeature({route}) {
                 latitude={route.params.latitude}
                 longitude={route.params.longitude}
                 unsubs={unsubs}
+                card={cardState}
+                setCard={setCardState}
+                modalVisible={modalVisible}
+                setModalVisible={setModalVisible}
+                resCounter={resCounter}
+                setCounter={setCounter}
             />
             <StatusBar style="auto" />
         </View>

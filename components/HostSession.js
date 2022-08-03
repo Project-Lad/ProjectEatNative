@@ -19,7 +19,7 @@ import {
 import Slider from '@react-native-community/slider';
 import firebase from "../firebase";
 import "firebase/firestore";
-import {InputStyles, IconStyles, LobbyStyles, CardStyle, ProfileStyles} from "./InputStyles";
+import {InputStyles, IconStyles, LobbyStyles, CardStyle} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from "expo-location";
 let TAG = "Console: ";

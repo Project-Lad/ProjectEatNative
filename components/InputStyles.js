@@ -104,9 +104,32 @@ const InputStyles = StyleSheet.create({
         elevation: 5,
         borderRadius:10
     },
+    disabledUpdateButtons:{
+        backgroundColor:"#eee",
+        width:'50%',
+        padding: 15,
+        display: 'flex',
+        flexDirection: 'row',
+        alignSelf:'flex-end',
+        justifyContent:'space-between',
+        marginBottom:10,
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderRadius:10
+    },
     buttonText:{
         fontSize: 20,
         color:"#e4e6e9"
+    },
+    disabledButtonText:{
+        fontSize: 20,
+        color:"#333"
     },
     preloader: {
         left: 0,
@@ -120,11 +143,12 @@ const InputStyles = StyleSheet.create({
     },
     userNameText:{
         color:"#2e344f",
-        fontSize:36,
+        fontSize:28,
+        marginTop:"-7%"
     },
     editProfile:{
         color:"#2e344f",
-        fontSize:24,
+        fontSize:15,
     }
 });
 const IconStyles = StyleSheet.create({
@@ -137,6 +161,11 @@ const IconStyles = StyleSheet.create({
         fontSize:20,
         alignSelf: 'center',
         color:"#e4e6e9"
+    },
+    disabledEditArrowRight:{
+        fontSize:20,
+        alignSelf: 'center',
+        color:"#333"
     },
     iconLeft:{
         fontSize:22,
@@ -158,14 +187,21 @@ const IconStyles = StyleSheet.create({
         flexDirection:'column'
     },
     addProfilePic:{
-        fontSize:24,
-        alignSelf:'flex-end',
-        paddingBottom:10
+        color:"#e4e6e9",
+        fontSize:22,
+        textAlign:'center'
     },
     profilePicture:{
-        width: 200,
-        height: 200,
-        borderRadius:100
+        width: 75,
+        height: 75,
+        borderRadius:100,
+        zIndex: 0,
+        elevation: 0,
+    },
+    signUpPicture:{
+        width:150,
+        height:150,
+        borderRadius:250
     },
     editIcon:{
         color:"#000",
@@ -181,22 +217,60 @@ const ProfileStyles = StyleSheet.create({
         justifyContent:'space-evenly'
     },
     card:{
-        flexDirection:"column",
+        flexDirection:"row",
         alignItems: 'center',
+        justifyContent:'space-between',
         width:'100%',
-        padding:'2%',
+        padding:'2%'
     },
     editProfile:{
         flexDirection:"row",
         justifyContent:'space-evenly',
         alignSelf:"center",
         alignItems: 'center',
-        width:'60%',
-        marginTop:'5%',
-        padding:'4%',
+        width:'35%',
+        marginTop:'1%',
+        padding:'1%',
         borderRadius:15,
         borderColor:"#f97c4d",
         borderWidth: 1.5
+    },
+    profilePenContainer:{
+        position:"relative",
+        justifyContent:'center',
+        top:-25,
+        left:45,
+        width:30,
+        height:30,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        backgroundColor:'#2e344f',
+        borderRadius:25,
+    },
+    editCameraContainer:{
+        position:"relative",
+        justifyContent:'center',
+        top:-25,
+        left:100,
+        width:40,
+        height:40,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        backgroundColor:'#2e344f',
+        borderRadius:25,
+    },
+    profilePen:{
+        color:"#e4e6e9",
+        fontSize:22,
+        textAlign:'center'
     },
     editButton:{
         fontSize:24,
@@ -432,19 +506,19 @@ const CardStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding:10,
-        marginTop:"60%"
     },
     loadContainer:{
         backgroundColor:'#eee',
         height:ScreenHeight,
-        flex:1,
         alignItems: 'center',
         justifyContent: 'center',
-        width:ScreenWidth * .95
+        width:ScreenWidth * .95,
+        marginTop:"5%"
     },
     card: {
         height:ScreenHeight,
         width:ScreenWidth * .95,
+        marginTop:"60%"
     },
     cardTitle: {
         fontSize: 24,
@@ -475,7 +549,7 @@ const CardStyle = StyleSheet.create({
         alignItems: 'flex-end',
         justifyContent:'space-between',
         position:'relative',
-        top:380,
+        top:'125%',
         left:0
     },
     yelpStars:{
@@ -534,20 +608,21 @@ const CardStyle = StyleSheet.create({
     yupNopeView:{
         position:'relative',
         flexDirection:'row-reverse',
-        bottom:200,
-        justifyContent:"space-evenly"
+        bottom:180,
+        justifyContent:"space-evenly",
     },
     yupNopeButtons:{
         borderRadius:100,
         backgroundColor:"#fff",
-        width:65,
-        height:65,
+        width:75,
+        height:75,
         shadowColor: '#000',
         shadowOffset: {width: 0, height: 0},
         shadowOpacity: 0.2,
         shadowRadius: 3,
-        alignItems:'center',
-        padding:5
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding:1
     }
 
 })

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity,LogBox} from "react-native";
 import {useNavigation} from '@react-navigation/native'
 import burgerGIF from '../assets/burger.gif';
@@ -95,6 +95,7 @@ class LoadingCard extends React.Component {
     }
 
     updateLobby = () => {
+        data = [];
         if (this.props.isHost === true) {
             //updates the start field in the current session to true to send everyone to the swipe feature
             firebase.firestore().collection('sessions')
@@ -122,8 +123,11 @@ class LoadingCard extends React.Component {
                 <View style={{
                     borderTopLeftRadius:10,
                     borderTopRightRadius:10,
+                    borderBottomRightRadius:10,
+                    borderBottomLeftRadius:10,
                     overflow: 'hidden',
                     width: "100%",
+                    backgroundColor:"#fff"
                 }}>
                     <Image source={burgerGIF} style={{
                         width: "100%",
@@ -131,13 +135,14 @@ class LoadingCard extends React.Component {
                         aspectRatio: 1,
                         borderTopLeftRadius:10,
                         borderTopRightRadius:10,
-                        overlayColor: 'white'
+                        overlayColor: 'white',
+
                     }}/>
                     <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
-                        <Text style={CardStyle.yelpText}>Finding Local Restaurants...</Text>
-                        <Text style={CardStyle.yelpText}>Please remember, if you are waiting a long time
+                        <Text style={{color:"#000", fontSize:18}}>Finding Local Restaurants...</Text>
+                        <Text style={{color:"#000", fontSize:18}}>Please remember, if you are waiting a long time
                             for the restaurants to load, there may be no restaurants nearby or your connection was lost.
-                            If this is the case,please head back to the lobby and increase the distance or establish a connection.</Text>
+                            If this is the case, please head back to the lobby and increase the distance or establish a connection.</Text>
                     </View>
                     <TouchableOpacity style={CardStyle.backButton} onPress={() => {
                         this.updateLobby();
@@ -156,32 +161,42 @@ let unsub;
 let unsubs = [];
 
 const Cards = (props) => {
-    let [resCounter, setCounter] = useState(0);
-    let [modalVisible, setModalVisible] = useState(false);
+    let [yelpData, setYelpData] = useState([]);
+    let [offset, setOffset] = useState(props.offset);
+    const handleCardSet = useCallback((value) => {
+        props.setCard(value)
+    }, [props.setCard])
+
+    const handleModalSet = useCallback((value) => {
+        props.setModalVisible(value)
+    }, [props.setModalVisible])
+
+    const handleSetCounter = useCallback((value) => {
+        props.setCounter(value)
+    }, [props.setCounter])
+
     const navigation = useNavigation();
-    let [cardState, setCardState] = useState({
-        id: "0",
-        name: "name",
-        price_range: "price_range",
-        address: "address",
-        rating: "rating",
-        review_count: "0",
-        distance: "0",
-        phone_numbers: "phone_number",
-        imageURL: "imageURL",
-        businessURL: ""
-    });
     let address = [];
     let name = [];
     let counter = 0;
     let swipeCardRef = React.createRef();
-    let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users')
+    let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users');
 
-    props.unsubs.forEach(unsub => {
-        unsubs.push(unsub);
-    })
+    useEffect(() => {
+        if(yelpData.length === 0) {
+            getYelpData().then(r => {
+                console.log("hit api")
+                setData(r)
+                setYelpData(r)
+            })
+        } else {
+            console.log("Render Again");
+        }
+    }, [yelpData]);
 
-    setData(YelpAPI(props.zip, props.categories, props.offset, props.distance, props.latitude, props.longitude));
+    async function getYelpData() {
+        return await YelpAPI(props.zip, props.categories, offset, props.distance, props.latitude, props.longitude)
+    }
 
     function setData(restaurantData) {
         try {
@@ -317,21 +332,23 @@ const Cards = (props) => {
         let restaurantID = card.id
 
         usersRef.doc(firebase.auth().currentUser.uid).set({
-            [resCounter]: restaurantID
+            [props.resCounter]: restaurantID
         }, {merge: true}).then(() => {
             console.log("Restaurant successfully written!");
-            setCounter(resCounter + 1);
+            handleSetCounter(props.resCounter + 1);
         }).catch((error) => {
             console.error("Error writing restaurant: ", error);
         });
 
         unsub = usersRef.onSnapshot(querySnapshot => {
-            console.log(querySnapshot.size)
+            //console.log(querySnapshot.size)
             querySnapshot.forEach(documentSnapshot => {
                 if (querySnapshot.size === 1) {
+                    console.log("setting card and modal")
                     //sets card state and shows modal when solo
-                    setCardState(card)
-                    setModalVisible(true)
+                    handleCardSet(card)
+                    handleModalSet(true)
+                    unsub();
                 } else {
                     //if in a group, and match is not true
                     if (match === false) {
@@ -348,8 +365,8 @@ const Cards = (props) => {
                                     if (querySnapshot.size === counter) {
                                         //set match to true, set card state, show modal, and console matched
                                         match = true
-                                        setCardState(card)
-                                        setModalVisible(true)
+                                        handleCardSet(card)
+                                        handleModalSet(true)
                                         console.log("Matched!")
                                     }
                                 }
@@ -362,6 +379,7 @@ const Cards = (props) => {
             //reset counter so when snapshot detects changes, it doesn't over count
             counter = 1;
         })
+
         unsubs.push(unsub)
         return true;
     }
@@ -374,7 +392,7 @@ const Cards = (props) => {
     function loveIt() {
         const increment = 1;
         let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
-            .collection('matched').doc(cardState.id)
+            .collection('matched').doc(props.card.id)
 
         let sessionSize;
         usersRef.onSnapshot(querySnapshot => {
@@ -435,7 +453,7 @@ const Cards = (props) => {
     function hateIt() {
         //basically the same as love it minus some features
         let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
-            .collection('matched').doc(cardState.id)
+            .collection('matched').doc(props.card.id)
 
         let sessionSize;
         usersRef.onSnapshot(querySnapshot => {
@@ -472,7 +490,7 @@ const Cards = (props) => {
     if (data.length === 0) {
         return (
             <View style={CardStyle.container}>
-                <LoadingCard code={props.code} offset={props.offset} navigation={navigation} isHost={props.isHost}/>
+                <LoadingCard code={props.code} offset={offset} navigation={navigation} isHost={props.isHost}/>
             </View>
         )
     } else {
@@ -481,18 +499,18 @@ const Cards = (props) => {
                 <Modal
                     style={{flex: 1, justifyContent: 'center'}}
                     animationType="slide"
-                    visible={modalVisible}
+                    visible={props.modalVisible}
                     onRequestClose={() => {
-                        setModalVisible(!modalVisible);
+                        handleModalSet(!props.modalVisible);
                     }}>
                     <View style={CardStyle.modalView}>
                         <Text style={CardStyle.modalText}>Let's Eat!</Text>
-                        <Image source={{uri: `${cardState.imageURL}`}} style={CardStyle.cardImageModal}/>
-                        <Text style={CardStyle.modalText}>The group chose {'\n' + cardState.name}</Text>
+                        <Image source={{uri: `${props.card.imageURL}`}} style={CardStyle.cardImageModal}/>
+                        <Text style={CardStyle.modalText}>The group chose {'\n' + props.card.name}</Text>
                         <Pressable style={InputStyles.buttons}
                                    onPress={() => {
-                                       loveIt(cardState)
-                                       setModalVisible(!modalVisible)
+                                       loveIt(props.card)
+                                       handleModalSet(!props.modalVisible)
                                    }}>
                             <Ionicons style={IconStyles.iconLeft} name="heart"/>
                             <Text style={InputStyles.buttonText}>Love It!</Text>
@@ -500,8 +518,8 @@ const Cards = (props) => {
                         </Pressable>
                         <Pressable style={InputStyles.buttons}
                                    onPress={() => {
-                                       hateIt(cardState)
-                                       setModalVisible(!modalVisible)
+                                       hateIt(props.card)
+                                       handleModalSet(!props.modalVisible)
                                    }}>
                             <Ionicons style={IconStyles.iconLeft} name="heart-dislike"/>
                             <Text style={InputStyles.buttonText}>Keep Swiping</Text>
@@ -536,18 +554,8 @@ const Cards = (props) => {
                     renderNoMoreCards={() => {
                         let size = data.length
                         data = []
-                        return (
-                            <Cards
-                                code={props.code}
-                                zip={props.zip}
-                                offset={props.offset + size}
-                                distance={props.distance}
-                                isHost={props.isHost}
-                                categories={props.categories}
-                                latitude={props.latitude}
-                                longitude={props.longitude}
-                                unsubs={unsubs}
-                            />)
+                        setTimeout(() => setOffset(offset + size), 0);
+                        setTimeout(() => setYelpData([]), 0);
                         }
                     }
 

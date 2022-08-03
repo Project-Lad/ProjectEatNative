@@ -14,7 +14,7 @@ import "firebase/firestore";
 import { useNavigation} from '@react-navigation/native'
 import {CheckBox} from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
-import {InputStyles,IconStyles} from "./InputStyles";
+import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import userPhoto from '../assets/user-placeholder.png'
 import * as WebBrowser from 'expo-web-browser';
@@ -150,8 +150,10 @@ export default function Signup(){
                                style={IconStyles.profilePicture}
                                resizeMode='contain'/>
                         :
-                        <Image source={{ uri: image.photoURL }} style={IconStyles.profilePicture} />}
-                    <Ionicons style={IconStyles.addProfilePic} name="person-add-outline"/>
+                        <Image source={{ uri: image.photoURL }} style={IconStyles.signUpPicture} />}
+                    <View style={ProfileStyles.editCameraContainer}>
+                        <Ionicons style={IconStyles.addProfilePic} name="person-add-outline"/>
+                    </View>
                 </TouchableOpacity>
             </View>
             <TextInput

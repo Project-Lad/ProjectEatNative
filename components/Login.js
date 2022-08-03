@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-    StyleSheet,
     Text,
     View,
     TextInput,
@@ -8,7 +7,8 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     KeyboardAvoidingView,
-    Platform, Image,LogBox
+    Platform,
+    LogBox
 } from 'react-native';
 import firebase from "firebase";
 import "firebase/firestore";
@@ -35,7 +35,7 @@ export default class Login extends Component {
         this.setState(state);
     }
 
-    userLogin = (email, password) => {
+    userLogin = () => {
         if(this.state.email === '' && this.state.password === '') {
             Alert.alert('Enter details to Sign In!')
         } else {
