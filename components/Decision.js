@@ -46,20 +46,24 @@ const Decision = ({route}) => {
     let [isLoading, setIsLoading] = useState(false)
     let [selectedIndex, setSelectedIndex] = useState(0)
     let navigation = useNavigation()
-    let rating = ""
-    let phone = ""
-    let address = []
-    let name = []
-    let googleURL = "https://www.google.com/maps/search/?api=1&query=";
+    let [rating, setRating] = useState("");
+    let [phone, setPhone] = useState("");
+    let [address, setAddress] = useState([]);
+    let [name, setName] = useState([]);
+    let [googleURL, setGoogleURL] = useState("https://www.google.com/maps/search/?api=1&query=");
     let counter = 0
 
     useEffect(() => {
         console.log("Getting Data")
         console.log("Our Data: ", route.params.ourData)
         if(route.params.ourData) {
-            getOurData()
+            getOurData().then(() => {
+
+            })
         } else {
-            getData() //use API fetch only once to reduce amount of API calls
+            getData().then(() => {
+
+            }) //use API fetch only once to reduce amount of API calls
         }
         setIsLoading(true)
         clearSubs()
@@ -68,7 +72,7 @@ const Decision = ({route}) => {
     setData()   //called everytime an action occurs on the screen
                 //cannot call just one time otherwise googleURL doesn't work
 
-    function getData(){
+    async function getData() {
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${YELP_API_KEY}`);
 
@@ -78,7 +82,7 @@ const Decision = ({route}) => {
             redirect: 'follow'
         };
 
-        fetch(`https://api.yelp.com/v3/businesses/${route.params.id}`, requestOptions)
+        await fetch(`https://api.yelp.com/v3/businesses/${route.params.id}`, requestOptions)
             .then(response => response.json())
             .then(result => {
                 setRestaurant(result);
@@ -86,34 +90,30 @@ const Decision = ({route}) => {
             .catch(error => console.log('error', error));
     }
 
-    function getOurData() {
+    async function getOurData() {
         const restaurantRef = firebase.firestore().collection('restaurants').doc(route.params.id);
-        const name = restaurantRef.get('name');
-        const price_range = restaurantRef.get('price_range');
-        const location = restaurantRef.get('location');
-        const rating = restaurantRef.get('rating');
-        const review_count = restaurantRef.get('review_count');
-        const phone_numbers = restaurantRef.get('phone_numbers')
-        const imageURL = restaurantRef.get('imageURL')
-        const businessURL = restaurantRef.get('businessURL')
-        const id = restaurantRef.id
+        const doc = await restaurantRef.get();
 
-        setRestaurant({
-            name: name,
-            location: {
-                address1: location.address1,
-                address2: location.address2,
-                address3: location.address3,
-                city: location.city,
-                state: location.state
-            },
-            review_count: review_count,
-            rating: rating,
-            price_range: price_range,
-            phone: phone_numbers,
-            businessURL: businessURL,
-            photos: [imageURL],
-        })
+        if(!doc.exists) {
+            console.log("Document Doesn't Exist")
+        } else {
+            setRestaurant({
+                name: doc.data().name,
+                location: {
+                    address1: doc.data().location.address1,
+                    address2: doc.data().location.address2,
+                    address3: doc.data().location.address3,
+                    city: doc.data().location.city,
+                    state: doc.data().location.state
+                },
+                review_count: doc.data().review_count,
+                rating: doc.data().rating,
+                price_range: doc.data().price_range,
+                phone: doc.data().phone_numbers,
+                businessURL: doc.data().businessURL,
+                photos: [doc.data().imageURL]
+            })
+        }
     }
 
     function setData() {

@@ -35,6 +35,7 @@ import {CardStyle, IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 LogBox.ignoreLogs(['Setting a timer']);
 import YelpAPI from "./YelpAPI.js";
+import {FirebaseData} from "./YelpAPI.js";
 
 class Card extends React.Component {
     constructor(props) {
@@ -139,10 +140,20 @@ class LoadingCard extends React.Component {
 
                     }}/>
                     <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
-                        <Text style={{color:"#000", fontSize:18}}>Finding Local Restaurants...</Text>
-                        <Text style={{color:"#000", fontSize:18}}>Please remember, if you are waiting a long time
-                            for the restaurants to load, there may be no restaurants nearby or your connection was lost.
-                            If this is the case, please head back to the lobby and increase the distance or establish a connection.</Text>
+                        <Text style={{color:"#000", fontSize:18}}>
+                            {this.props.loadingMessage === "" ?
+                                    "Finding Local Restaurants..."
+                                :
+                                    "All out of Restaurants!"
+                            }
+                        </Text>
+                        <Text style={{color:"#000", fontSize:18}}>
+                            {this.props.loadingMessage === "" ?
+                                    "Please remember, if you are waiting a long time for the restaurants to load, there may be no restaurants nearby or your connection was lost. If this is the case, please head back to the lobby and increase the distance or establish a connection."
+                                :
+                                    this.props.loadingMessage
+                            }
+                        </Text>
                     </View>
                     <TouchableOpacity style={CardStyle.backButton} onPress={() => {
                         this.updateLobby();
@@ -161,8 +172,11 @@ let unsub;
 let unsubs = [];
 
 const Cards = (props) => {
-    let [yelpData, setYelpData] = useState([]);
+    let [resData, setResData] = useState([]);
     let [offset, setOffset] = useState(props.offset);
+    let [calledFirebase, setCalledFirebase] = useState(false);
+    let [calledYelp, setCalledYelp] = useState(false);
+    let [loadingMessage, setLoadingMessage] = useState("");
     const handleCardSet = useCallback((value) => {
         props.setCard(value)
     }, [props.setCard])
@@ -183,19 +197,41 @@ const Cards = (props) => {
     let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users');
 
     useEffect(() => {
-        if(yelpData.length === 0) {
-            getYelpData().then(r => {
-                console.log("hit api")
-                setData(r)
-                setYelpData(r)
-            })
+        if(resData.length === 0) {
+            if(calledFirebase) {
+                if(!calledYelp) {
+                    getYelpData().then(r => {
+                        console.log("hit api")
+
+                        if(r.length !== 0) {
+                            setData(r)
+                            setResData(r)
+                        } else {
+                            setLoadingMessage("Oops! Ran out of restaurants? Try increasing your distance!")
+                        }
+
+                        setCalledYelp(true)
+                    })
+                }
+            } else {
+                getFirebaseData().then(r => {
+                    console.log("hit firebase api")
+                    setData(r)
+                    setResData(r)
+                })
+                setCalledFirebase(true);
+            }
         } else {
             console.log("Render Again");
         }
-    }, [yelpData]);
+    }, [resData]);
 
     async function getYelpData() {
         return await YelpAPI(props.zip, props.categories, offset, props.distance, props.latitude, props.longitude)
+    }
+
+    async function getFirebaseData() {
+        return await FirebaseData(props.zip, props.categories, offset, props.distance, props.latitude, props.longitude)
     }
 
     function setData(restaurantData) {
@@ -441,7 +477,7 @@ const Cards = (props) => {
                         code: props.code,
                         unsubs: unsubs,
                         isHost: props.isHost,
-                        ourData: !props.usedFirebase
+                        ourData: calledFirebase
                     })
                     console.log("Majority Rule")
                 }
@@ -491,7 +527,7 @@ const Cards = (props) => {
     if (data.length === 0) {
         return (
             <View style={CardStyle.container}>
-                <LoadingCard code={props.code} offset={offset} navigation={navigation} isHost={props.isHost}/>
+                <LoadingCard code={props.code} offset={offset} navigation={navigation} isHost={props.isHost} loadingMessage={loadingMessage}/>
             </View>
         )
     } else {
@@ -556,7 +592,8 @@ const Cards = (props) => {
                         let size = data.length
                         data = []
                         setTimeout(() => setOffset(offset + size), 0);
-                        setTimeout(() => setYelpData([]), 0);
+                        setTimeout(() => setCalledYelp(false), 0);
+                        setTimeout(() => setResData([]), 0);
                         }
                     }
 
