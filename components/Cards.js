@@ -3,9 +3,7 @@ import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity
 import {useNavigation} from '@react-navigation/native'
 import burgerGIF from '../assets/burger.gif';
 import burgerJPG from '../assets/burger.jpg';
-//import YelpImage from '../assets/YelpImage.png'
 import YelpBurst from '../assets/yelp_burst.png'
-import Data from './YelpAPI.js'
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
 import androidStar15 from '../assets/android/stars_regular_1_half.png'
@@ -118,40 +116,50 @@ class LoadingCard extends React.Component {
 
     render() {
         return (
-        <View style={CardStyle.loadContainer}>
-            <View style={CardStyle.card}>
-                <View style={{
-                    borderTopLeftRadius:10,
-                    borderTopRightRadius:10,
-                    borderBottomRightRadius:10,
-                    borderBottomLeftRadius:10,
-                    overflow: 'hidden',
-                    width: "100%",
-                    backgroundColor:"#fff"
-                }}>
-                    <Image source={burgerGIF} style={{
-                        width: "100%",
-                        height: undefined,
-                        aspectRatio: 1,
+            <View style={CardStyle.loadContainer}>
+                <View style={CardStyle.card}>
+                    <View style={{
                         borderTopLeftRadius:10,
                         borderTopRightRadius:10,
-                        overlayColor: 'white',
-
-                    }}/>
-                    <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
-                        <Text style={{color:"#000", fontSize:18}}>Finding Local Restaurants...</Text>
-                        <Text style={{color:"#000", fontSize:18}}>Please remember, if you are waiting a long time
-                            for the restaurants to load, there may be no restaurants nearby or your connection was lost.
-                            If this is the case, please head back to the lobby and increase the distance or establish a connection.</Text>
-                    </View>
-                    <TouchableOpacity style={CardStyle.backButton} onPress={() => {
-                        this.updateLobby();
+                        borderBottomRightRadius:10,
+                        borderBottomLeftRadius:10,
+                        overflow: 'hidden',
+                        width: "100%",
+                        backgroundColor:"#fff"
                     }}>
-                        <Ionicons style={IconStyles.iconBackLobby} name="arrow-undo-outline"/>
-                    </TouchableOpacity>
+                        <Image source={burgerGIF} style={{
+                            width: "100%",
+                            height: undefined,
+                            aspectRatio: 1,
+                            borderTopLeftRadius:10,
+                            borderTopRightRadius:10,
+                            overlayColor: 'white',
+
+                        }}/>
+                        <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
+                            <Text style={{color:"#000", fontSize:18}}>
+                                {this.props.loadingMessage === "" ?
+                                    "Finding Local Restaurants..."
+                                    :
+                                    "All out of Restaurants!"
+                                }
+                            </Text>
+                            <Text style={{color:"#000", fontSize:18}}>
+                                {this.props.loadingMessage === "" ?
+                                    "Please remember, if you are waiting a long time for the restaurants to load, there may be no restaurants nearby or your connection was lost. If this is the case, please head back to the lobby and increase the distance or establish a connection."
+                                    :
+                                    this.props.loadingMessage
+                                }
+                            </Text>
+                        </View>
+                        <TouchableOpacity style={CardStyle.backButton} onPress={() => {
+                            this.updateLobby();
+                        }}>
+                            <Ionicons style={IconStyles.iconBackLobby} name="arrow-undo-outline"/>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
-        </View>
         )
     }
 }
@@ -161,8 +169,10 @@ let unsub;
 let unsubs = [];
 
 const Cards = (props) => {
-    let [yelpData, setYelpData] = useState([]);
+    let [resData, setResData] = useState([]);
     let [offset, setOffset] = useState(props.offset);
+    let [calledYelp, setCalledYelp] = useState(false);
+    let [loadingMessage, setLoadingMessage] = useState("");
     const handleCardSet = useCallback((value) => {
         props.setCard(value)
     }, [props.setCard])
@@ -183,16 +193,25 @@ const Cards = (props) => {
     let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users');
 
     useEffect(() => {
-        if(yelpData.length === 0) {
-            getYelpData().then(r => {
-                console.log("hit api")
-                setData(r)
-                setYelpData(r)
-            })
+        if(resData.length === 0) {
+            if(!calledYelp) {
+                getYelpData().then(r => {
+                    console.log("hit api")
+
+                    if(r.length !== 0) {
+                        setData(r)
+                        setResData(r)
+                    } else {
+                        setLoadingMessage("Oops! It seems you have run out of restaurants! Try increasing your distance to keep the search going!")
+                    }
+
+                    setCalledYelp(true)
+                })
+            }
         } else {
             console.log("Render Again");
         }
-    }, [yelpData]);
+    }, [resData]);
 
     async function getYelpData() {
         return await YelpAPI(props.zip, props.categories, offset, props.distance, props.latitude, props.longitude)
@@ -322,7 +341,7 @@ const Cards = (props) => {
                 counter = 0;
             }
         } catch (e) {
-            console.log("Error: ", e)
+            console.log("Error setting data: ", e)
         }
     }
 
@@ -490,7 +509,7 @@ const Cards = (props) => {
     if (data.length === 0) {
         return (
             <View style={CardStyle.container}>
-                <LoadingCard code={props.code} offset={offset} navigation={navigation} isHost={props.isHost}/>
+                <LoadingCard code={props.code} offset={offset} navigation={navigation} isHost={props.isHost} loadingMessage={loadingMessage}/>
             </View>
         )
     } else {
@@ -538,7 +557,7 @@ const Cards = (props) => {
                                     swipeCardRef.current.swipeYup()
                                     handleYup(swipeCardRef.current.state.card)
                                 }}>
-                                      <Ionicons style={{fontSize:48}} name={"thumbs-up-outline"}/>
+                                    <Ionicons style={{fontSize:48}} name={"thumbs-up-outline"}/>
 
                                 </TouchableOpacity>
                                 <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
@@ -555,8 +574,9 @@ const Cards = (props) => {
                         let size = data.length
                         data = []
                         setTimeout(() => setOffset(offset + size), 0);
-                        setTimeout(() => setYelpData([]), 0);
-                        }
+                        setTimeout(() => setCalledYelp(false), 0);
+                        setTimeout(() => setResData([]), 0);
+                    }
                     }
 
                     actions={{
