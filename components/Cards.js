@@ -1,11 +1,9 @@
-import React, {useState} from 'react';
-import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity} from "react-native";
+import React, {useCallback, useEffect, useState} from 'react';
+import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity,LogBox} from "react-native";
 import {useNavigation} from '@react-navigation/native'
 import burgerGIF from '../assets/burger.gif';
 import burgerJPG from '../assets/burger.jpg';
-//import YelpImage from '../assets/YelpImage.png'
 import YelpBurst from '../assets/yelp_burst.png'
-import Data from './YelpAPI.js'
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
 import androidStar15 from '../assets/android/stars_regular_1_half.png'
@@ -33,6 +31,8 @@ import firebase from "../firebase";
 import "firebase/firestore"
 import {CardStyle, IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
+LogBox.ignoreLogs(['Setting a timer']);
+import YelpAPI from "./YelpAPI.js";
 
 class Card extends React.Component {
     constructor(props) {
@@ -44,14 +44,13 @@ class Card extends React.Component {
                 <View style={CardStyle.card}>
                     <Image source={this.props.imageURL} style={CardStyle.cardImage} />
                     <View style={CardStyle.yelpInfo}>
-                        <Text style={CardStyle.cardsText}>{this.props.name}</Text>
-                        <View>
-                            <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
-                            <Text style={CardStyle.yelpText}>{this.props.address}</Text>
-                        </View>
-
+                        <Text style={CardStyle.cardTitle}>{this.props.name}</Text>
                         <View style={CardStyle.yelpReview}>
                             <View style={{width:'85%'}}>
+                                <View>
+                                    <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
+                                    <Text style={CardStyle.yelpText}>{this.props.address}</Text>
+                                </View>
                                 <Image style={CardStyle.yelpStars} source={this.props.rating} />
                                 <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
                             </View>
@@ -64,26 +63,25 @@ class Card extends React.Component {
             )
         }else {
             return (
-                    <View style={CardStyle.card}>
-                        <Image source={{uri: `${this.props.imageURL}`}} style={CardStyle.cardImage}/>
-                        <View style={CardStyle.yelpInfo}>
-                            <Text style={CardStyle.cardsText}>{this.props.name}</Text>
-                            <View>
-                                <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
-                                <Text style={CardStyle.yelpText}>{this.props.address}</Text>
-                            </View>
-
-                            <View style={CardStyle.yelpReview}>
-                                <View style={{width:'90%'}}>
-                                    <Image style={CardStyle.yelpStars} source={this.props.rating} />
-                                    <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
+                <View style={CardStyle.card}>
+                    <Image source={{uri: `${this.props.imageURL}`}} style={CardStyle.cardImage}/>
+                    <View style={CardStyle.yelpInfo}>
+                        <Text style={CardStyle.cardTitle}>{this.props.name}</Text>
+                        <View style={CardStyle.yelpReview}>
+                            <View style={{width:'90%'}}>
+                                <View>
+                                    <Text style={CardStyle.yelpText}>{(this.props.distance / 1609.3).toFixed(2)} mi.</Text>
+                                    <Text style={CardStyle.yelpText}>{this.props.address}</Text>
                                 </View>
-                                <TouchableOpacity style={{width:'10%'}} onPress={() => Linking.openURL(this.props.businessURL)}>
-                                    <Image style={CardStyle.yelpImage} source={YelpBurst}/>
-                                </TouchableOpacity>
+                                <Image style={CardStyle.yelpStars} source={this.props.rating} />
+                                <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
                             </View>
+                            <TouchableOpacity style={{width:'10%'}} onPress={() => Linking.openURL(this.props.businessURL)}>
+                                <Image style={CardStyle.yelpImage} source={YelpBurst}/>
+                            </TouchableOpacity>
                         </View>
                     </View>
+                </View>
             )
         }
     }
@@ -95,16 +93,17 @@ class LoadingCard extends React.Component {
     }
 
     updateLobby = () => {
-        //updates the start field in the current session to true to send everyone to the swipe feature
-        firebase.firestore().collection('sessions')
-            .doc(this.props.code).update({zip: null, start: false, distance: null})
-            .then(() => {
-                console.log("Reset lobby data.")
-            }).catch(error => {
-            console.log(`Encountered Update Error: ${error}`)
-        })
-
+        data = [];
         if (this.props.isHost === true) {
+            //updates the start field in the current session to true to send everyone to the swipe feature
+            firebase.firestore().collection('sessions')
+                .doc(this.props.code).update({zip: null, start: false, distance: null})
+                .then(() => {
+                    console.log("Reset lobby data.")
+                }).catch(error => {
+                console.log(`Encountered Update Error: ${error}`)
+            })
+
             //if user is the host
             console.log(this.props.isHost)
             this.props.navigation.navigate('HostSession', {code: this.props.code, zip: null, distance: null})
@@ -117,42 +116,50 @@ class LoadingCard extends React.Component {
 
     render() {
         return (
-        <View style={CardStyle.loadContainer}>
-            <View style={CardStyle.card}>
-                <View style={{
-                    borderTopLeftRadius:10,
-                    borderTopRightRadius:10,
-                    overflow: 'hidden',
-                    width: "100%",
-                }}>
-                    <Image source={burgerGIF} style={{
-                        width: "100%",
-                        height: undefined,
-                        aspectRatio: 1,
+            <View style={CardStyle.loadContainer}>
+                <View style={CardStyle.card}>
+                    <View style={{
                         borderTopLeftRadius:10,
                         borderTopRightRadius:10,
-                        overlayColor: 'white'
-                    }}/>
-                    <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
-                        <Text style={CardStyle.cardsText}>Finding Local Restaurants...</Text>
-                        <Text style={CardStyle.yelpText}>Please remember, if you are waiting a long time
-                            for the restaurants to load, there may be no restaurants nearby or your connection was lost.
-                            If this is the case,please head back to the lobby and increase the distance or establish a connection.</Text>
-                    </View>
-                    <TouchableOpacity style={CardStyle.backButton} onPress={() => {
-                        this.updateLobby();
+                        borderBottomRightRadius:10,
+                        borderBottomLeftRadius:10,
+                        overflow: 'hidden',
+                        width: "100%",
+                        backgroundColor:"#fff"
                     }}>
-                        <Ionicons style={IconStyles.iconLeft} name="arrow-undo-outline"/>
-                        {/*                            <Text style={{
-                                color:'#EEEEEE',
-                                fontWeight: "400",
-                                fontSize: 20,
-                                paddingLeft:10,
-                            }}>Back to Lobby</Text>*/}
-                    </TouchableOpacity>
+                        <Image source={burgerGIF} style={{
+                            width: "100%",
+                            height: undefined,
+                            aspectRatio: 1,
+                            borderTopLeftRadius:10,
+                            borderTopRightRadius:10,
+                            overlayColor: 'white',
+
+                        }}/>
+                        <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
+                            <Text style={{color:"#000", fontSize:18}}>
+                                {this.props.loadingMessage === "" ?
+                                    "Finding Local Restaurants..."
+                                    :
+                                    "All out of Restaurants!"
+                                }
+                            </Text>
+                            <Text style={{color:"#000", fontSize:18}}>
+                                {this.props.loadingMessage === "" ?
+                                    "Please remember, if you are waiting a long time for the restaurants to load, there may be no restaurants nearby or your connection was lost. If this is the case, please head back to the lobby and increase the distance or establish a connection."
+                                    :
+                                    this.props.loadingMessage
+                                }
+                            </Text>
+                        </View>
+                        <TouchableOpacity style={CardStyle.backButton} onPress={() => {
+                            this.updateLobby();
+                        }}>
+                            <Ionicons style={IconStyles.iconBackLobby} name="arrow-undo-outline"/>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
-        </View>
         )
     }
 }
@@ -162,30 +169,56 @@ let unsub;
 let unsubs = [];
 
 const Cards = (props) => {
-    let [resCounter, setCounter] = useState(0);
-    let [modalVisible, setModalVisible] = useState(false);
+    let [resData, setResData] = useState([]);
+    let [offset, setOffset] = useState(props.offset);
+    let [calledYelp, setCalledYelp] = useState(false);
+    let [loadingMessage, setLoadingMessage] = useState("");
+    const handleCardSet = useCallback((value) => {
+        props.setCard(value)
+    }, [props.setCard])
+
+    const handleModalSet = useCallback((value) => {
+        props.setModalVisible(value)
+    }, [props.setModalVisible])
+
+    const handleSetCounter = useCallback((value) => {
+        props.setCounter(value)
+    }, [props.setCounter])
+
     const navigation = useNavigation();
-    let [cardState, setCardState] = useState({
-        id: "0",
-        name: "name",
-        price_range: "price_range",
-        address: "address",
-        rating: "rating",
-        review_count: "0",
-        distance: "0",
-        phone_numbers: "phone_number",
-        imageURL: "imageURL",
-        businessURL: ""
-    });
     let address = [];
     let name = [];
     let counter = 0;
-    let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users')
+    let swipeCardRef = React.createRef();
+    let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users');
 
-    setData(props.restaurantData)
+    useEffect(() => {
+        if(resData.length === 0) {
+            if(!calledYelp) {
+                getYelpData().then(r => {
+                    console.log("hit api")
+
+                    if(r.length !== 0) {
+                        setData(r)
+                        setResData(r)
+                    } else {
+                        setLoadingMessage("Oops! It seems you have run out of restaurants! Try increasing your distance to keep the search going!")
+                    }
+
+                    setCalledYelp(true)
+                })
+            }
+        } else {
+            console.log("Render Again");
+        }
+    }, [resData]);
+
+    async function getYelpData() {
+        return await YelpAPI(props.zip, props.categories, offset, props.distance, props.latitude, props.longitude)
+    }
 
     function setData(restaurantData) {
-        try{
+        try {
             for (let i = 0; i < restaurantData.length; i++) {
                 const current = restaurantData[i];
 
@@ -193,14 +226,14 @@ const Cards = (props) => {
                 name = current.name;
                 const price_range = current.price;
                 address = current.location.address1;
-                if(current.location.address2 === '' || current.location.address2 === null) {
+                if (current.location.address2 === '' || current.location.address2 === null) {
                     //console.log("Address 2: Null")
                 } else {
                     address += ', ';
                     address += current.location.address2;
                 }
 
-                if(current.location.address3 === '' || current.location.address3 === null) {
+                if (current.location.address3 === '' || current.location.address3 === null) {
                     //console.log("Address 3: Null")
                 } else {
                     address += ', ';
@@ -215,7 +248,7 @@ const Cards = (props) => {
                 const businessURL = current.url;
                 let imageURL;
 
-                if(current.image_url === '') {
+                if (current.image_url === '') {
                     imageURL = burgerJPG;
                 } else {
                     imageURL = current.image_url;
@@ -224,8 +257,8 @@ const Cards = (props) => {
                 const distance = current.distance;
                 const review_count = current.review_count;
 
-                if(Platform.OS === 'android') {
-                    switch(rating) {
+                if (Platform.OS === 'android') {
+                    switch (rating) {
                         case 0:
                             rating = androidStar0
                             break;
@@ -258,7 +291,7 @@ const Cards = (props) => {
                             break;
                     }
                 } else {
-                    switch(rating) {
+                    switch (rating) {
                         case 0:
                             rating = iosStar0
                             break;
@@ -291,6 +324,7 @@ const Cards = (props) => {
                             break;
                     }
                 }
+
                 data.push({
                     id: id,
                     name: name,
@@ -307,7 +341,7 @@ const Cards = (props) => {
                 counter = 0;
             }
         } catch (e) {
-            console.log("Error: ", e)
+            console.log("Error setting data: ", e)
         }
     }
 
@@ -316,25 +350,24 @@ const Cards = (props) => {
         let counter = 1
         let restaurantID = card.id
 
-        console.log(props.code)
-
-
         usersRef.doc(firebase.auth().currentUser.uid).set({
-            [resCounter]: restaurantID
+            [props.resCounter]: restaurantID
         }, {merge: true}).then(() => {
             console.log("Restaurant successfully written!");
-            setCounter(resCounter + 1);
+            handleSetCounter(props.resCounter + 1);
         }).catch((error) => {
             console.error("Error writing restaurant: ", error);
         });
 
         unsub = usersRef.onSnapshot(querySnapshot => {
-            console.log(querySnapshot.size)
+            //console.log(querySnapshot.size)
             querySnapshot.forEach(documentSnapshot => {
                 if (querySnapshot.size === 1) {
+                    console.log("setting card and modal")
                     //sets card state and shows modal when solo
-                    setCardState(card)
-                    setModalVisible(true)
+                    handleCardSet(card)
+                    handleModalSet(true)
+                    unsub();
                 } else {
                     //if in a group, and match is not true
                     if (match === false) {
@@ -351,8 +384,8 @@ const Cards = (props) => {
                                     if (querySnapshot.size === counter) {
                                         //set match to true, set card state, show modal, and console matched
                                         match = true
-                                        setCardState(card)
-                                        setModalVisible(true)
+                                        handleCardSet(card)
+                                        handleModalSet(true)
                                         console.log("Matched!")
                                     }
                                 }
@@ -365,19 +398,20 @@ const Cards = (props) => {
             //reset counter so when snapshot detects changes, it doesn't over count
             counter = 1;
         })
+
         unsubs.push(unsub)
         return true;
     }
 
-    function handleNope (card) {
+    function handleNope(card) {
         console.log(`Nope for ${card.id}`)
         return true;
     }
 
-    function loveIt () {
+    function loveIt() {
         const increment = 1;
         let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
-            .collection('matched').doc(cardState.id)
+            .collection('matched').doc(props.card.id)
 
         let sessionSize;
         usersRef.onSnapshot(querySnapshot => {
@@ -387,7 +421,7 @@ const Cards = (props) => {
         //retrieve document
         matchedRef.get().then((doc) => {
             //if the document data isn't null
-            if(doc.data() === undefined) {
+            if (doc.data() === undefined) {
                 //console log that the document doesn't exist
                 console.log("Document Doesn't Exist, Creating Document")
                 //set the document counter to 1 for this user
@@ -403,7 +437,7 @@ const Cards = (props) => {
             }
 
             //if the data isn't null
-            if(doc.data() !== undefined) {
+            if (doc.data() !== undefined) {
                 //update current document
                 matchedRef.update({
                     counter: doc.data().counter + increment
@@ -417,11 +451,16 @@ const Cards = (props) => {
             unsub = matchedRef.onSnapshot(docSnapshot => {
                 console.log(docSnapshot.data())
                 //if majority of the group wants this
-                if((docSnapshot.data().counter / sessionSize) > 0.50) {
+                if ((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
                     data = []
-                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs})
+                    navigation.navigate('Final Decision', {
+                        id: docSnapshot.id,
+                        code: props.code,
+                        unsubs: unsubs,
+                        isHost: props.isHost
+                    })
                     console.log("Majority Rule")
                 }
             })
@@ -433,7 +472,7 @@ const Cards = (props) => {
     function hateIt() {
         //basically the same as love it minus some features
         let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
-            .collection('matched').doc(cardState.id)
+            .collection('matched').doc(props.card.id)
 
         let sessionSize;
         usersRef.onSnapshot(querySnapshot => {
@@ -441,7 +480,7 @@ const Cards = (props) => {
         })
 
         matchedRef.get().then((doc) => {
-            if(doc.data() === undefined) {
+            if (doc.data() === undefined) {
                 console.log("Document Doesn't Exist, Creating Document")
                 matchedRef.set({
                     counter: 0
@@ -454,11 +493,11 @@ const Cards = (props) => {
 
             unsub = matchedRef.onSnapshot(docSnapshot => {
                 console.log(docSnapshot.data())
-                if((docSnapshot.data().counter / sessionSize) > 0.50) {
+                if ((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
                     data = []
-                    navigation.navigate('Final Decision',{id: docSnapshot.id, code: props.code, unsubs: unsubs})
+                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs})
                     console.log("Majority Rule")
                 }
             })
@@ -467,56 +506,75 @@ const Cards = (props) => {
         })
     }
 
-    if (data.length === 0) {
-        return (
-            <View style={CardStyle.container}>
-                <LoadingCard code={props.code} offset={props.offset} navigation={navigation} isHost={props.isHost}/>
-            </View>
-        )
-    } else {
-        return (
-            <View style={CardStyle.container}>
-                    <Modal
-                        style={{flex:1, justifyContent:'center'}}
-                        animationType="slide"
-                        visible={modalVisible}
-                        onRequestClose={() => {
-                            setModalVisible(!modalVisible);
-                        }}>
-                        <View style={CardStyle.modalView}>
-                            <Text style={CardStyle.modalText}>Let's Eat!</Text>
-                            <Image source={{uri: `${cardState.imageURL}`}} style={CardStyle.cardImageModal}/>
-                            <Text style={CardStyle.modalText}>The group chose {'\n' + cardState.name}</Text>
-                            <Pressable style={InputStyles.buttons}
-                                       onPress={() => {
-                                           loveIt(cardState)
-                                           setModalVisible(!modalVisible)
-                                       }}>
-                                <Ionicons style={IconStyles.iconLeft} name="heart"/>
-                                <Text style={InputStyles.buttonText}>Love It!</Text>
-                                <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
-                            </Pressable>
-                            <Pressable style={InputStyles.buttons}
-                                       onPress={() => {
-                                           hateIt(cardState)
-                                           setModalVisible(!modalVisible)
-                                       }}>
-                                <Ionicons style={IconStyles.iconLeft} name="heart-dislike"/>
-                                <Text style={InputStyles.buttonText}>Keep Swiping</Text>
-                                <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
-                            </Pressable>
-                        </View>
-                    </Modal>
+    return (
+        <View style={CardStyle.container}>
+            <Modal
+                style={{flex: 1, justifyContent: 'center'}}
+                animationType="slide"
+                visible={props.modalVisible}
+                onRequestClose={() => {
+                    handleModalSet(!props.modalVisible);
+                }}>
+                <View style={CardStyle.modalView}>
+                    <Text style={CardStyle.modalText}>Let's Eat!</Text>
+                    <Image source={{uri: `${props.card.imageURL}`}} style={CardStyle.cardImageModal}/>
+                    <Text style={CardStyle.modalText}>The group chose {'\n' + props.card.name}</Text>
+                    <Pressable style={InputStyles.buttons}
+                               onPress={() => {
+                                   loveIt(props.card)
+                                   handleModalSet(!props.modalVisible)
+                               }}>
+                        <Ionicons style={IconStyles.iconLeft} name="heart"/>
+                        <Text style={InputStyles.buttonText}>Love It!</Text>
+                        <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
+                    </Pressable>
+                    <Pressable style={InputStyles.buttons}
+                               onPress={() => {
+                                   hateIt(props.card)
+                                   handleModalSet(!props.modalVisible)
+                               }}>
+                        <Ionicons style={IconStyles.iconLeft} name="heart-dislike"/>
+                        <Text style={InputStyles.buttonText}>Keep Swiping</Text>
+                        <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
+                    </Pressable>
+                </View>
+            </Modal>
+            {data.length === 0
+                ?
+                <LoadingCard code={props.code} offset={offset} navigation={navigation} isHost={props.isHost}
+                             loadingMessage={loadingMessage}/>
+                :
+                <View style={CardStyle.container}>
                     <SwipeCards
+                        ref={swipeCardRef}
                         cards={data}
-                        renderCard={(cardData) => <Card {...cardData} />}
+                        renderCard={(cardData) => (
+                            <>
+                                <Card {...cardData} />
+                                <View style={CardStyle.yupNopeView}>
+                                    <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
+                                        swipeCardRef.current.swipeYup()
+                                        handleYup(swipeCardRef.current.state.card)
+                                    }}>
+                                        <Ionicons style={{fontSize: 48}} name={"thumbs-up-outline"}/>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
+                                        swipeCardRef.current.swipeNope()
+                                        handleNope(swipeCardRef.current.state.card)
+                                    }}>
+                                        <Ionicons style={{fontSize: 48}} name={"thumbs-down-outline"}/>
+                                    </TouchableOpacity>
+                                </View>
+                            </>)
+                        }
                         keyExtractor={(cardData) => String(cardData.id)}
                         renderNoMoreCards={() => {
                             let size = data.length
-                            data=[]
-                            return (<Data code={props.code} zip={props.zip} offset={props.offset+size} distance={props.distance} isHost={props.isHost} categories={props.categories}/>)
-                            }
-                        }
+                            data = []
+                            setTimeout(() => setOffset(offset + size), 0);
+                            setTimeout(() => setCalledYelp(false), 0);
+                            setTimeout(() => setResData([]), 0);
+                        }}
 
                         actions={{
                             nope: {onAction: handleNope},
@@ -524,9 +582,9 @@ const Cards = (props) => {
                         }}
                     />
                 </View>
-
-        )
-    }
+            }
+        </View>
+    )
 }
 
 export default Cards;

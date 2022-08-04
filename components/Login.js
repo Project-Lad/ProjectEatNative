@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-    StyleSheet,
     Text,
     View,
     TextInput,
@@ -8,12 +7,15 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     KeyboardAvoidingView,
-    Platform
+    Platform,
+    LogBox
 } from 'react-native';
 import firebase from "firebase";
 import "firebase/firestore";
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
+import SVGComponent from './SVGLogo'
+LogBox.ignoreLogs(['Setting a timer']);
 export default class Login extends Component {
 
     constructor() {
@@ -21,7 +23,9 @@ export default class Login extends Component {
         this.state = {
             email: '',
             password: '',
-            isLoading: false
+            isLoading: false,
+            isFocused: false,
+            onFocus:false
         }
     }
 
@@ -31,7 +35,7 @@ export default class Login extends Component {
         this.setState(state);
     }
 
-    userLogin = (email, password) => {
+    userLogin = () => {
         if(this.state.email === '' && this.state.password === '') {
             Alert.alert('Enter details to Sign In!')
         } else {
@@ -40,7 +44,7 @@ export default class Login extends Component {
             })
              firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
                 .then((res) => {
-                    //console.log(res)
+
                     console.log('User logged-in successfully!')
                     this.setState({
                         isLoading: false,
@@ -61,6 +65,17 @@ export default class Login extends Component {
                 })
         }
     }
+    //Focus functions for password field.
+    onFocus() {
+        this.setState({
+            onFocus: true
+        })
+    }
+    onBlur() {
+        this.setState({
+            onFocus:false
+        })
+    }
 
     render() {
         if(this.state.isLoading){
@@ -72,8 +87,10 @@ export default class Login extends Component {
         }
         return (
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
+                {/*<Image source={require('../assets/branding/out2eat.png')}  style={{marginBottom:'5%'}}/>*/}
+                <SVGComponent/>
                 <TextInput
-                    style={InputStyles.inputStyle}
+                    style={this.state.isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                     placeholder="Email"
                     value={this.state.email}
                     keyboardType={'email-address'}
@@ -81,16 +98,26 @@ export default class Login extends Component {
                     windowSoftInputMode="adjustPan"
                     autoComplete='email'
                     autoCapitalize={'none'}
+                    onFocus={()=>{this.setState({isFocused:true})}}
+                    onBlur={()=>{this.setState({isFocused:false})}}
+                    placeholderTextColor={"#000"}
                 />
                 <TextInput
-                    style={InputStyles.inputStyle}
+                    style={this.state.onFocus ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                     placeholder="Password"
                     value={this.state.password}
                     onChangeText={(val) => this.updateInputVal(val, 'password')}
                     maxLength={15}
                     secureTextEntry={true}
-                    windowSoftInputMode="adjustPan"
+                    onFocus={()=>this.onFocus()}
+                    onBlur={()=>this.onBlur()}
+                    placeholderTextColor={"#000"}
                 />
+                <Text
+                    style={InputStyles.ForgotPasswordText}
+                    onPress={() => this.props.navigation.navigate('Forgot Password')}>
+                    Forgot Password?
+                </Text>
                 <TouchableOpacity style={InputStyles.buttons} onPress={() => this.userLogin()}>
                     <Text style={InputStyles.buttonText}>Login</Text>
                     <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
@@ -100,11 +127,6 @@ export default class Login extends Component {
                     style={InputStyles.loginText}
                     onPress={() => this.props.navigation.navigate('SignUp')}>
                     Don't have account? Sign Up
-                </Text>
-                <Text
-                    style={InputStyles.loginText}
-                    onPress={() => this.props.navigation.navigate('Forgot Password')}>
-                    Forgot Password?
                 </Text>
             </KeyboardAvoidingView>
         );

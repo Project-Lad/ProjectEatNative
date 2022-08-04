@@ -1,7 +1,7 @@
 //checks for location
 import {YELP_API_KEY} from '@env'
 import React, {useState, useEffect} from 'react';
-import {View, Text, Image, Platform, Linking, ScrollView, TouchableOpacity} from "react-native";
+import {View, Text, Image, Platform, Linking, ScrollView, TouchableOpacity,LogBox} from "react-native";
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
 import androidStar15 from '../assets/android/stars_regular_1_half.png'
@@ -28,7 +28,7 @@ import {useNavigation} from "@react-navigation/native";
 import YelpImage from "../assets/yelp_burst.png";
 import {IconStyles, InputStyles,DecisionStyle} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
-
+LogBox.ignoreLogs(['Setting a timer']);
 const Decision = ({route}) => {
     let [restaurant, setRestaurant] = useState({
         name: "",
@@ -205,30 +205,39 @@ const Decision = ({route}) => {
     function deleteDocument() {
         let currentSession = firebase.firestore().collection('sessions').doc(route.params.code)
 
-        currentSession.collection('matched').get().then(snapshot => {
-            snapshot.forEach(doc => {
-                currentSession.collection('matched').doc(doc.id).delete().then(() => {
-                    console.log("Deleted match restaurant number: ", doc.id)
-                }).catch((error) => {
-                    console.log("Error deleting matched restaurant: ", error)
+        if(route.params.isHost) {
+            currentSession.collection('matched').get().then(snapshot => {
+                snapshot.forEach(doc => {
+                    currentSession.collection('matched').doc(doc.id).delete().then(() => {
+                        console.log("Deleted match restaurant number: ", doc.id)
+                    }).catch((error) => {
+                        console.log("Error deleting matched restaurant: ", error)
+                    })
                 })
             })
-        })
 
-        currentSession.collection('users').get().then(snapshot => {
-            snapshot.forEach(doc => {
-                currentSession.collection('users').doc(doc.id).delete().then(() => {
-                    console.log("Deleted user: ", doc.id)
-                }).catch((error) => {
-                    console.log("Error deleting user: ", error)
+            currentSession.collection('users').get().then(snapshot => {
+                snapshot.forEach(doc => {
+                    currentSession.collection('users').doc(doc.id).delete().then(() => {
+                        console.log("Deleted user: ", doc.id)
+                    }).catch((error) => {
+                        console.log("Error deleting user: ", error)
+                    })
                 })
             })
-        })
 
-        //delete the firebase document
-        firebase.firestore().collection('sessions').doc(route.params.code).delete()
-            .then(() => {navigation.navigate('Profile')})
-            .catch((e) => console.log("Error deleting document session: ", e))
+            //delete the firebase document
+            firebase.firestore().collection('sessions').doc(route.params.code).delete()
+                .then(() => {navigation.navigate('Profile')})
+                .catch((e) => console.log("Error deleting document session: ", e))
+        } else {
+            currentSession.collection('users').doc(firebase.auth().currentUser.uid).delete().then(() => {
+                console.log("Deleted user: ", firebase.auth().currentUser.uid)
+                navigation.navigate('Profile')
+            }).catch((error) => {
+                console.log("Error deleting user: ", error)
+            })
+        }
     }
 
     function callRestaurant(number) {

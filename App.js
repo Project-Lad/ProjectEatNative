@@ -1,4 +1,4 @@
-import React, {useEffect,useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import SwipeFeature from "./components/SwipeFeature";
 import {NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,7 +12,7 @@ import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import firebase from "./firebase";
-import {Alert, BackHandler} from "react-native";
+import {BackHandler} from "react-native";
 
 function AuthStack() {
     return (
@@ -20,11 +20,9 @@ function AuthStack() {
             initialRouteName="Profile"
             screenOptions={{
                 headerTitleAlign: 'center',
-                headerStyle: {
-                    backgroundColor: '#2decb4',
-                },
                 headerTitleStyle: {
                     fontWeight: 'bold',
+                    fontSize:24
                 },
                 gestureEnabled:false
             }}>
@@ -51,12 +49,12 @@ function AuthStack() {
             <Stack.Screen
                 name="Edit Account"
                 component={EditAccount}
-                options={{ title: 'Edit Account',}}
+                options={{ title: 'Edit Account',headerTintColor:'#2e344f'}}
             />
             <Stack.Screen
                 name="HostSession"
                 component={HostSession}
-                options={{ title: 'Lobby', headerLeft:null}}
+                options={{ headerShown:true,title: 'Lobby', headerLeft:null}}
             />
             <Stack.Screen
                 name="Guest Session"
@@ -69,6 +67,7 @@ function AuthStack() {
                 options={{
                     headerShown: true,
                     headerTitle:'',
+                    headerTintColor:'#2e344f'
                     }}
             />
         </Stack.Navigator>
@@ -81,9 +80,6 @@ function LoginSignup(){
         initialRouteName="Login"
         screenOptions={{
             headerTitleAlign: 'center',
-            headerStyle: {
-                backgroundColor: '#2decb4',
-            },
             headerTitleStyle: {
                 fontWeight: 'bold',
             },
@@ -101,7 +97,7 @@ function LoginSignup(){
         <Stack.Screen
             name="Forgot Password"
             component={ForgotPassword}
-            options={{ title: 'ForgotPassword'}}
+            options={{ title: 'Forgot Password', headerTintColor:'#2e344f'}}
         />
     </Stack.Navigator>
     )
@@ -111,7 +107,6 @@ const Stack = createStackNavigator();
 
 export default function App() {
     const [isLoggedIn, setLogIn] = useState(false)
-
     useEffect(()=>{
         firebase.auth().onAuthStateChanged(user => {
             if(user) {
@@ -120,21 +115,22 @@ export default function App() {
                 setLogIn(false)
             }
         })
-
         const backAction = () => {
             return false;
         };
-
         const backHandler = BackHandler.addEventListener(
             "hardwareBackPress",
             backAction
         );
-    },[])
+    }, []);
+    return (
+        <NavigationContainer>
+            {isLoggedIn ? (
+                <AuthStack/>
+            ) : (
+                <LoginSignup/>
+            )}
+        </NavigationContainer>
+    );
 
-  return (
-      <NavigationContainer>
-          {isLoggedIn ? (<AuthStack/>) : (<LoginSignup/>)}
-      </NavigationContainer>
-
-  );
 }
