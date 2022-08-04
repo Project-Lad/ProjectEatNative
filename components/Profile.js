@@ -33,15 +33,18 @@ export default function Dashboard(){
         <View style={ProfileStyles.container}>
             {/*Profile Card View*/}
             <View style={ProfileStyles.card}>
-                <View style={{flexDirection: "column", alignItems: "center"}}>
-                    <View>
+                <View style={{flexDirection: "row", alignItems: "center", justifyContent:'space-between', position:"absolute", width:'100%'}}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Edit Account')}>
                         {newProfilePicture && <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />}
-                    </View>
-                    {/*<Text style={InputStyles.userNameText}>
+                        <View style={ProfileStyles.profilePenContainer}>
+                            <Ionicons style={ProfileStyles.profilePen} name="pencil-outline"/>
+                        </View>
+                    </TouchableOpacity>
+                    <Text style={InputStyles.userNameText}>
                         {newProfileUsername}
-                    </Text>*/}
+                    </Text>
                 </View>
-                <TouchableOpacity style={ProfileStyles.editProfile} onPress={() => navigation.navigate('Edit Account')}>
+{/*                <TouchableOpacity style={ProfileStyles.editProfile} onPress={() => navigation.navigate('Edit Account')}>
                     <View>
                         <Text style={InputStyles.editProfile}>
                             Edit Profile
@@ -50,7 +53,7 @@ export default function Dashboard(){
                     <View style={ProfileStyles.editButton}>
                         <Ionicons style={IconStyles.editIcon} name="chevron-forward-outline"/>
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity>*/}
             </View>
 
             <View style={{justifyContent:'space-evenly', padding:'10%'}}>

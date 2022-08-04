@@ -25,11 +25,13 @@ export default function EditAccount(){
     const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName})
     const [newProfilePicture, setNewProfilePicture] = useState({photoURL: currentUser.photoURL})
     const [result, setResult] = useState(null);
+    const [updateDisable, setUpdateDisable] = useState(true)
 
     useEffect(() => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
         return () => backHandler.remove()
     }, [])
+
 
     function userName() {
         //updates users displayName
@@ -70,6 +72,7 @@ export default function EditAccount(){
             uploadImage(result.uri, "profilePicture")
                 .then(setTimeout(() => {
                     setNewProfilePicture({photoURL:result.uri})
+                    setUpdateDisable(false)
                 },100))
                 .catch((error) => {
                     Alert.alert("Error: ", error)
@@ -121,7 +124,9 @@ export default function EditAccount(){
                 <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
                     <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
                         <Image source={{ uri: newProfilePicture.photoURL }} style={{width:150, height:150, borderRadius:250}} />
-                        <Ionicons style={IconStyles.addProfilePic} name="camera-outline"/>
+                        <View style={ProfileStyles.editCameraContainer}>
+                            <Ionicons style={IconStyles.addProfilePic} name="camera-outline"/>
+                        </View>
                     </TouchableOpacity>
                 </View>
                 <TextInput
@@ -129,11 +134,18 @@ export default function EditAccount(){
                     onFocus={() => handleInputFocus(true)}
                     onBlur={() => handleInputBlur(false)}
                     value={newProfileUsername.displayName}
-                    onChangeText={(text)=>setNewProfileUsername({displayName:text})}
+                    onChangeText={(text)=>{
+                        setNewProfileUsername({displayName:text})
+                        if(currentUser.displayName !== text){
+                            setUpdateDisable(false)
+                        }else{
+                            setUpdateDisable(true)
+                        }
+                    }}
                 />
-                <TouchableOpacity style={InputStyles.updateButtons} onPress={userName}>
-                    <Text style={{color:'#e4e6e9', fontSize:20}}>Update</Text>
-                    <Ionicons style={IconStyles.editArrowRight} name="chevron-forward-outline"/>
+                <TouchableOpacity style={updateDisable ? InputStyles.disabledUpdateButtons: InputStyles.updateButtons} disabled={updateDisable} onPress={userName} >
+                    <Text style={updateDisable ? InputStyles.disabledButtonText: InputStyles.buttonText}>Update</Text>
+                    <Ionicons style={updateDisable ? IconStyles.disabledEditArrowRight: IconStyles.editArrowRight} name="chevron-forward-outline"/>
                 </TouchableOpacity>
             </KeyboardAvoidingView>
             <View style={{
