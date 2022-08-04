@@ -506,87 +506,85 @@ const Cards = (props) => {
         })
     }
 
-    if (data.length === 0) {
-        return (
-            <View style={CardStyle.container}>
-                <LoadingCard code={props.code} offset={offset} navigation={navigation} isHost={props.isHost} loadingMessage={loadingMessage}/>
-            </View>
-        )
-    } else {
-        return (
-            <View style={CardStyle.container}>
-                <Modal
-                    style={{flex: 1, justifyContent: 'center'}}
-                    animationType="slide"
-                    visible={props.modalVisible}
-                    onRequestClose={() => {
-                        handleModalSet(!props.modalVisible);
-                    }}>
-                    <View style={CardStyle.modalView}>
-                        <Text style={CardStyle.modalText}>Let's Eat!</Text>
-                        <Image source={{uri: `${props.card.imageURL}`}} style={CardStyle.cardImageModal}/>
-                        <Text style={CardStyle.modalText}>The group chose {'\n' + props.card.name}</Text>
-                        <Pressable style={InputStyles.buttons}
-                                   onPress={() => {
-                                       loveIt(props.card)
-                                       handleModalSet(!props.modalVisible)
-                                   }}>
-                            <Ionicons style={IconStyles.iconLeft} name="heart"/>
-                            <Text style={InputStyles.buttonText}>Love It!</Text>
-                            <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
-                        </Pressable>
-                        <Pressable style={InputStyles.buttons}
-                                   onPress={() => {
-                                       hateIt(props.card)
-                                       handleModalSet(!props.modalVisible)
-                                   }}>
-                            <Ionicons style={IconStyles.iconLeft} name="heart-dislike"/>
-                            <Text style={InputStyles.buttonText}>Keep Swiping</Text>
-                            <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
-                        </Pressable>
-                    </View>
-                </Modal>
-                <SwipeCards
-                    ref={swipeCardRef}
-                    cards={data}
-                    renderCard={(cardData) => (
-                        <>
-                            <Card {...cardData} />
-                            <View style={CardStyle.yupNopeView}>
-                                <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
-                                    swipeCardRef.current.swipeYup()
-                                    handleYup(swipeCardRef.current.state.card)
-                                }}>
-                                    <Ionicons style={{fontSize:48}} name={"thumbs-up-outline"}/>
+    return (
+        <View style={CardStyle.container}>
+            <Modal
+                style={{flex: 1, justifyContent: 'center'}}
+                animationType="slide"
+                visible={props.modalVisible}
+                onRequestClose={() => {
+                    handleModalSet(!props.modalVisible);
+                }}>
+                <View style={CardStyle.modalView}>
+                    <Text style={CardStyle.modalText}>Let's Eat!</Text>
+                    <Image source={{uri: `${props.card.imageURL}`}} style={CardStyle.cardImageModal}/>
+                    <Text style={CardStyle.modalText}>The group chose {'\n' + props.card.name}</Text>
+                    <Pressable style={InputStyles.buttons}
+                               onPress={() => {
+                                   loveIt(props.card)
+                                   handleModalSet(!props.modalVisible)
+                               }}>
+                        <Ionicons style={IconStyles.iconLeft} name="heart"/>
+                        <Text style={InputStyles.buttonText}>Love It!</Text>
+                        <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
+                    </Pressable>
+                    <Pressable style={InputStyles.buttons}
+                               onPress={() => {
+                                   hateIt(props.card)
+                                   handleModalSet(!props.modalVisible)
+                               }}>
+                        <Ionicons style={IconStyles.iconLeft} name="heart-dislike"/>
+                        <Text style={InputStyles.buttonText}>Keep Swiping</Text>
+                        <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
+                    </Pressable>
+                </View>
+            </Modal>
+            {data.length === 0
+                ?
+                <LoadingCard code={props.code} offset={offset} navigation={navigation} isHost={props.isHost}
+                             loadingMessage={loadingMessage}/>
+                :
+                <View style={CardStyle.container}>
+                    <SwipeCards
+                        ref={swipeCardRef}
+                        cards={data}
+                        renderCard={(cardData) => (
+                            <>
+                                <Card {...cardData} />
+                                <View style={CardStyle.yupNopeView}>
+                                    <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
+                                        swipeCardRef.current.swipeYup()
+                                        handleYup(swipeCardRef.current.state.card)
+                                    }}>
+                                        <Ionicons style={{fontSize: 48}} name={"thumbs-up-outline"}/>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
+                                        swipeCardRef.current.swipeNope()
+                                        handleNope(swipeCardRef.current.state.card)
+                                    }}>
+                                        <Ionicons style={{fontSize: 48}} name={"thumbs-down-outline"}/>
+                                    </TouchableOpacity>
+                                </View>
+                            </>)
+                        }
+                        keyExtractor={(cardData) => String(cardData.id)}
+                        renderNoMoreCards={() => {
+                            let size = data.length
+                            data = []
+                            setTimeout(() => setOffset(offset + size), 0);
+                            setTimeout(() => setCalledYelp(false), 0);
+                            setTimeout(() => setResData([]), 0);
+                        }}
 
-                                </TouchableOpacity>
-                                <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
-                                    swipeCardRef.current.swipeNope()
-                                    handleNope(swipeCardRef.current.state.card)
-                                }}>
-                                    <Ionicons style={{fontSize:48}} name={"thumbs-down-outline"}/>
-                                </TouchableOpacity>
-                            </View>
-                        </>)
-                    }
-                    keyExtractor={(cardData) => String(cardData.id)}
-                    renderNoMoreCards={() => {
-                        let size = data.length
-                        data = []
-                        setTimeout(() => setOffset(offset + size), 0);
-                        setTimeout(() => setCalledYelp(false), 0);
-                        setTimeout(() => setResData([]), 0);
-                    }
-                    }
-
-                    actions={{
-                        nope: {onAction: handleNope},
-                        yup: {onAction: handleYup}
-                    }}
-                />
-            </View>
-        )
-    }
+                        actions={{
+                            nope: {onAction: handleNope},
+                            yup: {onAction: handleYup}
+                        }}
+                    />
+                </View>
+            }
+        </View>
+    )
 }
 
 export default Cards;
