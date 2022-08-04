@@ -195,8 +195,6 @@ const IconStyles = StyleSheet.create({
         width: 75,
         height: 75,
         borderRadius:100,
-        zIndex: 0,
-        elevation: 0,
     },
     signUpPicture:{
         width:150,

@@ -1,4 +1,4 @@
-import React, {useEffect,useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import SwipeFeature from "./components/SwipeFeature";
 import {NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,7 +12,7 @@ import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import firebase from "./firebase";
-import { BackHandler} from "react-native";
+import {BackHandler} from "react-native";
 
 function AuthStack() {
     return (
@@ -107,7 +107,6 @@ const Stack = createStackNavigator();
 
 export default function App() {
     const [isLoggedIn, setLogIn] = useState(false)
-
     useEffect(()=>{
         firebase.auth().onAuthStateChanged(user => {
             if(user) {
@@ -116,21 +115,22 @@ export default function App() {
                 setLogIn(false)
             }
         })
-
         const backAction = () => {
             return false;
         };
-
         const backHandler = BackHandler.addEventListener(
             "hardwareBackPress",
             backAction
         );
-    },[])
+    }, []);
+    return (
+        <NavigationContainer>
+            {isLoggedIn ? (
+                <AuthStack/>
+            ) : (
+                <LoginSignup/>
+            )}
+        </NavigationContainer>
+    );
 
-  return (
-      <NavigationContainer>
-          {isLoggedIn ? (<AuthStack/>) : (<LoginSignup/>)}
-      </NavigationContainer>
-
-  );
 }
