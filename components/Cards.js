@@ -98,18 +98,13 @@ class LoadingCard extends React.Component {
             //updates the start field in the current session to true to send everyone to the swipe feature
             firebase.firestore().collection('sessions')
                 .doc(this.props.code).update({zip: null, start: false, distance: null})
-                .then(() => {
-                    console.log("Reset lobby data.")
-                }).catch(error => {
-                console.log(`Encountered Update Error: ${error}`)
-            })
+                .then(() => {})
+                .catch(() => {})
 
             //if user is the host
-            console.log(this.props.isHost)
             this.props.navigation.navigate('HostSession', {code: this.props.code, zip: null, distance: null})
         } else {
             //if not, back to guest session
-            console.log(this.props.isHost)
             this.props.navigation.navigate('Guest Session', {code: this.props.code})
         }
     }
@@ -196,8 +191,6 @@ const Cards = (props) => {
         if(resData.length === 0) {
             if(!calledYelp) {
                 getYelpData().then(r => {
-                    console.log("hit api")
-
                     if(r.length !== 0) {
                         setData(r)
                         setResData(r)
@@ -209,7 +202,6 @@ const Cards = (props) => {
                 })
             }
         } else {
-            console.log("Render Again");
         }
     }, [resData]);
 
@@ -227,14 +219,12 @@ const Cards = (props) => {
                 const price_range = current.price;
                 address = current.location.address1;
                 if (current.location.address2 === '' || current.location.address2 === null) {
-                    //console.log("Address 2: Null")
                 } else {
                     address += ', ';
                     address += current.location.address2;
                 }
 
                 if (current.location.address3 === '' || current.location.address3 === null) {
-                    //console.log("Address 3: Null")
                 } else {
                     address += ', ';
                     address += current.location.address3;
@@ -341,7 +331,6 @@ const Cards = (props) => {
                 counter = 0;
             }
         } catch (e) {
-            console.log("Error setting data: ", e)
         }
     }
 
@@ -353,17 +342,13 @@ const Cards = (props) => {
         usersRef.doc(firebase.auth().currentUser.uid).set({
             [props.resCounter]: restaurantID
         }, {merge: true}).then(() => {
-            console.log("Restaurant successfully written!");
             handleSetCounter(props.resCounter + 1);
-        }).catch((error) => {
-            console.error("Error writing restaurant: ", error);
+        }).catch(() => {
         });
 
         unsub = usersRef.onSnapshot(querySnapshot => {
-            //console.log(querySnapshot.size)
             querySnapshot.forEach(documentSnapshot => {
                 if (querySnapshot.size === 1) {
-                    console.log("setting card and modal")
                     //sets card state and shows modal when solo
                     handleCardSet(card)
                     handleModalSet(true)
@@ -386,7 +371,6 @@ const Cards = (props) => {
                                         match = true
                                         handleCardSet(card)
                                         handleModalSet(true)
-                                        console.log("Matched!")
                                     }
                                 }
                             }
@@ -404,7 +388,6 @@ const Cards = (props) => {
     }
 
     function handleNope(card) {
-        console.log(`Nope for ${card.id}`)
         return true;
     }
 
@@ -422,17 +405,13 @@ const Cards = (props) => {
         matchedRef.get().then((doc) => {
             //if the document data isn't null
             if (doc.data() === undefined) {
-                //console log that the document doesn't exist
-                console.log("Document Doesn't Exist, Creating Document")
                 //set the document counter to 1 for this user
                 matchedRef.set({
                     counter: 1
                 }).then(() => {
                     //console log that the restaurant is successful
-                    console.log("Matched restaurant successfully created!");
-                }).catch((error) => {
+                }).catch(() => {
                     //if there is an issue, console log error
-                    console.error("Error creating matched restaurant: ", error);
                 });
             }
 
@@ -442,14 +421,11 @@ const Cards = (props) => {
                 matchedRef.update({
                     counter: doc.data().counter + increment
                 }).then(() => {
-                    console.log("Restaurant Counter Updated!");
-                }).catch((error) => {
-                    console.error("Error Updating restaurant: ", error);
+                }).catch(() => {
                 });
             }
 
             unsub = matchedRef.onSnapshot(docSnapshot => {
-                console.log(docSnapshot.data())
                 //if majority of the group wants this
                 if ((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
@@ -461,7 +437,6 @@ const Cards = (props) => {
                         unsubs: unsubs,
                         isHost: props.isHost
                     })
-                    console.log("Majority Rule")
                 }
             })
 
@@ -481,24 +456,19 @@ const Cards = (props) => {
 
         matchedRef.get().then((doc) => {
             if (doc.data() === undefined) {
-                console.log("Document Doesn't Exist, Creating Document")
                 matchedRef.set({
                     counter: 0
                 }).then(() => {
-                    console.log("Matched restaurant successfully created!");
-                }).catch((error) => {
-                    console.error("Error creating matched restaurant: ", error);
+                }).catch(() => {
                 });
             }
 
             unsub = matchedRef.onSnapshot(docSnapshot => {
-                console.log(docSnapshot.data())
                 if ((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
                     data = []
                     navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs})
-                    console.log("Majority Rule")
                 }
             })
 

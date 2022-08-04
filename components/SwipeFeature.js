@@ -35,7 +35,6 @@ export default function SwipeFeature({route}) {
         })
 
         unsubs.push(unsub);
-        console.log(route.params.code, route.params.zip, route.params.distance, route.params.isHost, route.params.categories)
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
         return () => backHandler.remove()
     }, [])
