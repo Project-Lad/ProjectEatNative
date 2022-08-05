@@ -26,7 +26,7 @@
         "foregroundImage": "./assets/icon.png"
       },
       "softwareKeyboardLayoutMode": "pan",
-      "package": "com.andrewyoung.ProjectEatNative",
+      "package": "com.Out2Eat.ProjectEatNative",
       "intentFilters": [
         {
           "action": "VIEW",
