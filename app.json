@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "Out2Eat",
-    "slug": "Out2Eat",
+    "slug": "out2eat",
+    "owner": "out2eat",
     "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
