@@ -9,7 +9,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     BackHandler,
-    LogBox, Linking
+    LogBox
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
@@ -54,8 +54,6 @@ export default function EditAccount(){
             })
         }).catch(function(error) {
             //Catch any errors
-            console.log(newProfilePicture.photoURL)
-            console.log(error)
             alert(error)
         })
     }

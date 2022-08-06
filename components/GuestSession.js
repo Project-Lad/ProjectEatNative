@@ -11,7 +11,6 @@ import firebase from "../firebase";
 import "firebase/firestore";
 import {IconStyles, InputStyles, LobbyStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
-let TAG = "Console: ";
 let unsubscribe;
 LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
@@ -60,11 +59,8 @@ export default class GuestSession extends Component {
                          docRef.collection('users').doc(firebase.auth().currentUser.uid).set({
                              displayName: displayName,
                              photoURL: url
-                         }, {merge: true}).then(() => {
-                             console.log(TAG, "User successfully written!");
-                         }).catch((error) => {
-                             console.error(TAG, "Error writing user: ", error);
-                         });
+                         }, {merge: true}).then(() => {})
+                             .catch(() => {});
 
                          this.checkForUsers()
                          this.checkForSessionStart()
@@ -74,8 +70,7 @@ export default class GuestSession extends Component {
                      }
                  })
              })
-             .catch((error) => {
-                 console.log("Error on photo retrieval: ", error)
+             .catch(() => {
              })
          this.state.isLoading = false
      }
@@ -143,8 +138,7 @@ export default class GuestSession extends Component {
                 Alert.alert('Lobby Closed', 'The lobby you are in has ended, returning to home')
                 this.props.navigation.navigate('Profile')
             }
-        }, (error) => {
-            console.log(`Encountered Error: ${error}`)
+        }, () => {
         })
     }
 
@@ -166,7 +160,6 @@ export default class GuestSession extends Component {
                             .then(this.props.navigation.navigate('Connect'))
                             .catch((error) => {
                                 //if an error occurs, display console log and navigate back to connect
-                                console.log("User Delete Error: ", error)
                                 this.props.navigation.navigate('Connect')})
                     }
                 }

@@ -57,8 +57,6 @@ export default function Signup(){
             quality: 0.5,
         });
 
-        console.log(result);
-
         if (!result.cancelled) {
             setImage({photoURL:result.uri});
         }
@@ -109,12 +107,8 @@ export default function Signup(){
                         }).then(() => {
                             //upload image to firebase storage
                             uploadImage(image.photoURL, "profilePicture")
-                                .then(() => {
-                                    console.log("Success")
-                                })
-                                .catch((error) => {
-                                    console.log("Error: ", error)
-                                })
+                                .then(() => {})
+                                .catch(() => {})
                         }).then(()=>{
                             navigation.navigate('Profile')
                         })
@@ -129,7 +123,6 @@ export default function Signup(){
                             [{text: 'Try Again', onPress:() => navigation.goBack()}]
                         )
                     }
-                    console.log(error.message)
                 })
         }
 

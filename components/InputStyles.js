@@ -474,27 +474,7 @@ const LobbyStyles = StyleSheet.create({
         elevation: 10,
         borderRadius:10,
         marginBottom:'3%'
-    },
-/*    startButton: {
-        backgroundColor:"#2decb4",
-        padding: 15,
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent:'space-between',
-        marginBottom:10,
-        shadowColor: "#5D737E",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 3.84,
-        elevation: 5,
-        borderBottomRightRadius:25,
-        borderTopRightRadius:25,
-        borderLeftWidth: 1,
-        width: '70%'
-    }*/
+    }
 })
 const CardStyle = StyleSheet.create({
     container:{
