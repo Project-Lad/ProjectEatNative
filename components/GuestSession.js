@@ -71,9 +71,12 @@ export default class GuestSession extends Component {
 
                          this.setState({isLoading: true})
                      } else {
-                         alert("Error: Session could not be found, please re-enter code")
+                         alert("Session could not be found, please re-enter code")
                          this.props.navigation.navigate('Connect')
                      }
+                 }).catch(() => {
+                     alert("There was an issue connecting to the Session, please re-enter code")
+                     this.props.navigation.navigate('Connect')
                  })
              })
              .catch((error) => {
