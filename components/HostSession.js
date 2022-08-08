@@ -507,7 +507,7 @@ export default class HostSession extends Component {
                                    onPress={() => {
                                        this.setState({modalVisible: !this.state.modalVisible})
                                    }}>
-                            <Text style={InputStyles.buttonText}>Close Modal</Text>
+                            <Text style={InputStyles.buttonText}>Close Filters</Text>
                         </Pressable>
                     </KeyboardAvoidingView>
                 </Modal>

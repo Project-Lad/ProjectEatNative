@@ -37,23 +37,13 @@ export default function Dashboard(){
                     <TouchableOpacity onPress={() => navigation.navigate('Edit Account')}>
                         {newProfilePicture && <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />}
                         <View style={ProfileStyles.profilePenContainer}>
-                            <Ionicons style={ProfileStyles.profilePen} name="pencil-outline"/>
+                            <Ionicons style={ProfileStyles.profilePen} name="settings-outline"/>
                         </View>
                     </TouchableOpacity>
                     <Text style={InputStyles.userNameText}>
                         {newProfileUsername}
                     </Text>
                 </View>
-{/*                <TouchableOpacity style={ProfileStyles.editProfile} onPress={() => navigation.navigate('Edit Account')}>
-                    <View>
-                        <Text style={InputStyles.editProfile}>
-                            Edit Profile
-                        </Text>
-                    </View>
-                    <View style={ProfileStyles.editButton}>
-                        <Ionicons style={IconStyles.editIcon} name="chevron-forward-outline"/>
-                    </View>
-                </TouchableOpacity>*/}
             </View>
 
             <View style={{justifyContent:'space-evenly', padding:'10%'}}>
@@ -73,16 +63,6 @@ export default function Dashboard(){
                         <Text style={InputStyles.buttonText}>Join Lobby</Text>
                         <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                     </TouchableOpacity>
-
-{/*                    <TouchableOpacity onPress={signOut} style = {ProfileStyles.buttons}>
-                        <Ionicons style={IconStyles.iconLeft} name="log-out-outline"/>
-                        <Text style={InputStyles.buttonText}>Logout</Text>
-                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
-                    </TouchableOpacity>*/}
-
-                    {/*<TouchableOpacity onPress={deleteAccount} style = {ProfileStyles.buttons}>
-                        <Text style={InputStyles.buttonText}>delete</Text>
-                    </TouchableOpacity>*/}
                 </View>
         </View>
     )
