@@ -30,7 +30,7 @@ export default function Dashboard(){
                     <TouchableOpacity onPress={() => navigation.navigate('Edit Account')}>
                         {newProfilePicture && <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />}
                         <View style={ProfileStyles.profilePenContainer}>
-                            <Ionicons style={ProfileStyles.profilePen} name="pencil-outline"/>
+                            <Ionicons style={ProfileStyles.profilePen} name="settings-outline"/>
                         </View>
                     </TouchableOpacity>
                     <Text style={InputStyles.userNameText}>
