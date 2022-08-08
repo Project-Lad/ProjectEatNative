@@ -42,7 +42,7 @@ class Card extends React.Component {
         if(this.props.imageURL === burgerJPG) {
             return (
                 <View style={CardStyle.card}>
-                    <Image source={this.props.imageURL} style={CardStyle.cardImage} />
+                    <Image source={this.props.imageURL} style={CardStyle.burgerCardImage} />
                     <View style={CardStyle.yelpInfo}>
                         <Text style={CardStyle.cardTitle}>{this.props.name}</Text>
                         <View style={CardStyle.yelpReview}>
@@ -519,8 +519,10 @@ const Cards = (props) => {
                         ref={swipeCardRef}
                         cards={data}
                         renderCard={(cardData) => (
-                            <>
-                                <Card {...cardData} />
+                            <View style={{flex: 1,flexDirection: "column", justifyContent: "space-evenly"}}>
+                                <View style={{flex: 0.85}}>
+                                    <Card {...cardData} />
+                                </View>
                                 <View style={CardStyle.yupNopeView}>
                                     <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
                                         swipeCardRef.current.swipeYup()
@@ -535,7 +537,7 @@ const Cards = (props) => {
                                         <Ionicons style={{fontSize: 48}} name={"thumbs-down-outline"}/>
                                     </TouchableOpacity>
                                 </View>
-                            </>)
+                            </View>)
                         }
                         keyExtractor={(cardData) => String(cardData.id)}
                         renderNoMoreCards={() => {

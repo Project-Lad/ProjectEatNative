@@ -479,7 +479,7 @@ const LobbyStyles = StyleSheet.create({
 const CardStyle = StyleSheet.create({
     container:{
         backgroundColor:'#eee',
-        height:ScreenHeight,
+        //height:ScreenHeight,
         flex:1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -491,12 +491,12 @@ const CardStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width:ScreenWidth * .95,
-        marginTop:"5%"
+        marginTop:"50%"
     },
     card: {
         height:ScreenHeight,
         width:ScreenWidth * .95,
-        marginTop:"60%"
+        flex:1
     },
     cardTitle: {
         fontSize: 24,
@@ -527,7 +527,7 @@ const CardStyle = StyleSheet.create({
         alignItems: 'flex-end',
         justifyContent:'space-between',
         position:'relative',
-        top:'125%',
+        top:'120%',
         left:0
     },
     yelpStars:{
@@ -539,9 +539,14 @@ const CardStyle = StyleSheet.create({
         height:55,
     },
     cardImage: {
-        height: undefined,
-        aspectRatio: .6,
+        aspectRatio:.6,
         width:"100%",
+        borderRadius:10,
+    },
+    burgerCardImage: {
+        aspectRatio:.6,
+        width:"100%",
+        height:"100%",
         borderRadius:10,
     },
     modalView: {
@@ -584,10 +589,9 @@ const CardStyle = StyleSheet.create({
         right:10
     },
     yupNopeView:{
-        position:'relative',
         flexDirection:'row-reverse',
-        bottom:180,
         justifyContent:"space-evenly",
+        //borderWidth: 3, borderColor: 'red'
     },
     yupNopeButtons:{
         borderRadius:100,

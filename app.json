@@ -24,7 +24,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png"
+        "foregroundImage": "./assets/androidAFI.png",
+        "backgroundImage": "./assets/androidABI.png"
       },
       "softwareKeyboardLayoutMode": "pan",
       "package": "com.Out2Eat.ProjectEatNative",
