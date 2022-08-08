@@ -54,7 +54,6 @@ const Decision = ({route}) => {
     let counter = 0
 
     useEffect(() => {
-        console.log("Getting Data")
         getData() //use API fetch only once to reduce amount of API calls
         setIsLoading(true)
         clearSubs()
@@ -78,7 +77,7 @@ const Decision = ({route}) => {
             .then(result => {
                 setRestaurant(result);
             })
-            .catch(error => console.log('error', error));
+            .catch(() => {});
     }
 
     function setData() {
@@ -184,8 +183,6 @@ const Decision = ({route}) => {
             googleURL += "+";
             counter++;
         }
-
-        console.log(googleURL)
     }
 
     function clearSubs() {
@@ -209,9 +206,7 @@ const Decision = ({route}) => {
             currentSession.collection('matched').get().then(snapshot => {
                 snapshot.forEach(doc => {
                     currentSession.collection('matched').doc(doc.id).delete().then(() => {
-                        console.log("Deleted match restaurant number: ", doc.id)
-                    }).catch((error) => {
-                        console.log("Error deleting matched restaurant: ", error)
+                    }).catch(() => {
                     })
                 })
             })
@@ -219,9 +214,7 @@ const Decision = ({route}) => {
             currentSession.collection('users').get().then(snapshot => {
                 snapshot.forEach(doc => {
                     currentSession.collection('users').doc(doc.id).delete().then(() => {
-                        console.log("Deleted user: ", doc.id)
-                    }).catch((error) => {
-                        console.log("Error deleting user: ", error)
+                    }).catch(() => {
                     })
                 })
             })
@@ -229,13 +222,11 @@ const Decision = ({route}) => {
             //delete the firebase document
             firebase.firestore().collection('sessions').doc(route.params.code).delete()
                 .then(() => {navigation.navigate('Profile')})
-                .catch((e) => console.log("Error deleting document session: ", e))
+                .catch(() => {})
         } else {
             currentSession.collection('users').doc(firebase.auth().currentUser.uid).delete().then(() => {
-                console.log("Deleted user: ", firebase.auth().currentUser.uid)
                 navigation.navigate('Profile')
-            }).catch((error) => {
-                console.log("Error deleting user: ", error)
+            }).catch(() => {
             })
         }
     }
@@ -247,7 +238,7 @@ const Decision = ({route}) => {
         } else {
             phoneNumber = `telprompt:${number}`;
         }
-        Linking.openURL(phoneNumber).then(() => {console.log("Making phone call")}).catch((error) => {console.log("Error making call ", error)})
+        Linking.openURL(phoneNumber).then(() => {}).catch(() => {})
     }
 
     if(isLoading === false) {

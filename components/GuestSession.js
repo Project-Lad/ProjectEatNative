@@ -5,18 +5,17 @@ import {
     Image,
     Alert,
     TouchableOpacity,
-    LogBox, ScrollView, Share, BackHandler
+    LogBox, ScrollView, Share, BackHandler, ActivityIndicator
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {IconStyles, InputStyles, LobbyStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
-let TAG = "Console: ";
 let unsubscribe;
 LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
     state = {
-        isLoading: true,
+        isLoading: false,
         users: [],
         code: 0,
         photoURL: "",
@@ -60,22 +59,20 @@ export default class GuestSession extends Component {
                          docRef.collection('users').doc(firebase.auth().currentUser.uid).set({
                              displayName: displayName,
                              photoURL: url
-                         }, {merge: true}).then(() => {
-                             console.log(TAG, "User successfully written!");
-                         }).catch((error) => {
-                             console.error(TAG, "Error writing user: ", error);
-                         });
+                         }, {merge: true}).then(() => {})
+                             .catch(() => {});
 
                          this.checkForUsers()
                          this.checkForSessionStart()
+
+                         this.setState({isLoading: true})
                      } else {
                          alert("Error: Session could not be found, please re-enter code")
                          this.props.navigation.navigate('Connect')
                      }
                  })
              })
-             .catch((error) => {
-                 console.log("Error on photo retrieval: ", error)
+             .catch(() => {
              })
          this.state.isLoading = false
      }
@@ -143,8 +140,7 @@ export default class GuestSession extends Component {
                 Alert.alert('Lobby Closed', 'The lobby you are in has ended, returning to home')
                 this.props.navigation.navigate('Profile')
             }
-        }, (error) => {
-            console.log(`Encountered Error: ${error}`)
+        }, () => {
         })
     }
 
@@ -166,7 +162,6 @@ export default class GuestSession extends Component {
                             .then(this.props.navigation.navigate('Connect'))
                             .catch((error) => {
                                 //if an error occurs, display console log and navigate back to connect
-                                console.log("User Delete Error: ", error)
                                 this.props.navigation.navigate('Connect')})
                     }
                 }
@@ -194,33 +189,41 @@ export default class GuestSession extends Component {
     };
 
     render() {
-        return (
-            <View style={LobbyStyles.container}>
-                <ScrollView>
-                    {this.state.users.map(user=>{
-                        return(
-                            <View style={LobbyStyles.listContainer} key={user.id}>
-                                <Image source={{uri:user.photoURL}} style={LobbyStyles.image}/>
-                                <Text style={LobbyStyles.userName}>{user.displayName}</Text>
-                            </View>
-                        )
-                    })}
-                </ScrollView>
-                <View>
-                    <Text style={{fontSize:18, color:'#2e344f'}}>Share Code</Text>
-
+        if(!this.state.isLoading) {
+            return (
+                <View style={{flex: 1, justifyContent: 'center'}}>
+                    <ActivityIndicator size="large" color="#f97c4d"/>
+                    <Text style={LobbyStyles.userName}>Joining Lobby...</Text>
+                </View>
+            )
+        } else {
+            return (
+                <View style={LobbyStyles.container}>
+                    <ScrollView>
+                        {this.state.users.map(user=>{
+                            return(
+                                <View style={LobbyStyles.listContainer} key={user.id}>
+                                    <Image source={{uri:user.photoURL}} style={LobbyStyles.image}/>
+                                    <Text style={LobbyStyles.userName}>{user.displayName}</Text>
+                                </View>
+                            )
+                        })}
+                    </ScrollView>
                     <View>
-                        <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
-                            <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
-                            <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
-                        <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={LobbyStyles.closeButton}>
-                            <Ionicons style={IconStyles.iconLeft}  name="close-circle-outline"/>
-                            <Text style={InputStyles.buttonText}>Leave</Text>
-                        </TouchableOpacity>
-                        {this.state.start ?
+                        <Text style={{fontSize:18, color:'#2e344f'}}>Share Code</Text>
+
+                        <View>
+                            <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
+                                <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
+                                <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
+                            <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={LobbyStyles.closeButton}>
+                                <Ionicons style={IconStyles.iconLeft}  name="close-circle-outline"/>
+                                <Text style={InputStyles.buttonText}>Leave</Text>
+                            </TouchableOpacity>
+                            {this.state.start ?
                                 <TouchableOpacity
                                     onPress={() =>
                                         this.props.navigation.navigate('Swipe Feature',{
@@ -237,12 +240,13 @@ export default class GuestSession extends Component {
                                 >
                                     <Text style={InputStyles.buttonText}>Back 2 Swiping</Text>
                                 </TouchableOpacity>
-                            :
+                                :
                                 null
-                        }
+                            }
+                        </View>
                     </View>
                 </View>
-            </View>
-        );
+            );
+        }
     }
 }

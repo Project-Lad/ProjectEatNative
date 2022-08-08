@@ -29,6 +29,7 @@ export default function Connect() {
                 onChangeText={setCode}
                 onFocus={() => setFocus(true)}
                 onBlur={() => setFocus(false)}
+                maxLength={5}
             />
             <TouchableOpacity
                 onPress={() => {

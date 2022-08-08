@@ -195,8 +195,6 @@ const IconStyles = StyleSheet.create({
         width: 75,
         height: 75,
         borderRadius:100,
-        zIndex: 0,
-        elevation: 0,
     },
     signUpPicture:{
         width:150,
@@ -476,32 +474,12 @@ const LobbyStyles = StyleSheet.create({
         elevation: 10,
         borderRadius:10,
         marginBottom:'3%'
-    },
-/*    startButton: {
-        backgroundColor:"#2decb4",
-        padding: 15,
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent:'space-between',
-        marginBottom:10,
-        shadowColor: "#5D737E",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 3.84,
-        elevation: 5,
-        borderBottomRightRadius:25,
-        borderTopRightRadius:25,
-        borderLeftWidth: 1,
-        width: '70%'
-    }*/
+    }
 })
 const CardStyle = StyleSheet.create({
     container:{
         backgroundColor:'#eee',
-        height:ScreenHeight,
+        //height:ScreenHeight,
         flex:1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -513,12 +491,12 @@ const CardStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width:ScreenWidth * .95,
-        marginTop:"5%"
+        marginTop:"50%"
     },
     card: {
         height:ScreenHeight,
         width:ScreenWidth * .95,
-        marginTop:"60%"
+        flex:1
     },
     cardTitle: {
         fontSize: 24,
@@ -549,7 +527,7 @@ const CardStyle = StyleSheet.create({
         alignItems: 'flex-end',
         justifyContent:'space-between',
         position:'relative',
-        top:'125%',
+        top:'120%',
         left:0
     },
     yelpStars:{
@@ -561,9 +539,14 @@ const CardStyle = StyleSheet.create({
         height:55,
     },
     cardImage: {
-        height: undefined,
-        aspectRatio: .6,
+        aspectRatio:.6,
         width:"100%",
+        borderRadius:10,
+    },
+    burgerCardImage: {
+        aspectRatio:.6,
+        width:"100%",
+        height:"100%",
         borderRadius:10,
     },
     modalView: {
@@ -606,10 +589,9 @@ const CardStyle = StyleSheet.create({
         right:10
     },
     yupNopeView:{
-        position:'relative',
         flexDirection:'row-reverse',
-        bottom:180,
         justifyContent:"space-evenly",
+        //borderWidth: 3, borderColor: 'red'
     },
     yupNopeButtons:{
         borderRadius:100,

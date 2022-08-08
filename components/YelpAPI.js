@@ -1,6 +1,5 @@
-
 import {YELP_API_KEY} from '@env'
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 
 const Data = async (zip, categories, offset, distance, latitude, longitude) => {
     let apicategories = "";
@@ -29,14 +28,9 @@ const Data = async (zip, categories, offset, distance, latitude, longitude) => {
         await fetch(`https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&limit=50&offset=${offset}&radius=${parseInt(distance * 1609)}&sort_by=distance&categories=${apicategories}`, requestOptions)
             .then(response => response.json())
             .then(result => {
-                //console.log("Latitude: " + latitude)
-                //console.log("Longitude: " + longitude)
-                //console.log("Offset: " + props.offset)
-                //console.log("Distance: " + parseInt((props.distance * 1609)))
-                console.log("Categories: " + apicategories)
                 restaurantData = result.businesses
             })
-            .catch(error => console.log('error', error));
+            .catch(() => {});
 
         return restaurantData;
     } else {
@@ -44,9 +38,8 @@ const Data = async (zip, categories, offset, distance, latitude, longitude) => {
             .then(response => response.json())
             .then(result => {
                 restaurantData = result.businesses
-                //console.log(result.businesses);
             })
-            .catch(error => console.log('error', error));
+            .catch(() => {});
 
         return restaurantData
     }

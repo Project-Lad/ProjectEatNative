@@ -22,7 +22,6 @@ import "firebase/firestore";
 import {InputStyles, IconStyles, LobbyStyles, CardStyle} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from "expo-location";
-let TAG = "Console: ";
 LogBox.ignoreLogs(['Setting a timer']);
 
 //Declares lat and long vars
@@ -34,7 +33,6 @@ let longitude;
     let locationSuccess = false;
     let count = 0;
     let { status } = await Location.requestForegroundPermissionsAsync();
-    console.log(status)
 
     if (status === 'denied') {
         Alert.alert('Please enable Location Services in your Settings');
@@ -46,10 +44,7 @@ let longitude;
                 });
                 locationSuccess = true;
             } catch (ex) {
-                //console.log(ex)
                 count++;
-                console.log(count);
-                console.log("retrying....");
 
                 if (count === 500) {
                     Alert.alert("Location Unreachable", "Your location cannot be found.", ["Cancel", "OK"])
@@ -61,8 +56,6 @@ let longitude;
 
     latitude = location.coords.latitude;
     longitude = location.coords.longitude;
-
-    console.log(latitude + ", " + longitude)
 })();
 
 export default class HostSession extends Component {
@@ -139,18 +132,11 @@ export default class HostSession extends Component {
                             .collection('users').doc(firebase.auth().currentUser.uid).set({
                             displayName: displayName,
                             photoURL: url
-                        }).then(() => {
-                            console.log(TAG, "User successfully written")
-                        }).catch((error) => {
-                            console.error(TAG, "Error writing user: ", error);
-                        })
-                    }).catch((error) => {
-                    console.log("Error creating session: ", error)
-                })
+                        }).then(() => {})
+                        .catch(() => {})
+                    }).catch(() => {})
             })
-            .catch((error) => {
-                console.log("Error on photo retrieval: ", error)
-            })
+            .catch(() => {})
 
         this.checkForUsers()
 
@@ -175,10 +161,8 @@ export default class HostSession extends Component {
         sessionsRef.get()
             .then((docSnapshot) => {
                 if (docSnapshot.exists) {
-                    console.log('That session currently exists')
                     result = 0
                 } else {
-                    console.log('That session slot is open for use')
                     result = 1
                 }
             })
@@ -206,7 +190,6 @@ export default class HostSession extends Component {
 
             //usersLocal is reset so duplicate users are not created in lobby
             usersLocal = []
-            console.log(this.state.users)
         })
     }
 
@@ -227,21 +210,15 @@ export default class HostSession extends Component {
                                 snapshot.forEach(doc => {
                                     firebase.firestore()
                                         .collection('sessions').doc(this.state.code)
-                                        .collection('users').doc(doc.id).delete().then(() => {
-                                            console.log("Deleted user: ", doc.id)
-                                        })
-                                        .catch((error) => {
-                                            console.log("Error deleting user: ", error)
-                                        })
+                                        .collection('users').doc(doc.id).delete().then(() => {})
+                                        .catch(() => {})
                                 })
                         })
 
                         //delete the firebase document
                         firebase.firestore().collection('sessions').doc(this.state.code).delete()
                             .then(() => {this.props.navigation.navigate('Profile')})
-                            .catch((error) => {
-                                console.log("End Lobby Error: ", error)
-                                this.props.navigation.navigate('Profile')})
+                            .catch(() => {this.props.navigation.navigate('Profile')})
                     }
                 }
             ]
@@ -256,27 +233,18 @@ export default class HostSession extends Component {
                 //updates the start field in the current session to true to send everyone to the swipe feature
                 firebase.firestore().collection('sessions')
                     .doc(this.state.code).update({zip: this.state.zip, start: true, distance: this.state.distance, categories: this.state.categories})
-                    .then(() => {
-                        console.log("Session start updated to true, zipcode updated")
-                    }).catch(error => {
-                    console.log(`Encountered Update Error: ${error}`)
-                })
+                    .then(() => {}).catch(() => {})
 
                 //navigate to the swipe page manually
                 this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance, isHost:true, categories: this.state.categories})
             } else {
-                console.log("Zip Code: ", this.state.zip);
                 Alert.alert("Invalid ZipCode")
             }
         } else {
             //updates the start field in the current session to true to send everyone to the swipe feature
             firebase.firestore().collection('sessions')
                 .doc(this.state.code).update({start: true, distance: this.state.distance, categories: this.state.categories})
-                .then(() => {
-                    console.log("Session start updated to true")
-                }).catch(error => {
-                console.log(`Encountered Update Error: ${error}`)
-            })
+                .then(() => {}).catch(() => {})
 
             //navigate to the swipe page manually
             this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance, isHost:true, categories: this.state.categories, latitude: latitude, longitude: longitude})
@@ -448,7 +416,6 @@ export default class HostSession extends Component {
                                    onPress={() => {
                                        if(this.state.isAll === true) {
                                            this.state.categories = ['all']
-                                           console.log(this.state.categories)
                                            this.setState({modalVisible: !this.state.modalVisible})
                                        } else if(this.state.isAll === false && this.state.isItalian === false && this.state.isAfrican === false &&
                                            this.state.isAmerican === false && this.state.isAsian === false && this.state.isMiddleEast === false &&
@@ -496,8 +463,6 @@ export default class HostSession extends Component {
                                            if(this.state.isVegan === true) {
                                                this.state.categories.push('vegan', 'vegetarian')
                                            }
-
-                                           console.log(this.state.categories)
                                            this.setState({modalVisible: !this.state.modalVisible})
                                        }
                                    }}>
@@ -571,7 +536,7 @@ export default class HostSession extends Component {
                             [
                                 {
                                     text: "Wait, go back!",
-                                    onPress: () => console.log("Cancel Pressed"),
+                                    onPress: () => {},
                                     style: "cancel"
                                 },
                                 { text: "Let's Eat!!", onPress: () => {this.changeScreens()} }

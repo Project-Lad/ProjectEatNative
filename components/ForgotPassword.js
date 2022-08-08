@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Alert, LogBox, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView} from 'react-native'
+import {Alert, LogBox, Platform, Text, TextInput, TouchableOpacity, KeyboardAvoidingView} from 'react-native'
 import firebase from "firebase";
 import {IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";

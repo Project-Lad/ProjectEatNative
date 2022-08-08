@@ -15,20 +15,13 @@ export default function Dashboard(){
     const navigation = useNavigation()
     const isFocused = useIsFocused();
 
-
     useEffect(()=>{
            firebase.firestore().collection('users').doc(user).get().then((doc)=>{
                setNewProfileUsername(doc.data().username)
                setNewProfilePicture(doc.data().photoURL)
            })
         },[isFocused])
-/*    async function signOut(){
-        await firebase.auth().signOut()
-    }*/
-    async function deleteAccount(){
-        await firebase.auth().currentUser.delete()
-        await firebase.firestore().collection('users').doc(user).delete()
-    }
+
     return(
         <View style={ProfileStyles.container}>
             {/*Profile Card View*/}
@@ -44,16 +37,6 @@ export default function Dashboard(){
                         {newProfileUsername}
                     </Text>
                 </View>
-{/*                <TouchableOpacity style={ProfileStyles.editProfile} onPress={() => navigation.navigate('Edit Account')}>
-                    <View>
-                        <Text style={InputStyles.editProfile}>
-                            Edit Profile
-                        </Text>
-                    </View>
-                    <View style={ProfileStyles.editButton}>
-                        <Ionicons style={IconStyles.editIcon} name="chevron-forward-outline"/>
-                    </View>
-                </TouchableOpacity>*/}
             </View>
 
             <View style={{justifyContent:'space-evenly', padding:'10%'}}>
@@ -73,16 +56,6 @@ export default function Dashboard(){
                         <Text style={InputStyles.buttonText}>Join Lobby</Text>
                         <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                     </TouchableOpacity>
-
-{/*                    <TouchableOpacity onPress={signOut} style = {ProfileStyles.buttons}>
-                        <Ionicons style={IconStyles.iconLeft} name="log-out-outline"/>
-                        <Text style={InputStyles.buttonText}>Logout</Text>
-                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
-                    </TouchableOpacity>*/}
-
-                    {/*<TouchableOpacity onPress={deleteAccount} style = {ProfileStyles.buttons}>
-                        <Text style={InputStyles.buttonText}>delete</Text>
-                    </TouchableOpacity>*/}
                 </View>
         </View>
     )

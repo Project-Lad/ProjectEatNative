@@ -44,8 +44,6 @@ export default class Login extends Component {
             })
              firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
                 .then((res) => {
-
-                    console.log('User logged-in successfully!')
                     this.setState({
                         isLoading: false,
                         email: '',
@@ -87,7 +85,7 @@ export default class Login extends Component {
         }
         return (
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
-                {/*<Image source={require('../assets/branding/out2eat.png')}  style={{marginBottom:'5%'}}/>*/}
+                {/*<Image source={require('../assets/branding/out2eat_image.png')}  style={{marginBottom:'5%'}}/>*/}
                 <SVGComponent/>
                 <TextInput
                     style={this.state.isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
