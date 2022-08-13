@@ -88,6 +88,8 @@ export default function Signup(){
             Alert.alert('Password Length', 'Password does not meet minimum required length of 8 characters')
         }else if(userPassword.password !== retypedPassword.password) {
             Alert.alert('Password Mismatch', 'Password entered does not match original password')
+        }else if( /^[^!-\/:-@\[-`{-~]+$/.test(userPassword.password)){
+            Alert.alert('Password Invalid', 'Password must contain a special characters(^[^!-\\/:-@\\[-`{-~]+$)')
         }else{
             setLoading({
                 isLoading: true,
@@ -182,7 +184,7 @@ export default function Signup(){
                 placeholderTextColor={"#000"}
             />
             <TextInput
-                style={isFocused.password ? InputStyles.focusInputStyle : InputStyles.inputStyle}
+                style={isFocused.retypedPassword ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                 placeholder="Re-type Password"
                 onChangeText={password => setRetypedPassword({password:password})}
                 maxLength={200}
