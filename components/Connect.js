@@ -26,7 +26,7 @@ export default function Connect() {
                 placeholder="Enter Lobby Code"
                 placeholderTextColor={"#000"}
                 value={inputCode}
-                onChangeText={setCode}
+                onChangeText={(code)=>setCode(code.trim())}
                 onFocus={() => setFocus(true)}
                 onBlur={() => setFocus(false)}
                 maxLength={5}
