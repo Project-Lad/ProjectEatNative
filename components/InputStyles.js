@@ -583,7 +583,6 @@ const CardStyle = StyleSheet.create({
     cardImageModal: {
         width: "100%",
         height: "50%",
-        //aspectRatio: 1,
         borderRadius:10,
         position: "relative",
         left:0,
