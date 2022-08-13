@@ -580,13 +580,13 @@ const CardStyle = StyleSheet.create({
         fontSize: 20,
     },
     cardImageModal: {
-        width: "20%",
+        width: "100%",
         height: "50%",
-        aspectRatio: 1,
+        //aspectRatio: 1,
         borderRadius:10,
         position: "relative",
-        left:10,
-        right:10
+        left:0,
+        right:0
     },
     yupNopeView:{
         flexDirection:'row-reverse',
