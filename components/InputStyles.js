@@ -491,10 +491,10 @@ const CardStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width:ScreenWidth * .95,
-        marginTop:"50%"
+        marginTop:"35%"
     },
     card: {
-        height:ScreenHeight,
+        height:undefined,
         width:ScreenWidth * .95,
         flex:1
     },
@@ -524,10 +524,10 @@ const CardStyle = StyleSheet.create({
     },
     yelpReview:{
         flexDirection: 'row',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         justifyContent:'space-between',
         position:'relative',
-        top:'120%',
+        top:ScreenHeight-400,
         left:0
     },
     yelpStars:{
@@ -539,14 +539,15 @@ const CardStyle = StyleSheet.create({
         height:55,
     },
     cardImage: {
-        aspectRatio:.6,
+        //aspectRatio:1,
+        height:ScreenHeight * .75,
         width:"100%",
         borderRadius:10,
     },
     burgerCardImage: {
-        aspectRatio:.6,
+        //aspectRatio:.6,
         width:"100%",
-        height:"100%",
+        height:ScreenHeight*.75,
         borderRadius:10,
     },
     modalView: {
@@ -591,7 +592,9 @@ const CardStyle = StyleSheet.create({
     yupNopeView:{
         flexDirection:'row-reverse',
         justifyContent:"space-evenly",
-        //borderWidth: 3, borderColor: 'red'
+        alignItems:"center",
+        //borderWidth: 3, borderColor: 'red',
+        marginTop:'35%'
     },
     yupNopeButtons:{
         borderRadius:100,
