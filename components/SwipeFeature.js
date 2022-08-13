@@ -32,6 +32,10 @@ export default function SwipeFeature({route}) {
                 unsub();
                 navigation.navigate('Guest Session', {code: route.params.code})
             }
+
+            if(!!docSnapshot.data().start) {
+                unsub();
+            }
         })
 
         unsubs.push(unsub);

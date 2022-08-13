@@ -549,8 +549,8 @@ const Cards = (props) => {
                         }}
 
                         actions={{
-                            nope: {onAction: handleNope},
-                            yup: {onAction: handleYup}
+                            nope: {show: false, onAction: handleNope},
+                            yup: {show: false, onAction: handleYup}
                         }}
                     />
                 </View>
