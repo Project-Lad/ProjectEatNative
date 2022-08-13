@@ -38,27 +38,30 @@ export default function Signup(){
     const DEFAULT_IMAGE = Image.resolveAssetSource(userPhoto).uri;
     const [image, setImage] = useState({photoURL:DEFAULT_IMAGE});
 
-    useEffect(() => {
+    /*useEffect(() => {
         (async () => {
-            if (Platform.OS !== 'web') {
                 const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
                 if (status !== 'granted') {
-                    alert('Sorry, we need camera roll permissions to make this work!');
+                    alert('Sorry! We need permission to change your profile picture!');
                 }
-            }
         })();
-    }, []);
+    }, []);*/
 
     const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0.5,
-        });
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Sorry! We need permission to change your profile picture!');
+        } else {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.5,
+            });
 
-        if (!result.cancelled) {
-            setImage({photoURL:result.uri});
+            if (!result.cancelled) {
+                setImage({photoURL:result.uri});
+            }
         }
     };
 
@@ -159,6 +162,7 @@ export default function Signup(){
                 onFocus={() => setFocused({username: true, email: false, password: false, retypedPassword: false})}
                 onBlur={() => setFocused({username: false, email: false, password: false, retypedPassword: false})}
                 placeholderTextColor={"#000"}
+                maxLength={15}
             />
             <TextInput
                 style={isFocused.email ? InputStyles.focusInputStyle : InputStyles.inputStyle}
