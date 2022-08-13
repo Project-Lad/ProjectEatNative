@@ -32,7 +32,6 @@ export default function EditAccount(){
         return () => backHandler.remove()
     }, [])
 
-
     function userName() {
         //updates users displayName
         firebase.auth().currentUser.updateProfile({
@@ -58,23 +57,30 @@ export default function EditAccount(){
         })
     }
     const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0.5,
-        });
 
-        if (!result.cancelled) {
-            //uploads the image to firebase storage
-            uploadImage(result.uri, "profilePicture")
-                .then(setTimeout(() => {
-                    setNewProfilePicture({photoURL:result.uri})
-                    setUpdateDisable(false)
-                },100))
-                .catch((error) => {
-                    Alert.alert("Error: ", error)
-                })
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (status !== 'granted') {
+            alert('Sorry! We need permission to change your profile picture!');
+        } else {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.5,
+            });
+
+            if (!result.cancelled) {
+                //uploads the image to firebase storage
+                uploadImage(result.uri, "profilePicture")
+                    .then(setTimeout(() => {
+                        setNewProfilePicture({photoURL:result.uri})
+                        setUpdateDisable(false)
+                    },100))
+                    .catch((error) => {
+                        Alert.alert("Error: ", error)
+                    })
+            }
         }
     };
 
