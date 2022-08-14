@@ -23,9 +23,10 @@
       "bundleIdentifier": "Out2Eat"
     },
     "android": {
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/androidAFI.png",
-        "backgroundImage": "./assets/androidABI.png"
+        "backgroundImage": "./assets/androidABI.png",
       },
       "softwareKeyboardLayoutMode": "pan",
       "package": "com.Out2Eat.ProjectEatNative",
