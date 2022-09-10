@@ -7,6 +7,18 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "out2eat",
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "out2eat",
+            "project": "out2eat-rn",
+            "authToken": "a4946aa511694ccbac8a48da725eed96f2b9a35d1b174b08a89ab83faff7f1ad"
+          }
+        }
+      ]
+    },
     "splash": {
       "image": "./assets/branding/out2eat-splash.png",
       "resizeMode": "contain",
@@ -44,6 +56,9 @@
         }
       ]
     },
-    "description": ""
+    "description": "",
+    "plugins": [
+      "sentry-expo"
+    ]
   }
 }

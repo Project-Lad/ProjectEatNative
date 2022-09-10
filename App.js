@@ -13,6 +13,7 @@ import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import firebase from "./firebase";
 import {BackHandler} from "react-native";
+import * as Sentry from 'sentry-expo';
 
 function AuthStack() {
     return (
@@ -102,6 +103,11 @@ function LoginSignup(){
     </Stack.Navigator>
     )
 }
+Sentry.init({
+    dsn: "https://767ea43956cc4dbdbbb48abbeb8dffa7@o1403110.ingest.sentry.io/6735768",
+    enableInExpoDevelopment: true,
+    debug:true
+});
 
 const Stack = createStackNavigator();
 
@@ -132,5 +138,4 @@ export default function App() {
             )}
         </NavigationContainer>
     );
-
 }
