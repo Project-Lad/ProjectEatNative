@@ -33,6 +33,7 @@ import {CardStyle, IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 LogBox.ignoreLogs(['Setting a timer']);
 import YelpAPI from "./YelpAPI.js";
+import * as Sentry from "sentry-expo";
 
 class Card extends React.Component {
     constructor(props) {
@@ -330,7 +331,8 @@ const Cards = (props) => {
 
                 counter = 0;
             }
-        } catch (e) {
+        } catch (error) {
+            Sentry.Native.captureException(error.message);
         }
     }
 
@@ -343,7 +345,8 @@ const Cards = (props) => {
             [props.resCounter]: restaurantID
         }, {merge: true}).then(() => {
             handleSetCounter(props.resCounter + 1);
-        }).catch(() => {
+        }).catch((error) => {
+            Sentry.Native.captureException(error.message);
         });
 
         unsub = usersRef.onSnapshot(querySnapshot => {
@@ -410,8 +413,9 @@ const Cards = (props) => {
                     counter: 1
                 }).then(() => {
                     //console log that the restaurant is successful
-                }).catch(() => {
+                }).catch((error) => {
                     //if there is an issue, console log error
+                    Sentry.Native.captureException(error.message);
                 });
             }
 
@@ -421,7 +425,8 @@ const Cards = (props) => {
                 matchedRef.update({
                     counter: doc.data().counter + increment
                 }).then(() => {
-                }).catch(() => {
+                }).catch((error) => {
+                    Sentry.Native.captureException(error.message);
                 });
             }
 

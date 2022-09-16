@@ -77,7 +77,8 @@ export default class GuestSession extends Component {
                      this.props.navigation.navigate('Connect')
                  })
              })
-             .catch(() => {
+             .catch((error) => {
+                 Sentry.Native.captureException(error.message);
              })
          this.state.isLoading = false
      }
@@ -167,6 +168,7 @@ export default class GuestSession extends Component {
                             .collection('users').doc(firebase.auth().currentUser.uid).delete()
                             .then(this.props.navigation.navigate('Connect'))
                             .catch((error) => {
+                                Sentry.Native.captureException(error.message);
                                 //if an error occurs, display console log and navigate back to connect
                                 this.props.navigation.navigate('Connect')})
                     }
@@ -191,6 +193,7 @@ export default class GuestSession extends Component {
             }
         } catch (error) {
             alert(error.message);
+            Sentry.Native.captureException(error.message);
         }
     };
 

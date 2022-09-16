@@ -1,5 +1,6 @@
 import {YELP_API_KEY} from '@env'
 import React from 'react';
+import * as Sentry from "sentry-expo";
 
 const Data = async (zip, categories, offset, distance, latitude, longitude) => {
     let apicategories = "";
@@ -30,7 +31,10 @@ const Data = async (zip, categories, offset, distance, latitude, longitude) => {
             .then(result => {
                 restaurantData = result.businesses
             })
-            .catch(() => {});
+            .catch((error) => {
+                console.log(error.message)
+                Sentry.Native.captureException(error.message);
+            });
 
         return restaurantData;
     } else {
@@ -39,7 +43,9 @@ const Data = async (zip, categories, offset, distance, latitude, longitude) => {
             .then(result => {
                 restaurantData = result.businesses
             })
-            .catch(() => {});
+            .catch((error) => {
+                Sentry.Native.captureException(error.message);
+            });
 
         return restaurantData
     }
