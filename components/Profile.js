@@ -15,13 +15,17 @@ export default function Dashboard(){
     const [newProfilePicture, setNewProfilePicture] = useState()
     const navigation = useNavigation()
     const isFocused = useIsFocused();
+    try {
+        useEffect(() => {
+            firebase.firestore().collection('users').doc(user).get().then((doc) => {
+                setNewProfileUsername(doc.data().username)
+                setNewProfilePicture(doc.data().photoURL)
+            })
+        }, [isFocused])
+    } catch (error) {
+        Sentry.Native.captureException(error.message);
+    }
 
-    useEffect(()=>{
-           firebase.firestore().collection('users').doc(user).get().then((doc)=>{
-               setNewProfileUsername(doc.data().username)
-               setNewProfilePicture(doc.data().photoURL)
-           })
-        },[isFocused])
 
     return(
         <View style={ProfileStyles.container}>
