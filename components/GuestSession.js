@@ -69,10 +69,10 @@ export default class GuestSession extends Component {
                          this.setState({isLoading: true})
                      } else {
                          alert("Session could not be found, please re-enter code")
-                         Sentry.Native.captureException("testing with android and ios")
                          this.props.navigation.navigate('Connect')
                      }
-                 }).catch(() => {
+                 }).catch((error) => {
+                     Sentry.Native.captureException(error.message);
                      alert("There was an issue connecting to the Session, please re-enter code")
                      this.props.navigation.navigate('Connect')
                  })
@@ -147,7 +147,8 @@ export default class GuestSession extends Component {
 
                 this.props.navigation.navigate('Profile')
             }
-        }, () => {
+        }, (error) => {
+            Sentry.Native.captureException(error.message);
         })
     }
 
