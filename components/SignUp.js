@@ -18,6 +18,7 @@ import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import userPhoto from '../assets/user-placeholder.png'
 import * as WebBrowser from 'expo-web-browser';
+import * as Sentry from "sentry-expo";
 LogBox.ignoreLogs(['Setting a timer']);
 export default function Signup(){
     const navigation = useNavigation()
@@ -37,15 +38,6 @@ export default function Signup(){
 
     const DEFAULT_IMAGE = Image.resolveAssetSource(userPhoto).uri;
     const [image, setImage] = useState({photoURL:DEFAULT_IMAGE});
-
-    /*useEffect(() => {
-        (async () => {
-                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-                if (status !== 'granted') {
-                    alert('Sorry! We need permission to change your profile picture!');
-                }
-        })();
-    }, []);*/
 
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -113,7 +105,9 @@ export default function Signup(){
                             //upload image to firebase storage
                             uploadImage(image.photoURL, "profilePicture")
                                 .then(() => {})
-                                .catch(() => {})
+                                .catch((error) => {
+                                    Sentry.Native.captureException(error.message);
+                                })
                         }).then(()=>{
                             navigation.navigate('Profile')
                         })
@@ -124,6 +118,7 @@ export default function Signup(){
                             [{text: 'Try Again', onPress:() => navigation.navigate('Login')}]
                         )
                     }else{
+                        Sentry.Native.captureException(error.message);
                         Alert.alert('Email Invalid', 'Your email is invalid please enter it again',
                             [{text: 'Try Again', onPress:() => navigation.goBack()}]
                         )

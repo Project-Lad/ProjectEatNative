@@ -21,7 +21,6 @@ export default function Dashboard(){
                setNewProfileUsername(doc.data().username)
                setNewProfilePicture(doc.data().photoURL)
            })
-
         },[isFocused])
 
     return(

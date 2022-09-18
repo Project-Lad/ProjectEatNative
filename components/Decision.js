@@ -28,6 +28,7 @@ import {useNavigation} from "@react-navigation/native";
 import YelpImage from "../assets/yelp_burst.png";
 import {IconStyles, InputStyles,DecisionStyle} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
+import * as Sentry from "sentry-expo";
 LogBox.ignoreLogs(['Setting a timer']);
 const Decision = ({route}) => {
     let [restaurant, setRestaurant] = useState({
@@ -77,7 +78,9 @@ const Decision = ({route}) => {
             .then(result => {
                 setRestaurant(result);
             })
-            .catch(() => {});
+            .catch((error) => {
+                Sentry.Native.captureException(error.message);
+            });
     }
 
     function setData() {
@@ -206,7 +209,8 @@ const Decision = ({route}) => {
             currentSession.collection('matched').get().then(snapshot => {
                 snapshot.forEach(doc => {
                     currentSession.collection('matched').doc(doc.id).delete().then(() => {
-                    }).catch(() => {
+                    }).catch((error) => {
+                        Sentry.Native.captureException(error.message);
                     })
                 })
             })
@@ -214,7 +218,8 @@ const Decision = ({route}) => {
             currentSession.collection('users').get().then(snapshot => {
                 snapshot.forEach(doc => {
                     currentSession.collection('users').doc(doc.id).delete().then(() => {
-                    }).catch(() => {
+                    }).catch((error) => {
+                        Sentry.Native.captureException(error.message);
                     })
                 })
             })
@@ -222,11 +227,14 @@ const Decision = ({route}) => {
             //delete the firebase document
             firebase.firestore().collection('sessions').doc(route.params.code).delete()
                 .then(() => {navigation.navigate('Profile')})
-                .catch(() => {})
+                .catch((error) => {
+                    Sentry.Native.captureException(error.message);
+                })
         } else {
             currentSession.collection('users').doc(firebase.auth().currentUser.uid).delete().then(() => {
                 navigation.navigate('Profile')
-            }).catch(() => {
+            }).catch((error) => {
+                Sentry.Native.captureException(error.message);
             })
         }
     }

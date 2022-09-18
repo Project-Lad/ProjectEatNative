@@ -22,6 +22,7 @@ import "firebase/firestore";
 import {InputStyles, IconStyles, LobbyStyles, CardStyle} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from "expo-location";
+import * as Sentry from "sentry-expo";
 LogBox.ignoreLogs(['Setting a timer']);
 
 //Declares lat and long vars
@@ -133,10 +134,16 @@ export default class HostSession extends Component {
                             displayName: displayName,
                             photoURL: url
                         }).then(() => {})
-                        .catch(() => {})
-                    }).catch(() => {})
+                        .catch((error) => {
+                            Sentry.Native.captureException(error.message);
+                        })
+                    }).catch((error) => {
+                    Sentry.Native.captureException(error.message);
+                })
             })
-            .catch(() => {})
+            .catch((error) => {
+                Sentry.Native.captureException(error.message);
+            })
 
         this.checkForUsers()
 
@@ -211,14 +218,19 @@ export default class HostSession extends Component {
                                     firebase.firestore()
                                         .collection('sessions').doc(this.state.code)
                                         .collection('users').doc(doc.id).delete().then(() => {})
-                                        .catch(() => {})
+                                        .catch((error) => {
+                                            Sentry.Native.captureException(error.message);
+                                        })
                                 })
                         })
 
                         //delete the firebase document
                         firebase.firestore().collection('sessions').doc(this.state.code).delete()
                             .then(() => {this.props.navigation.navigate('Profile')})
-                            .catch(() => {this.props.navigation.navigate('Profile')})
+                            .catch((error) => {
+                                Sentry.Native.captureException(error.message);
+                                this.props.navigation.navigate('Profile')
+                            })
                     }
                 }
             ]
@@ -233,7 +245,10 @@ export default class HostSession extends Component {
                 //updates the start field in the current session to true to send everyone to the swipe feature
                 firebase.firestore().collection('sessions')
                     .doc(this.state.code).update({zip: this.state.zip, start: true, distance: this.state.distance, categories: this.state.categories})
-                    .then(() => {}).catch(() => {})
+                    .then(() => {})
+                    .catch((error) => {
+                        Sentry.Native.captureException(error.message);
+                })
 
                 //navigate to the swipe page manually
                 this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance, isHost:true, categories: this.state.categories})
@@ -244,7 +259,10 @@ export default class HostSession extends Component {
             //updates the start field in the current session to true to send everyone to the swipe feature
             firebase.firestore().collection('sessions')
                 .doc(this.state.code).update({start: true, distance: this.state.distance, categories: this.state.categories})
-                .then(() => {}).catch(() => {})
+                .then(() => {})
+                .catch((error) => {
+                    Sentry.Native.captureException(error.message);
+                })
 
             //navigate to the swipe page manually
             this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance, isHost:true, categories: this.state.categories, latitude: latitude, longitude: longitude})

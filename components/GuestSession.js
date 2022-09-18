@@ -69,15 +69,16 @@ export default class GuestSession extends Component {
                          this.setState({isLoading: true})
                      } else {
                          alert("Session could not be found, please re-enter code")
-                         Sentry.Native.captureException("testing with android and ios")
                          this.props.navigation.navigate('Connect')
                      }
-                 }).catch(() => {
+                 }).catch((error) => {
+                     Sentry.Native.captureException(error.message);
                      alert("There was an issue connecting to the Session, please re-enter code")
                      this.props.navigation.navigate('Connect')
                  })
              })
-             .catch(() => {
+             .catch((error) => {
+                 Sentry.Native.captureException(error.message);
              })
          this.state.isLoading = false
      }
@@ -146,7 +147,8 @@ export default class GuestSession extends Component {
 
                 this.props.navigation.navigate('Profile')
             }
-        }, () => {
+        }, (error) => {
+            Sentry.Native.captureException(error.message);
         })
     }
 
@@ -167,6 +169,7 @@ export default class GuestSession extends Component {
                             .collection('users').doc(firebase.auth().currentUser.uid).delete()
                             .then(this.props.navigation.navigate('Connect'))
                             .catch((error) => {
+                                Sentry.Native.captureException(error.message);
                                 //if an error occurs, display console log and navigate back to connect
                                 this.props.navigation.navigate('Connect')})
                     }
@@ -191,6 +194,7 @@ export default class GuestSession extends Component {
             }
         } catch (error) {
             alert(error.message);
+            Sentry.Native.captureException(error.message);
         }
     };
 
