@@ -84,7 +84,7 @@ export default function Signup(){
         }else if(userPassword.password !== retypedPassword.password) {
             Alert.alert('Password Mismatch', 'Password entered does not match original password')
         }else if( /^[^!-\/:-@\[-`{-~]+$/.test(userPassword.password)){
-            Alert.alert('Password Invalid', 'Password must contain a special characters(^[^!-\\/:-@\\[-`{-~]+$)')
+            Alert.alert('Password Invalid', 'Password must contain a special characters: ( ^ [ ! \ / : @ \ } ` { - ~ ] + $ )')
         }else{
             setLoading({
                 isLoading: true,
