@@ -331,8 +331,26 @@ const Cards = (props) => {
 
                 counter = 0;
             }
+
+            shuffleRestaurants();
         } catch (error) {
             Sentry.Native.captureException(error.message);
+        }
+    }
+
+    function shuffleRestaurants() {
+        let currentIndex = data.length,  randomIndex;
+
+        // While there remain elements to shuffle.
+        while (currentIndex !== 0) {
+
+            // Pick a remaining element.
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [data[currentIndex], data[randomIndex]] = [
+                data[randomIndex], data[currentIndex]];
         }
     }
 
