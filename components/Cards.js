@@ -33,6 +33,7 @@ import {CardStyle, IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 LogBox.ignoreLogs(['Setting a timer']);
 import YelpAPI from "./YelpAPI.js";
+import * as Sentry from "sentry-expo";
 
 class Card extends React.Component {
     constructor(props) {
@@ -330,7 +331,26 @@ const Cards = (props) => {
 
                 counter = 0;
             }
-        } catch (e) {
+
+            shuffleRestaurants();
+        } catch (error) {
+            Sentry.Native.captureException(error.message);
+        }
+    }
+
+    function shuffleRestaurants() {
+        let currentIndex = data.length,  randomIndex;
+
+        // While there remain elements to shuffle.
+        while (currentIndex !== 0) {
+
+            // Pick a remaining element.
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [data[currentIndex], data[randomIndex]] = [
+                data[randomIndex], data[currentIndex]];
         }
     }
 
@@ -343,7 +363,8 @@ const Cards = (props) => {
             [props.resCounter]: restaurantID
         }, {merge: true}).then(() => {
             handleSetCounter(props.resCounter + 1);
-        }).catch(() => {
+        }).catch((error) => {
+            Sentry.Native.captureException(error.message);
         });
 
         unsub = usersRef.onSnapshot(querySnapshot => {
@@ -410,8 +431,9 @@ const Cards = (props) => {
                     counter: 1
                 }).then(() => {
                     //console log that the restaurant is successful
-                }).catch(() => {
+                }).catch((error) => {
                     //if there is an issue, console log error
+                    Sentry.Native.captureException(error.message);
                 });
             }
 
@@ -421,7 +443,8 @@ const Cards = (props) => {
                 matchedRef.update({
                     counter: doc.data().counter + increment
                 }).then(() => {
-                }).catch(() => {
+                }).catch((error) => {
+                    Sentry.Native.captureException(error.message);
                 });
             }
 

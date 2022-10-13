@@ -15,6 +15,7 @@ import firebase from "../firebase";
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
+import * as Sentry from "sentry-expo";
 import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 LogBox.ignoreLogs(['Setting a timer']);
@@ -54,6 +55,7 @@ export default function EditAccount(){
         }).catch(function(error) {
             //Catch any errors
             alert(error)
+            Sentry.Native.captureException(error.message);
         })
     }
     const pickImage = async () => {
@@ -79,6 +81,7 @@ export default function EditAccount(){
                     },100))
                     .catch((error) => {
                         Alert.alert("Error: ", error)
+                        Sentry.Native.captureException(error.message);
                     })
             }
         }

@@ -11,6 +11,7 @@ import firebase from "../firebase";
 import "firebase/firestore";
 import {IconStyles, InputStyles, LobbyStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
+import * as Sentry from "sentry-expo";
 let unsubscribe;
 LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
@@ -70,12 +71,14 @@ export default class GuestSession extends Component {
                          alert("Session could not be found, please re-enter code")
                          this.props.navigation.navigate('Connect')
                      }
-                 }).catch(() => {
+                 }).catch((error) => {
+                     Sentry.Native.captureException(error.message);
                      alert("There was an issue connecting to the Session, please re-enter code")
                      this.props.navigation.navigate('Connect')
                  })
              })
-             .catch(() => {
+             .catch((error) => {
+                 Sentry.Native.captureException(error.message);
              })
          this.state.isLoading = false
      }
@@ -141,9 +144,11 @@ export default class GuestSession extends Component {
             } else {
                 //if lobby no longer exists, display lobby closed alert and return to main page
                 Alert.alert('Lobby Closed', 'The lobby you are in has ended, returning to home')
+
                 this.props.navigation.navigate('Profile')
             }
-        }, () => {
+        }, (error) => {
+            Sentry.Native.captureException(error.message);
         })
     }
 
@@ -164,6 +169,7 @@ export default class GuestSession extends Component {
                             .collection('users').doc(firebase.auth().currentUser.uid).delete()
                             .then(this.props.navigation.navigate('Connect'))
                             .catch((error) => {
+                                Sentry.Native.captureException(error.message);
                                 //if an error occurs, display console log and navigate back to connect
                                 this.props.navigation.navigate('Connect')})
                     }
@@ -188,6 +194,7 @@ export default class GuestSession extends Component {
             }
         } catch (error) {
             alert(error.message);
+            Sentry.Native.captureException(error.message);
         }
     };
 

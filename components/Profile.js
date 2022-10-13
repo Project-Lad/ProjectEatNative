@@ -6,6 +6,7 @@ import {useIsFocused, useNavigation} from '@react-navigation/native'
 import {InputStyles,IconStyles,ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import SVGComponent from "./SVGLogo";
+import * as Sentry from "sentry-expo";
 LogBox.ignoreLogs(['Setting a timer']);
 
 export default function Dashboard(){
