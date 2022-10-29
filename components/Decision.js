@@ -290,16 +290,16 @@ const Decision = ({route}) => {
                 </View>
                 <Text style={DecisionStyle.cardsText}>{restaurant.name}</Text>
                 <View style={DecisionStyle.yelpContainer}>
-                    <View style={DecisionStyle.yelpInformation}>
-                        <Text style={DecisionStyle.yelpText}>{restaurant.location.address1}</Text>
-                        <Text style={DecisionStyle.yelpText}>{restaurant.location.city}, {restaurant.location.state}</Text>
-                        <Text style={DecisionStyle.yelpText}>Based on {restaurant.review_count} Reviews</Text>
-                    </View>
                     <View style={DecisionStyle.yelpStars}>
-                        <View style={DecisionStyle.yelpStarReviewContainer}>
+                        <View>
+                            <View style={DecisionStyle.yelpInformation}>
+                                <Text style={DecisionStyle.yelpText}>{restaurant.location.address1}</Text>
+                                <Text style={DecisionStyle.yelpText}>{restaurant.location.city}, {restaurant.location.state}</Text>
+                                <Text style={DecisionStyle.yelpText}>Based on {restaurant.review_count} Reviews</Text>
+                            </View>
                             <Image source={rating} style={DecisionStyle.yelpStarReview}/>
                         </View>
-                        <TouchableOpacity style={{width:'25%'}} onPress={() => WebBrowser.openBrowserAsync(restaurant.url)}>
+                        <TouchableOpacity style={{width:'25%', alignItems:"center"}} onPress={() => WebBrowser.openBrowserAsync(restaurant.url)}>
                             <Image style={DecisionStyle.yelpImage} source={YelpImage}/>
                         </TouchableOpacity>
                     </View>
