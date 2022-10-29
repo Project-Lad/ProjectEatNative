@@ -1,7 +1,7 @@
 //checks for location
 import {YELP_API_KEY} from '@env'
 import React, {useState, useEffect} from 'react';
-import {View, Text, Image, Platform, Linking, ScrollView, TouchableOpacity,LogBox} from "react-native";
+import {View, Text, Image, Platform, Linking, ScrollView, TouchableOpacity, LogBox} from "react-native";
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
 import androidStar15 from '../assets/android/stars_regular_1_half.png'
@@ -29,6 +29,7 @@ import YelpImage from "../assets/yelp_burst.png";
 import {IconStyles, InputStyles,DecisionStyle} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 import * as Sentry from "sentry-expo";
+import * as WebBrowser from "expo-web-browser";
 LogBox.ignoreLogs(['Setting a timer']);
 const Decision = ({route}) => {
     let [restaurant, setRestaurant] = useState({
@@ -248,7 +249,11 @@ const Decision = ({route}) => {
         }
         Linking.openURL(phoneNumber).then(() => {}).catch(() => {})
     }
-
+    const size = 50;
+    const cat = {
+        width: size,
+        height: size
+    };
     if(isLoading === false) {
         return(
             <View>
@@ -294,7 +299,7 @@ const Decision = ({route}) => {
                         <View style={DecisionStyle.yelpStarReviewContainer}>
                             <Image source={rating} style={DecisionStyle.yelpStarReview}/>
                         </View>
-                        <TouchableOpacity style={{width:'20%'}} onPress={() => Linking.openURL(restaurant.url)}>
+                        <TouchableOpacity style={{width:'25%'}} onPress={() => WebBrowser.openBrowserAsync(restaurant.url)}>
                             <Image style={DecisionStyle.yelpImage} source={YelpImage}/>
                         </TouchableOpacity>
                     </View>

@@ -647,15 +647,18 @@ const DecisionStyle = StyleSheet.create({
         display:"flex",
         flexDirection:"row",
         justifyContent:'space-between',
-        width:ScreenWidth -25
+        //width:ScreenWidth - 25
     },
     yelpStarReviewContainer:{
-        width:'75%',
-        alignSelf:'center'
+        width:272,
+        height:48,
+        //alignSelf:'center'
     },
     yelpStarReview:{
-        width:Platform.OS === 'ios' ? 150: 205,
-        padding:'5%'
+        //width:Platform.OS === 'ios' ? 136: 205,
+        width:136,
+        height:24,
+        //padding:'5%'
     },
     yelpInformation:{
         display: "flex",
