@@ -531,8 +531,8 @@ const CardStyle = StyleSheet.create({
         left:0
     },
     yelpStars:{
-        width:'60%',
-        height:'25%',
+        width:136,
+        height:24,
     },
     yelpImage: {
         width:50,
