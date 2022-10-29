@@ -34,6 +34,7 @@ import {Ionicons} from "@expo/vector-icons";
 LogBox.ignoreLogs(['Setting a timer']);
 import YelpAPI from "./YelpAPI.js";
 import * as Sentry from "sentry-expo";
+import * as WebBrowser from "expo-web-browser";
 
 class Card extends React.Component {
     constructor(props) {
@@ -77,7 +78,7 @@ class Card extends React.Component {
                                 <Image style={CardStyle.yelpStars} source={this.props.rating} />
                                 <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
                             </View>
-                            <TouchableOpacity style={{width:'10%'}} onPress={() => Linking.openURL(this.props.businessURL)}>
+                            <TouchableOpacity style={{width:'10%'}} onPress={() => WebBrowser.openBrowserAsync(this.props.businessURL)}>
                                 <Image style={CardStyle.yelpImage} source={YelpBurst}/>
                             </TouchableOpacity>
                         </View>
