@@ -17,9 +17,11 @@ export default function Dashboard(){
     const isFocused = useIsFocused();
     try {
         useEffect(() => {
+           firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL().then((url)=>{
+               setNewProfilePicture(url)
+           })
             firebase.firestore().collection('users').doc(user).get().then((doc) => {
                 setNewProfileUsername(doc.data().username)
-                setNewProfilePicture(doc.data().photoURL)
             })
         }, [isFocused])
     } catch (error) {

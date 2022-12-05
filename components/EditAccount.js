@@ -24,11 +24,14 @@ export default function EditAccount(){
     const navigation = useNavigation()
     const currentUser = firebase.auth().currentUser
     const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName})
-    const [newProfilePicture, setNewProfilePicture] = useState({photoURL: currentUser.photoURL})
+    const [newProfilePicture, setNewProfilePicture] = useState({photoURL:null})
     const [result, setResult] = useState(null);
     const [updateDisable, setUpdateDisable] = useState(true)
 
     useEffect(() => {
+        firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL().then((url)=>{
+            setNewProfilePicture({photoURL:url})
+        })
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
         return () => backHandler.remove()
     }, [])
