@@ -12,8 +12,10 @@ import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import firebase from "./firebase";
-import {BackHandler} from "react-native";
+import {BackHandler, Image, View} from "react-native";
 import * as Sentry from 'sentry-expo';
+import burgerGIF from "./assets/burger.gif";
+import {ProfileStyles} from "./components/InputStyles";
 
 function AuthStack() {
     return (
@@ -113,6 +115,7 @@ const Stack = createStackNavigator();
 
 export default function App() {
     const [isLoggedIn, setLogIn] = useState(false)
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(()=>{
         firebase.auth().onAuthStateChanged(user => {
             if(user) {
@@ -128,14 +131,29 @@ export default function App() {
             "hardwareBackPress",
             backAction
         );
+
+        setTimeout(() => {setIsLoading(false)}, 1000)
     }, []);
     return (
         <NavigationContainer>
-            {isLoggedIn ? (
-                <AuthStack/>
-            ) : (
-                <LoginSignup/>
-            )}
+            {isLoading ?
+                <View style={ProfileStyles.container}>
+                    <Image source={burgerGIF} style={{
+                        width: "100%",
+                        height: undefined,
+                        aspectRatio: 1,
+                        borderTopLeftRadius:10,
+                        borderTopRightRadius:10,
+                        overlayColor: 'white',
+                    }}/>
+                </View>
+                :
+                isLoggedIn ? (
+                    <AuthStack/>
+                ) : (
+                    <LoginSignup/>
+                )
+            }
         </NavigationContainer>
     );
 }

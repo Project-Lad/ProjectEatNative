@@ -9,14 +9,16 @@ import {
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
-import {IconStyles, InputStyles, LobbyStyles} from "./InputStyles";
+import {IconStyles, InputStyles, LobbyStyles, ProfileStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 import * as Sentry from "sentry-expo";
+import burgerGIF from "../assets/burger.gif";
 let unsubscribe;
 LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
     state = {
         areUsersLoading: true,
+        isExiting: false,
         users: [],
         code: 0,
         photoURL: "",
@@ -161,6 +163,7 @@ export default class GuestSession extends Component {
                 {
                     text:"Yes",
                     onPress:() => {
+                        this.setState({isExiting: true})
                         unsubscribe();
                         //if yes, delete the user and navigate back to connection page
                         firebase.firestore().collection('sessions').doc(this.state.code)
@@ -169,7 +172,8 @@ export default class GuestSession extends Component {
                             .catch((error) => {
                                 Sentry.Native.captureException(error.message);
                                 //if an error occurs, display console log and navigate back to connect
-                                this.props.navigation.navigate('Connect')})
+                                this.props.navigation.navigate('Connect')}
+                            )
                     }
                 }
             ]
@@ -198,65 +202,80 @@ export default class GuestSession extends Component {
 
     render() {
         return(
-            <View style={LobbyStyles.container}>
-                {this.state.areUsersLoading ?
-                    <View style={{flex: 1, justifyContent: 'center'}}>
-                        <ActivityIndicator size="large" color="#f97c4d"/>
-                        <Text style={LobbyStyles.userName}>Loading Users...</Text>
+            <>
+                {this.state.isExiting ?
+                    <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
+                        <Image source={burgerGIF} style={{
+                            width: "100%",
+                            height: undefined,
+                            aspectRatio: 1,
+                            borderTopLeftRadius:10,
+                            borderTopRightRadius:10,
+                            overlayColor: 'white',
+                        }}/>
                     </View>
                     :
-                    <ScrollView>
-                        {this.state.users.map(user=>{
-                            return(
-                                <View style={LobbyStyles.listContainer} key={user.id}>
-                                    <Image
-                                        source={{uri:user.photoURL}}
-                                        style={LobbyStyles.image}
-                                        loadingIndicatorSource={<ActivityIndicator size="small" color="#f97c4d"/>}
-                                    />
-                                    <Text style={LobbyStyles.userName}>{user.displayName}</Text>
-                                </View>
-                            )
-                        })}
-                    </ScrollView>
-                }
-                <View>
-                    <Text style={{fontSize:18, color:'#2e344f'}}>Share Code</Text>
-
-                    <View>
-                        <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
-                            <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
-                            <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
-                        <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={LobbyStyles.closeButton}>
-                            <Ionicons style={IconStyles.iconLeft}  name="close-circle-outline"/>
-                            <Text style={InputStyles.buttonText}>Leave</Text>
-                        </TouchableOpacity>
-                        {this.state.start ?
-                            <TouchableOpacity
-                                onPress={() =>
-                                    this.props.navigation.navigate('Swipe Feature',{
-                                        code:this.state.code,
-                                        zip:this.state.zip,
-                                        distance: this.state.distance,
-                                        isHost:false,
-                                        categories: this.state.categories,
-                                        latitude: this.state.latitude,
-                                        longitude: this.state.longitude
-                                    })
-                                }
-                                style={LobbyStyles.buttons}
-                            >
-                                <Text style={InputStyles.buttonText}>Back 2 Swiping</Text>
-                            </TouchableOpacity>
+                    <View style={LobbyStyles.container}>
+                        {this.state.areUsersLoading ?
+                            <View style={{flex: 1, justifyContent: 'center'}}>
+                                <ActivityIndicator size="large" color="#f97c4d"/>
+                                <Text style={LobbyStyles.userName}>Loading Users...</Text>
+                            </View>
                             :
-                            null
+                            <ScrollView>
+                                {this.state.users.map(user=>{
+                                    return(
+                                        <View style={LobbyStyles.listContainer} key={user.id}>
+                                            <Image
+                                                source={{uri:user.photoURL}}
+                                                style={LobbyStyles.image}
+                                                loadingIndicatorSource={<ActivityIndicator size="small" color="#f97c4d"/>}
+                                            />
+                                            <Text style={LobbyStyles.userName}>{user.displayName}</Text>
+                                        </View>
+                                    )
+                                })}
+                            </ScrollView>
                         }
+                        <View>
+                            <Text style={{fontSize:18, color:'#2e344f'}}>Share Code</Text>
+
+                            <View>
+                                <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
+                                    <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
+                                    <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
+                                <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={LobbyStyles.closeButton}>
+                                    <Ionicons style={IconStyles.iconLeft}  name="close-circle-outline"/>
+                                    <Text style={InputStyles.buttonText}>Leave</Text>
+                                </TouchableOpacity>
+                                {this.state.start ?
+                                    <TouchableOpacity
+                                        onPress={() =>
+                                            this.props.navigation.navigate('Swipe Feature',{
+                                                code:this.state.code,
+                                                zip:this.state.zip,
+                                                distance: this.state.distance,
+                                                isHost:false,
+                                                categories: this.state.categories,
+                                                latitude: this.state.latitude,
+                                                longitude: this.state.longitude
+                                            })
+                                        }
+                                        style={LobbyStyles.buttons}
+                                    >
+                                        <Text style={InputStyles.buttonText}>Back 2 Swiping</Text>
+                                    </TouchableOpacity>
+                                    :
+                                    null
+                                }
+                            </View>
+                        </View>
                     </View>
-                </View>
-            </View>
+                }
+            </>
         );
     }
 }
