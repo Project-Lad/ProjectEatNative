@@ -14,7 +14,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     BackHandler,
-    LogBox
+    LogBox, ActivityIndicator
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import firebase from "../firebase";
@@ -146,8 +146,6 @@ export default class HostSession extends Component {
             })
 
         this.checkForUsers()
-
-        this.state.isLoading = false
     }
 
     createCode = () => {
@@ -183,6 +181,7 @@ export default class HostSession extends Component {
 
         //creates an observer to watch for new documents that may appear
         usersRef.onSnapshot(querySnapshot => {
+            this.setState({isLoading: true})
             //for each document in the collection, push them onto the usersLocal array
             querySnapshot.forEach(documentSnapshot => {
                 usersLocal.push({
@@ -193,7 +192,7 @@ export default class HostSession extends Component {
             })
 
             //resets the users state to the new array when updated
-            this.setState({users: usersLocal})
+            this.setState({users: usersLocal, isLoading: false})
 
             //usersLocal is reset so duplicate users are not created in lobby
             usersLocal = []
@@ -509,16 +508,27 @@ export default class HostSession extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <ScrollView>
-                    {this.state.users.map(user=>{
-                        return(
-                            <View style={LobbyStyles.listContainer} key={user.id}>
-                                <Image source={{uri:user.photoURL}} style={LobbyStyles.image}/>
-                                <Text style={LobbyStyles.userName}>{user.displayName}</Text>
-                            </View>
-                        )
-                    })}
-                </ScrollView>
+                {this.state.isLoading ?
+                    <View style={{flex: 1, justifyContent: 'center'}}>
+                        <ActivityIndicator size="large" color="#f97c4d"/>
+                        <Text style={LobbyStyles.userName}>Loading...</Text>
+                    </View>
+                    :
+                    <ScrollView>
+                        {this.state.users.map(user=>{
+                            return(
+                                <View style={LobbyStyles.listContainer} key={user.id}>
+                                    <Image
+                                        source={{uri:user.photoURL}}
+                                        style={LobbyStyles.image}
+                                        loadingIndicatorSource={<ActivityIndicator size="large" color="#f97c4d"/>}
+                                    />
+                                    <Text style={LobbyStyles.userName}>{user.displayName}</Text>
+                                </View>
+                            )
+                        })}
+                    </ScrollView>
+                }
                 <View style={LobbyStyles.sliderContainer}>
                     <Text>Distance: {this.state.distance} mi</Text>
                     <Slider

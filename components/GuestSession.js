@@ -16,7 +16,7 @@ let unsubscribe;
 LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
     state = {
-        isLoading: false,
+        areUsersLoading: true,
         users: [],
         code: 0,
         photoURL: "",
@@ -65,8 +65,6 @@ export default class GuestSession extends Component {
 
                          this.checkForUsers()
                          this.checkForSessionStart()
-
-                         this.setState({isLoading: true})
                      } else {
                          alert("Session could not be found, please re-enter code")
                          this.props.navigation.navigate('Connect')
@@ -80,7 +78,6 @@ export default class GuestSession extends Component {
              .catch((error) => {
                  Sentry.Native.captureException(error.message);
              })
-         this.state.isLoading = false
      }
 
     checkForUsers = () => {
@@ -88,6 +85,7 @@ export default class GuestSession extends Component {
         let usersLocal = [];
 
         usersRef.onSnapshot(querySnapshot => {
+            this.setState({areUsersLoading: true})
             //check the entire query, for each document push them onto local array
             querySnapshot.forEach(documentSnapshot => {
                 //push their id and displayName onto the array
@@ -99,7 +97,7 @@ export default class GuestSession extends Component {
             })
 
             //add the user to usersLocal array
-            this.setState({users: usersLocal})
+            this.setState({users: usersLocal, areUsersLoading: false})
 
             //reset the usersLocal array to avoid duplicates
             usersLocal = []
@@ -199,64 +197,66 @@ export default class GuestSession extends Component {
     };
 
     render() {
-        if(!this.state.isLoading) {
-            return (
-                <View style={{flex: 1, justifyContent: 'center'}}>
-                    <ActivityIndicator size="large" color="#f97c4d"/>
-                    <Text style={LobbyStyles.userName}>Joining Lobby...</Text>
-                </View>
-            )
-        } else {
-            return (
-                <View style={LobbyStyles.container}>
+        return(
+            <View style={LobbyStyles.container}>
+                {this.state.areUsersLoading ?
+                    <View style={{flex: 1, justifyContent: 'center'}}>
+                        <ActivityIndicator size="large" color="#f97c4d"/>
+                        <Text style={LobbyStyles.userName}>Loading Users...</Text>
+                    </View>
+                    :
                     <ScrollView>
                         {this.state.users.map(user=>{
                             return(
                                 <View style={LobbyStyles.listContainer} key={user.id}>
-                                    <Image source={{uri:user.photoURL}} style={LobbyStyles.image}/>
+                                    <Image
+                                        source={{uri:user.photoURL}}
+                                        style={LobbyStyles.image}
+                                        loadingIndicatorSource={<ActivityIndicator size="small" color="#f97c4d"/>}
+                                    />
                                     <Text style={LobbyStyles.userName}>{user.displayName}</Text>
                                 </View>
                             )
                         })}
                     </ScrollView>
-                    <View>
-                        <Text style={{fontSize:18, color:'#2e344f'}}>Share Code</Text>
+                }
+                <View>
+                    <Text style={{fontSize:18, color:'#2e344f'}}>Share Code</Text>
 
-                        <View>
-                            <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
-                                <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
-                                <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
+                    <View>
+                        <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
+                            <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
+                            <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
+                        <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={LobbyStyles.closeButton}>
+                            <Ionicons style={IconStyles.iconLeft}  name="close-circle-outline"/>
+                            <Text style={InputStyles.buttonText}>Leave</Text>
+                        </TouchableOpacity>
+                        {this.state.start ?
+                            <TouchableOpacity
+                                onPress={() =>
+                                    this.props.navigation.navigate('Swipe Feature',{
+                                        code:this.state.code,
+                                        zip:this.state.zip,
+                                        distance: this.state.distance,
+                                        isHost:false,
+                                        categories: this.state.categories,
+                                        latitude: this.state.latitude,
+                                        longitude: this.state.longitude
+                                    })
+                                }
+                                style={LobbyStyles.buttons}
+                            >
+                                <Text style={InputStyles.buttonText}>Back 2 Swiping</Text>
                             </TouchableOpacity>
-                        </View>
-                        <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
-                            <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={LobbyStyles.closeButton}>
-                                <Ionicons style={IconStyles.iconLeft}  name="close-circle-outline"/>
-                                <Text style={InputStyles.buttonText}>Leave</Text>
-                            </TouchableOpacity>
-                            {this.state.start ?
-                                <TouchableOpacity
-                                    onPress={() =>
-                                        this.props.navigation.navigate('Swipe Feature',{
-                                            code:this.state.code,
-                                            zip:this.state.zip,
-                                            distance: this.state.distance,
-                                            isHost:false,
-                                            categories: this.state.categories,
-                                            latitude: this.state.latitude,
-                                            longitude: this.state.longitude
-                                        })
-                                    }
-                                    style={LobbyStyles.buttons}
-                                >
-                                    <Text style={InputStyles.buttonText}>Back 2 Swiping</Text>
-                                </TouchableOpacity>
-                                :
-                                null
-                            }
-                        </View>
+                            :
+                            null
+                        }
                     </View>
                 </View>
-            );
-        }
+            </View>
+        );
     }
 }
