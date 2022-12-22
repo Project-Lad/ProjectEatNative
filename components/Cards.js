@@ -39,6 +39,7 @@ import * as WebBrowser from "expo-web-browser";
 class Card extends React.Component {
     constructor(props) {
         super(props);
+        //comment
     }
     render() {
         if(this.props.imageURL === burgerJPG) {
