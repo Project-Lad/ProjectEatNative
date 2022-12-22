@@ -2,10 +2,8 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity,LogBox} from "react-native";
 import {useNavigation} from '@react-navigation/native'
 import burgerGIF from '../assets/burger.gif';
-import burgerJPG from '../assets/burger.jpg';
-//import YelpImage from '../assets/YelpImage.png'
+import burgerJPG from '../assets/burger_image.jpg';
 import YelpBurst from '../assets/yelp_burst.png'
-import Data from './YelpAPI.js'
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
 import androidStar15 from '../assets/android/stars_regular_1_half.png'
@@ -35,6 +33,8 @@ import {CardStyle, IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 LogBox.ignoreLogs(['Setting a timer']);
 import YelpAPI from "./YelpAPI.js";
+import * as Sentry from "sentry-expo";
+import * as WebBrowser from "expo-web-browser";
 import {FirebaseData} from "./YelpAPI.js";
 
 class Card extends React.Component {
@@ -45,7 +45,7 @@ class Card extends React.Component {
         if(this.props.imageURL === burgerJPG) {
             return (
                 <View style={CardStyle.card}>
-                    <Image source={this.props.imageURL} style={CardStyle.cardImage} />
+                    <Image source={this.props.imageURL} style={CardStyle.burgerCardImage} />
                     <View style={CardStyle.yelpInfo}>
                         <Text style={CardStyle.cardTitle}>{this.props.name}</Text>
                         <View style={CardStyle.yelpReview}>
@@ -79,7 +79,7 @@ class Card extends React.Component {
                                 <Image style={CardStyle.yelpStars} source={this.props.rating} />
                                 <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
                             </View>
-                            <TouchableOpacity style={{width:'10%'}} onPress={() => Linking.openURL(this.props.businessURL)}>
+                            <TouchableOpacity style={{width:'10%'}} onPress={() => WebBrowser.openBrowserAsync(this.props.businessURL)}>
                                 <Image style={CardStyle.yelpImage} source={YelpBurst}/>
                             </TouchableOpacity>
                         </View>
@@ -101,41 +101,29 @@ class LoadingCard extends React.Component {
             //updates the start field in the current session to true to send everyone to the swipe feature
             firebase.firestore().collection('sessions')
                 .doc(this.props.code).update({zip: null, start: false, distance: null})
-                .then(() => {
-                    console.log("Reset lobby data.")
-                }).catch(error => {
-                console.log(`Encountered Update Error: ${error}`)
-            })
+                .then(() => {})
+                .catch(() => {})
 
             //if user is the host
-            console.log(this.props.isHost)
             this.props.navigation.navigate('HostSession', {code: this.props.code, zip: null, distance: null})
         } else {
             //if not, back to guest session
-            console.log(this.props.isHost)
             this.props.navigation.navigate('Guest Session', {code: this.props.code})
         }
     }
 
     render() {
         return (
-        <View style={CardStyle.loadContainer}>
-            <View style={CardStyle.card}>
-                <View style={{
-                    borderTopLeftRadius:10,
-                    borderTopRightRadius:10,
-                    borderBottomRightRadius:10,
-                    borderBottomLeftRadius:10,
-                    overflow: 'hidden',
-                    width: "100%",
-                    backgroundColor:"#fff"
-                }}>
-                    <Image source={burgerGIF} style={{
-                        width: "100%",
-                        height: undefined,
-                        aspectRatio: 1,
+            <View style={CardStyle.loadContainer}>
+                <View style={CardStyle.card}>
+                    <View style={{
                         borderTopLeftRadius:10,
                         borderTopRightRadius:10,
+                        borderBottomRightRadius:10,
+                        borderBottomLeftRadius:10,
+                        overflow: 'hidden',
+                        width: "100%",
+                        backgroundColor:"#fff"
                         overlayColor: 'white',
 
                     }}/>
@@ -158,11 +146,39 @@ class LoadingCard extends React.Component {
                     <TouchableOpacity style={CardStyle.backButton} onPress={() => {
                         this.updateLobby();
                     }}>
-                        <Ionicons style={IconStyles.iconBackLobby} name="arrow-undo-outline"/>
-                    </TouchableOpacity>
+                        <Image source={burgerGIF} style={{
+                            width: "100%",
+                            height: undefined,
+                            aspectRatio: 1,
+                            borderTopLeftRadius:10,
+                            borderTopRightRadius:10,
+                            overlayColor: 'white',
+
+                        }}/>
+                        <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
+                            <Text style={{color:"#000", fontSize:18}}>
+                                {this.props.loadingMessage === "" ?
+                                    "Finding Local Restaurants..."
+                                    :
+                                    "All out of Restaurants!"
+                                }
+                            </Text>
+                            <Text style={{color:"#000", fontSize:18}}>
+                                {this.props.loadingMessage === "" ?
+                                    "Please remember, if you are waiting a long time for the restaurants to load, there may be no restaurants nearby or your connection was lost. If this is the case, please head back to the lobby and increase the distance or establish a connection."
+                                    :
+                                    this.props.loadingMessage
+                                }
+                            </Text>
+                        </View>
+                        <TouchableOpacity style={CardStyle.backButton} onPress={() => {
+                            this.updateLobby();
+                        }}>
+                            <Ionicons style={IconStyles.iconBackLobby} name="arrow-undo-outline"/>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
-        </View>
         )
     }
 }
@@ -222,7 +238,6 @@ const Cards = (props) => {
                 setCalledFirebase(true);
             }
         } else {
-            console.log("Render Again");
         }
     }, [resData]);
 
@@ -244,14 +259,12 @@ const Cards = (props) => {
                 const price_range = current.price;
                 address = current.location.address1;
                 if (current.location.address2 === '' || current.location.address2 === null) {
-                    //console.log("Address 2: Null")
                 } else {
                     address += ', ';
                     address += current.location.address2;
                 }
 
                 if (current.location.address3 === '' || current.location.address3 === null) {
-                    //console.log("Address 3: Null")
                 } else {
                     address += ', ';
                     address += current.location.address3;
@@ -357,8 +370,24 @@ const Cards = (props) => {
 
                 counter = 0;
             }
-        } catch (e) {
-            console.log("Error setting data: ", e)
+            shuffleRestaurants();
+        } catch (error) {
+            Sentry.Native.captureException(error.message);
+        }
+    }
+
+    function shuffleRestaurants() {
+        let currentIndex = data.length,  randomIndex;
+
+        // While there remain elements to shuffle.
+        while (currentIndex !== 0) {
+
+            // Pick a remaining element.
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [data[currentIndex], data[randomIndex]] = [data[randomIndex], data[currentIndex]];
         }
     }
 
@@ -370,17 +399,14 @@ const Cards = (props) => {
         usersRef.doc(firebase.auth().currentUser.uid).set({
             [props.resCounter]: restaurantID
         }, {merge: true}).then(() => {
-            console.log("Restaurant successfully written!");
             handleSetCounter(props.resCounter + 1);
         }).catch((error) => {
-            console.error("Error writing restaurant: ", error);
+            Sentry.Native.captureException(error.message);
         });
 
         unsub = usersRef.onSnapshot(querySnapshot => {
-            //console.log(querySnapshot.size)
             querySnapshot.forEach(documentSnapshot => {
                 if (querySnapshot.size === 1) {
-                    console.log("setting card and modal")
                     //sets card state and shows modal when solo
                     handleCardSet(card)
                     handleModalSet(true)
@@ -403,7 +429,6 @@ const Cards = (props) => {
                                         match = true
                                         handleCardSet(card)
                                         handleModalSet(true)
-                                        console.log("Matched!")
                                     }
                                 }
                             }
@@ -421,7 +446,6 @@ const Cards = (props) => {
     }
 
     function handleNope(card) {
-        console.log(`Nope for ${card.id}`)
         return true;
     }
 
@@ -439,17 +463,14 @@ const Cards = (props) => {
         matchedRef.get().then((doc) => {
             //if the document data isn't null
             if (doc.data() === undefined) {
-                //console log that the document doesn't exist
-                console.log("Document Doesn't Exist, Creating Document")
                 //set the document counter to 1 for this user
                 matchedRef.set({
                     counter: 1
                 }).then(() => {
                     //console log that the restaurant is successful
-                    console.log("Matched restaurant successfully created!");
                 }).catch((error) => {
                     //if there is an issue, console log error
-                    console.error("Error creating matched restaurant: ", error);
+                    Sentry.Native.captureException(error.message);
                 });
             }
 
@@ -459,14 +480,12 @@ const Cards = (props) => {
                 matchedRef.update({
                     counter: doc.data().counter + increment
                 }).then(() => {
-                    console.log("Restaurant Counter Updated!");
                 }).catch((error) => {
-                    console.error("Error Updating restaurant: ", error);
+                    Sentry.Native.captureException(error.message);
                 });
             }
 
             unsub = matchedRef.onSnapshot(docSnapshot => {
-                console.log(docSnapshot.data())
                 //if majority of the group wants this
                 if ((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
@@ -479,7 +498,6 @@ const Cards = (props) => {
                         isHost: props.isHost,
                         ourData: calledFirebase
                     })
-                    console.log("Majority Rule")
                 }
             })
 
@@ -499,24 +517,19 @@ const Cards = (props) => {
 
         matchedRef.get().then((doc) => {
             if (doc.data() === undefined) {
-                console.log("Document Doesn't Exist, Creating Document")
                 matchedRef.set({
                     counter: 0
                 }).then(() => {
-                    console.log("Matched restaurant successfully created!");
-                }).catch((error) => {
-                    console.error("Error creating matched restaurant: ", error);
+                }).catch(() => {
                 });
             }
 
             unsub = matchedRef.onSnapshot(docSnapshot => {
-                console.log(docSnapshot.data())
                 if ((docSnapshot.data().counter / sessionSize) > 0.50) {
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
                     data = []
                     navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs})
-                    console.log("Majority Rule")
                 }
             })
 
@@ -524,87 +537,87 @@ const Cards = (props) => {
         })
     }
 
-    if (data.length === 0) {
-        return (
-            <View style={CardStyle.container}>
-                <LoadingCard code={props.code} offset={offset} navigation={navigation} isHost={props.isHost} loadingMessage={loadingMessage}/>
-            </View>
-        )
-    } else {
-        return (
-            <View style={CardStyle.container}>
-                <Modal
-                    style={{flex: 1, justifyContent: 'center'}}
-                    animationType="slide"
-                    visible={props.modalVisible}
-                    onRequestClose={() => {
-                        handleModalSet(!props.modalVisible);
-                    }}>
-                    <View style={CardStyle.modalView}>
-                        <Text style={CardStyle.modalText}>Let's Eat!</Text>
-                        <Image source={{uri: `${props.card.imageURL}`}} style={CardStyle.cardImageModal}/>
-                        <Text style={CardStyle.modalText}>The group chose {'\n' + props.card.name}</Text>
-                        <Pressable style={InputStyles.buttons}
-                                   onPress={() => {
-                                       loveIt(props.card)
-                                       handleModalSet(!props.modalVisible)
-                                   }}>
-                            <Ionicons style={IconStyles.iconLeft} name="heart"/>
-                            <Text style={InputStyles.buttonText}>Love It!</Text>
-                            <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
-                        </Pressable>
-                        <Pressable style={InputStyles.buttons}
-                                   onPress={() => {
-                                       hateIt(props.card)
-                                       handleModalSet(!props.modalVisible)
-                                   }}>
-                            <Ionicons style={IconStyles.iconLeft} name="heart-dislike"/>
-                            <Text style={InputStyles.buttonText}>Keep Swiping</Text>
-                            <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
-                        </Pressable>
-                    </View>
-                </Modal>
-                <SwipeCards
-                    ref={swipeCardRef}
-                    cards={data}
-                    renderCard={(cardData) => (
-                        <>
-                            <Card {...cardData} />
-                            <View style={CardStyle.yupNopeView}>
-                                <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
-                                    swipeCardRef.current.swipeYup()
-                                    handleYup(swipeCardRef.current.state.card)
-                                }}>
-                                      <Ionicons style={{fontSize:48}} name={"thumbs-up-outline"}/>
-
-                                </TouchableOpacity>
-                                <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
-                                    swipeCardRef.current.swipeNope()
-                                    handleNope(swipeCardRef.current.state.card)
-                                }}>
-                                    <Ionicons style={{fontSize:48}} name={"thumbs-down-outline"}/>
-                                </TouchableOpacity>
-                            </View>
-                        </>)
-                    }
-                    keyExtractor={(cardData) => String(cardData.id)}
-                    renderNoMoreCards={() => {
-                        let size = data.length
-                        data = []
-                        setTimeout(() => setOffset(offset + size), 0);
-                        setTimeout(() => setCalledYelp(false), 0);
-                        setTimeout(() => setResData([]), 0);
+    return (
+        <View style={CardStyle.container}>
+            <Modal
+                style={{flex: 1, justifyContent: 'center'}}
+                animationType="slide"
+                visible={props.modalVisible}
+                onRequestClose={() => {
+                    handleModalSet(!props.modalVisible);
+                }}>
+                <View style={CardStyle.modalView}>
+                    <Text style={CardStyle.modalText}>Let's Eat!</Text>
+                    <Image source={{uri: `${props.card.imageURL}`}} style={CardStyle.cardImageModal}/>
+                    <Text style={CardStyle.modalText}>The group chose {'\n' + props.card.name}</Text>
+                    <Pressable style={InputStyles.buttons}
+                               onPress={() => {
+                                   loveIt(props.card)
+                                   handleModalSet(!props.modalVisible)
+                               }}>
+                        <Ionicons style={IconStyles.iconLeft} name="heart"/>
+                        <Text style={InputStyles.buttonText}>Love It!</Text>
+                        <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
+                    </Pressable>
+                    <Pressable style={InputStyles.buttons}
+                               onPress={() => {
+                                   hateIt(props.card)
+                                   handleModalSet(!props.modalVisible)
+                               }}>
+                        <Ionicons style={IconStyles.iconLeft} name="heart-dislike"/>
+                        <Text style={InputStyles.buttonText}>Keep Swiping</Text>
+                        <Ionicons style={IconStyles.iconLeft} name="chevron-forward-outline"/>
+                    </Pressable>
+                </View>
+            </Modal>
+            {data.length === 0
+                ?
+                <LoadingCard code={props.code} offset={offset} navigation={navigation} isHost={props.isHost}
+                             loadingMessage={loadingMessage}/>
+                :
+                <View style={CardStyle.container}>
+                    <SwipeCards
+                        ref={swipeCardRef}
+                        cards={data}
+                        renderCard={(cardData) => (
+                            <View style={{flex: 1,flexDirection: "column", justifyContent: "space-evenly"}}>
+                                <View style={{flex: 0.85}}>
+                                    <Card {...cardData} />
+                                </View>
+                                <View style={CardStyle.yupNopeView}>
+                                    <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
+                                        swipeCardRef.current.swipeYup()
+                                        handleYup(swipeCardRef.current.state.card)
+                                    }}>
+                                        <Ionicons style={{fontSize: 48}} name={"thumbs-up-outline"}/>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => {
+                                        swipeCardRef.current.swipeNope()
+                                        handleNope(swipeCardRef.current.state.card)
+                                    }}>
+                                        <Ionicons style={{fontSize: 48}} name={"thumbs-down-outline"}/>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>)
                         }
-                    }
+                        keyExtractor={(cardData) => String(cardData.id)}
+                        renderNoMoreCards={() => {
+                            let size = data.length
+                            data = []
+                            setTimeout(() => setOffset(offset + size), 0);
+                            setTimeout(() => setCalledYelp(false), 0);
+                            setTimeout(() => setResData([]), 0);
+                        }}
 
-                    actions={{
-                        nope: {onAction: handleNope},
-                        yup: {onAction: handleYup}
-                    }}
-                />
-            </View>
-        )
-    }
+                        actions={{
+                            nope: {show: false, onAction: handleNope},
+                            yup: {show: false, onAction: handleYup}
+                        }}
+                    />
+                </View>
+            }
+        </View>
+    )
 }
 
 export default Cards;

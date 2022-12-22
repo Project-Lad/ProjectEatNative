@@ -104,9 +104,32 @@ const InputStyles = StyleSheet.create({
         elevation: 5,
         borderRadius:10
     },
+    disabledUpdateButtons:{
+        backgroundColor:"#eee",
+        width:'50%',
+        padding: 15,
+        display: 'flex',
+        flexDirection: 'row',
+        alignSelf:'flex-end',
+        justifyContent:'space-between',
+        marginBottom:10,
+        shadowColor: "#5D737E",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderRadius:10
+    },
     buttonText:{
         fontSize: 20,
         color:"#e4e6e9"
+    },
+    disabledButtonText:{
+        fontSize: 20,
+        color:"#333"
     },
     preloader: {
         left: 0,
@@ -120,7 +143,8 @@ const InputStyles = StyleSheet.create({
     },
     userNameText:{
         color:"#2e344f",
-        fontSize:20,
+        fontSize:28,
+        marginTop:"-7%"
     },
     editProfile:{
         color:"#2e344f",
@@ -137,6 +161,11 @@ const IconStyles = StyleSheet.create({
         fontSize:20,
         alignSelf: 'center',
         color:"#e4e6e9"
+    },
+    disabledEditArrowRight:{
+        fontSize:20,
+        alignSelf: 'center',
+        color:"#333"
     },
     iconLeft:{
         fontSize:22,
@@ -158,14 +187,19 @@ const IconStyles = StyleSheet.create({
         flexDirection:'column'
     },
     addProfilePic:{
-        fontSize:24,
-        alignSelf:'flex-end',
-        paddingBottom:10
+        color:"#e4e6e9",
+        fontSize:22,
+        textAlign:'center'
     },
     profilePicture:{
-        width: 50,
-        height: 50,
-        borderRadius:100
+        width: 75,
+        height: 75,
+        borderRadius:100,
+    },
+    signUpPicture:{
+        width:150,
+        height:150,
+        borderRadius:250
     },
     editIcon:{
         color:"#000",
@@ -198,6 +232,43 @@ const ProfileStyles = StyleSheet.create({
         borderRadius:15,
         borderColor:"#f97c4d",
         borderWidth: 1.5
+    },
+    profilePenContainer:{
+        position:"relative",
+        justifyContent:'center',
+        top:-25,
+        left:45,
+        width:30,
+        height:30,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        backgroundColor:'#2e344f',
+        borderRadius:25,
+    },
+    editCameraContainer:{
+        position:"relative",
+        justifyContent:'center',
+        top:-25,
+        left:100,
+        width:40,
+        height:40,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        backgroundColor:'#2e344f',
+        borderRadius:25,
+    },
+    profilePen:{
+        color:"#e4e6e9",
+        fontSize:22,
+        textAlign:'center'
     },
     editButton:{
         fontSize:24,
@@ -403,32 +474,12 @@ const LobbyStyles = StyleSheet.create({
         elevation: 10,
         borderRadius:10,
         marginBottom:'3%'
-    },
-/*    startButton: {
-        backgroundColor:"#2decb4",
-        padding: 15,
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent:'space-between',
-        marginBottom:10,
-        shadowColor: "#5D737E",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 3.84,
-        elevation: 5,
-        borderBottomRightRadius:25,
-        borderTopRightRadius:25,
-        borderLeftWidth: 1,
-        width: '70%'
-    }*/
+    }
 })
 const CardStyle = StyleSheet.create({
     container:{
         backgroundColor:'#eee',
-        height:ScreenHeight,
+        //height:ScreenHeight,
         flex:1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -440,12 +491,12 @@ const CardStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width:ScreenWidth * .95,
-        marginTop:"5%"
+        marginTop:"35%"
     },
     card: {
-        height:ScreenHeight,
+        height:undefined,
         width:ScreenWidth * .95,
-        marginTop:"60%"
+        flex:1
     },
     cardTitle: {
         fontSize: 24,
@@ -473,24 +524,30 @@ const CardStyle = StyleSheet.create({
     },
     yelpReview:{
         flexDirection: 'row',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         justifyContent:'space-between',
         position:'relative',
-        top:'125%',
+        top:ScreenHeight-400,
         left:0
     },
     yelpStars:{
-        width:'60%',
-        height:'25%',
+        width:136,
+        height:24,
     },
     yelpImage: {
         width:50,
         height:55,
     },
     cardImage: {
-        height: undefined,
-        aspectRatio: .6,
+        //aspectRatio:1,
+        height:ScreenHeight * .75,
         width:"100%",
+        borderRadius:10,
+    },
+    burgerCardImage: {
+        //aspectRatio:.6,
+        width:"100%",
+        height:ScreenHeight*.75,
         borderRadius:10,
     },
     modalView: {
@@ -524,19 +581,19 @@ const CardStyle = StyleSheet.create({
         fontSize: 20,
     },
     cardImageModal: {
-        width: "20%",
+        width: "100%",
         height: "50%",
-        aspectRatio: 1,
         borderRadius:10,
         position: "relative",
-        left:10,
-        right:10
+        left:0,
+        right:0
     },
     yupNopeView:{
-        position:'relative',
         flexDirection:'row-reverse',
-        bottom:180,
         justifyContent:"space-evenly",
+        alignItems:"center",
+        //borderWidth: 3, borderColor: 'red',
+        marginTop:'35%'
     },
     yupNopeButtons:{
         borderRadius:100,
@@ -559,10 +616,6 @@ const DecisionStyle = StyleSheet.create({
         width:ScreenWidth,
         paddingTop:"15%",
     },
-    yelpImage: {
-        width:45,
-        height:50,
-    },
     cardImages: {
         width: ScreenWidth,
         aspectRatio: 3/2,
@@ -580,7 +633,8 @@ const DecisionStyle = StyleSheet.create({
         color: '#010001'
     },
     yelpContainer: {
-        paddingTop: 5,
+        paddingTop: 15,
+        paddingBottom:15,
         paddingLeft:25,
         paddingRight:25,
         display: "flex",
@@ -590,21 +644,25 @@ const DecisionStyle = StyleSheet.create({
         display:"flex",
         flexDirection:"row",
         justifyContent:'space-between',
-        width:ScreenWidth -25
-    },
-    yelpStarReviewContainer:{
-        width:'75%',
-        alignSelf:'center'
-    },
-    yelpStarReview:{
-        width:Platform.OS === 'ios' ? 150: 205,
-        padding:'5%'
+        alignItems:"center"
     },
     yelpInformation:{
         display: "flex",
         flexDirection: "column",
         justifyContent:"space-evenly"
     },
+    yelpStarReview:{
+        //width:Platform.OS === 'ios' ? 136: 205,
+        width:136,
+        height:24,
+    },
+    yelpImage: {
+        width:45,
+        height:50,
+    },
+
+
+
     circleDiv: {
         position: "absolute",
         bottom: 15,

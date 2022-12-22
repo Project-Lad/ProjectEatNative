@@ -14,10 +14,11 @@ import "firebase/firestore";
 import { useNavigation} from '@react-navigation/native'
 import {CheckBox} from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
-import {InputStyles,IconStyles} from "./InputStyles";
+import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import userPhoto from '../assets/user-placeholder.png'
 import * as WebBrowser from 'expo-web-browser';
+import * as Sentry from "sentry-expo";
 LogBox.ignoreLogs(['Setting a timer']);
 export default function Signup(){
     const navigation = useNavigation()
@@ -38,29 +39,21 @@ export default function Signup(){
     const DEFAULT_IMAGE = Image.resolveAssetSource(userPhoto).uri;
     const [image, setImage] = useState({photoURL:DEFAULT_IMAGE});
 
-    useEffect(() => {
-        (async () => {
-            if (Platform.OS !== 'web') {
-                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-                if (status !== 'granted') {
-                    alert('Sorry, we need camera roll permissions to make this work!');
-                }
-            }
-        })();
-    }, []);
-
     const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0.5,
-        });
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Sorry! We need permission to change your profile picture!');
+        } else {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.5,
+            });
 
-        console.log(result);
-
-        if (!result.cancelled) {
-            setImage({photoURL:result.uri});
+            if (!result.cancelled) {
+                setImage({photoURL:result.uri});
+            }
         }
     };
 
@@ -90,6 +83,8 @@ export default function Signup(){
             Alert.alert('Password Length', 'Password does not meet minimum required length of 8 characters')
         }else if(userPassword.password !== retypedPassword.password) {
             Alert.alert('Password Mismatch', 'Password entered does not match original password')
+        }else if( /^[^!-\/:-@\[-`{-~]+$/.test(userPassword.password)){
+            Alert.alert('Password Invalid', 'Password must contain a special characters: ( ^ [ ! \ / : @ \ } ` { - ~ ] + $ )')
         }else{
             setLoading({
                 isLoading: true,
@@ -109,11 +104,9 @@ export default function Signup(){
                         }).then(() => {
                             //upload image to firebase storage
                             uploadImage(image.photoURL, "profilePicture")
-                                .then(() => {
-                                    console.log("Success")
-                                })
+                                .then(() => {})
                                 .catch((error) => {
-                                    console.log("Error: ", error)
+                                    Sentry.Native.captureException(error.message);
                                 })
                         }).then(()=>{
                             navigation.navigate('Profile')
@@ -125,11 +118,11 @@ export default function Signup(){
                             [{text: 'Try Again', onPress:() => navigation.navigate('Login')}]
                         )
                     }else{
+                        Sentry.Native.captureException(error.message);
                         Alert.alert('Email Invalid', 'Your email is invalid please enter it again',
                             [{text: 'Try Again', onPress:() => navigation.goBack()}]
                         )
                     }
-                    console.log(error.message)
                 })
         }
 
@@ -150,8 +143,10 @@ export default function Signup(){
                                style={IconStyles.profilePicture}
                                resizeMode='contain'/>
                         :
-                        <Image source={{ uri: image.photoURL }} style={IconStyles.profilePicture} />}
-                    <Ionicons style={IconStyles.addProfilePic} name="person-add-outline"/>
+                        <Image source={{ uri: image.photoURL }} style={IconStyles.signUpPicture} />}
+                    <View style={ProfileStyles.editCameraContainer}>
+                        <Ionicons style={IconStyles.addProfilePic} name="person-add-outline"/>
+                    </View>
                 </TouchableOpacity>
             </View>
             <TextInput
@@ -162,6 +157,7 @@ export default function Signup(){
                 onFocus={() => setFocused({username: true, email: false, password: false, retypedPassword: false})}
                 onBlur={() => setFocused({username: false, email: false, password: false, retypedPassword: false})}
                 placeholderTextColor={"#000"}
+                maxLength={15}
             />
             <TextInput
                 style={isFocused.email ? InputStyles.focusInputStyle : InputStyles.inputStyle}
@@ -187,7 +183,7 @@ export default function Signup(){
                 placeholderTextColor={"#000"}
             />
             <TextInput
-                style={isFocused.password ? InputStyles.focusInputStyle : InputStyles.inputStyle}
+                style={isFocused.retypedPassword ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                 placeholder="Re-type Password"
                 onChangeText={password => setRetypedPassword({password:password})}
                 maxLength={200}

@@ -9,12 +9,13 @@ import {
     KeyboardAvoidingView,
     Platform,
     BackHandler,
-    LogBox, Linking
+    LogBox
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
+import * as Sentry from "sentry-expo";
 import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 LogBox.ignoreLogs(['Setting a timer']);
@@ -23,10 +24,14 @@ export default function EditAccount(){
     const navigation = useNavigation()
     const currentUser = firebase.auth().currentUser
     const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName})
-    const [newProfilePicture, setNewProfilePicture] = useState({photoURL: currentUser.photoURL})
+    const [newProfilePicture, setNewProfilePicture] = useState({photoURL:null})
     const [result, setResult] = useState(null);
+    const [updateDisable, setUpdateDisable] = useState(true)
 
     useEffect(() => {
+        firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL().then((url)=>{
+            setNewProfilePicture({photoURL:url})
+        })
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
         return () => backHandler.remove()
     }, [])
@@ -52,28 +57,36 @@ export default function EditAccount(){
             })
         }).catch(function(error) {
             //Catch any errors
-            console.log(newProfilePicture.photoURL)
-            console.log(error)
             alert(error)
+            Sentry.Native.captureException(error.message);
         })
     }
     const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0.5,
-        });
 
-        if (!result.cancelled) {
-            //uploads the image to firebase storage
-            uploadImage(result.uri, "profilePicture")
-                .then(setTimeout(() => {
-                    setNewProfilePicture({photoURL:result.uri})
-                },100))
-                .catch((error) => {
-                    Alert.alert("Error: ", error)
-                })
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (status !== 'granted') {
+            alert('Sorry! We need permission to change your profile picture!');
+        } else {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.5,
+            });
+
+            if (!result.cancelled) {
+                //uploads the image to firebase storage
+                uploadImage(result.uri, "profilePicture")
+                    .then(setTimeout(() => {
+                        setNewProfilePicture({photoURL:result.uri})
+                        setUpdateDisable(false)
+                    },100))
+                    .catch((error) => {
+                        Alert.alert("Error: ", error)
+                        Sentry.Native.captureException(error.message);
+                    })
+            }
         }
     };
 
@@ -121,7 +134,9 @@ export default function EditAccount(){
                 <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
                     <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
                         <Image source={{ uri: newProfilePicture.photoURL }} style={{width:150, height:150, borderRadius:250}} />
-                        <Ionicons style={IconStyles.addProfilePic} name="camera-outline"/>
+                        <View style={ProfileStyles.editCameraContainer}>
+                            <Ionicons style={IconStyles.addProfilePic} name="camera-outline"/>
+                        </View>
                     </TouchableOpacity>
                 </View>
                 <TextInput
@@ -129,11 +144,18 @@ export default function EditAccount(){
                     onFocus={() => handleInputFocus(true)}
                     onBlur={() => handleInputBlur(false)}
                     value={newProfileUsername.displayName}
-                    onChangeText={(text)=>setNewProfileUsername({displayName:text})}
+                    onChangeText={(text)=>{
+                        setNewProfileUsername({displayName:text})
+                        if(currentUser.displayName !== text){
+                            setUpdateDisable(false)
+                        }else{
+                            setUpdateDisable(true)
+                        }
+                    }}
                 />
-                <TouchableOpacity style={InputStyles.updateButtons} onPress={userName}>
-                    <Text style={{color:'#e4e6e9', fontSize:20}}>Update</Text>
-                    <Ionicons style={IconStyles.editArrowRight} name="chevron-forward-outline"/>
+                <TouchableOpacity style={updateDisable ? InputStyles.disabledUpdateButtons: InputStyles.updateButtons} disabled={updateDisable} onPress={userName} >
+                    <Text style={updateDisable ? InputStyles.disabledButtonText: InputStyles.buttonText}>Update</Text>
+                    <Ionicons style={updateDisable ? IconStyles.disabledEditArrowRight: IconStyles.editArrowRight} name="chevron-forward-outline"/>
                 </TouchableOpacity>
             </KeyboardAvoidingView>
             <View style={{

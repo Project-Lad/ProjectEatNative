@@ -1,5 +1,5 @@
-
 import {YELP_API_KEY} from '@env'
+import * as Sentry from "sentry-expo";
 import React, {useEffect, useState} from 'react';
 import firebase from "../firebase";
 const geofire = require('geofire-common')
@@ -37,9 +37,13 @@ const Data = async (zip, categories, offset, distance, latitude, longitude) => {
                 //console.log("Offset: " + props.offset)
                 //console.log("Distance: " + parseInt((props.distance * 1609)))
                 /*console.log("Categories: " + apicategories)*/
+
                 restaurantData = result.businesses
             })
-            .catch(error => console.log('error', error));
+            .catch((error) => {
+                console.log(error.message)
+                Sentry.Native.captureException(error.message);
+            });
 
         return restaurantData;
     } else {
@@ -47,9 +51,10 @@ const Data = async (zip, categories, offset, distance, latitude, longitude) => {
             .then(response => response.json())
             .then(result => {
                 restaurantData = result.businesses
-                //console.log(result.businesses);
             })
-            .catch(error => console.log('error', error));
+            .catch((error) => {
+                Sentry.Native.captureException(error.message);
+            });
 
         return restaurantData
     }

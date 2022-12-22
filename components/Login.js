@@ -15,6 +15,7 @@ import "firebase/firestore";
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import SVGComponent from './SVGLogo'
+import * as Sentry from "sentry-expo";
 LogBox.ignoreLogs(['Setting a timer']);
 export default class Login extends Component {
 
@@ -44,8 +45,6 @@ export default class Login extends Component {
             })
              firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
                 .then((res) => {
-
-                    console.log('User logged-in successfully!')
                     this.setState({
                         isLoading: false,
                         email: '',
@@ -60,8 +59,8 @@ export default class Login extends Component {
                     });
                     if(this.state.email || this.state.password !== firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)){
                         alert('Invalid email or password')
-
                     }
+                    Sentry.Native.captureException(error.message);
                 })
         }
     }
@@ -87,7 +86,7 @@ export default class Login extends Component {
         }
         return (
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
-                {/*<Image source={require('../assets/branding/out2eat.png')}  style={{marginBottom:'5%'}}/>*/}
+                {/*<Image source={require('../assets/branding/out2eat_image.png')}  style={{marginBottom:'5%'}}/>*/}
                 <SVGComponent/>
                 <TextInput
                     style={this.state.isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
