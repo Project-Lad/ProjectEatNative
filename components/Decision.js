@@ -26,10 +26,11 @@ import iosStar5 from '../assets/ios/regular_5.png'
 import firebase from "../firebase";
 import {useNavigation} from "@react-navigation/native";
 import YelpImage from "../assets/yelp_burst.png";
-import {IconStyles, InputStyles,DecisionStyle} from "./InputStyles";
+import {IconStyles, InputStyles, DecisionStyle, ProfileStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 import * as Sentry from "sentry-expo";
 import * as WebBrowser from "expo-web-browser";
+import burgerGIF from "../assets/burger.gif";
 LogBox.ignoreLogs(['Setting a timer']);
 const Decision = ({route}) => {
     let [restaurant, setRestaurant] = useState({
@@ -45,7 +46,7 @@ const Decision = ({route}) => {
         photos: [],
         code: route.params.code
     })
-    let [isLoading, setIsLoading] = useState(false)
+    let [isLoading, setIsLoading] = useState(true)
     let [selectedIndex, setSelectedIndex] = useState(0)
     let navigation = useNavigation()
     let rating = ""
@@ -57,8 +58,8 @@ const Decision = ({route}) => {
 
     useEffect(() => {
         getData() //use API fetch only once to reduce amount of API calls
-        setIsLoading(true)
         clearSubs()
+        setTimeout(() => {setIsLoading(false)}, 1500)
     }, []);
 
     setData()   //called everytime an action occurs on the screen
@@ -232,11 +233,11 @@ const Decision = ({route}) => {
                     Sentry.Native.captureException(error.message);
                 })
         } else {
-            currentSession.collection('users').doc(firebase.auth().currentUser.uid).delete().then(() => {
-                navigation.navigate('Profile')
-            }).catch((error) => {
-                Sentry.Native.captureException(error.message);
-            })
+            currentSession.collection('users').doc(firebase.auth().currentUser.uid).delete()
+                .then(() => {navigation.navigate('Profile')})
+                .catch((error) => {
+                    Sentry.Native.captureException(error.message);
+                })
         }
     }
 
@@ -254,76 +255,84 @@ const Decision = ({route}) => {
         width: size,
         height: size
     };
-    if(isLoading === false) {
-        return(
-            <View>
-                <Text>Loading Restaurant...</Text>
-            </View>
-        )
-    } else {
-        return(
-            <View style={DecisionStyle.container}>
-                <View style={{width:"100%"}}>
-                    <ScrollView
-                        horizontal
-                        pagingEnabled
-                        onMomentumScrollEnd={setIndex}>
-                        {restaurant.photos.map(image => (
-                               <Image
+
+    return(
+        <>
+            {isLoading ?
+                <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
+                    <Image source={burgerGIF} style={{
+                        width: "100%",
+                        height: undefined,
+                        aspectRatio: 1,
+                        borderTopLeftRadius:10,
+                        borderTopRightRadius:10,
+                        overlayColor: 'white',
+                    }}/>
+                </View>
+                :
+                <View style={DecisionStyle.container}>
+                    <View style={{width:"100%"}}>
+                        <ScrollView
+                            horizontal
+                            pagingEnabled
+                            onMomentumScrollEnd={setIndex}>
+                            {restaurant.photos.map(image => (
+                                <Image
                                     key={image}
                                     source={{uri: image}}
                                     style={DecisionStyle.cardImages}
                                 />
                             ))}
-                    </ScrollView>
-                    <View style={DecisionStyle.circleDiv}>
-                        {restaurant.photos.map((image,i) => (
-                            <View
-                                key={image}
-                                style={[
-                                    DecisionStyle.whiteCircle,
-                                    {opacity: i === selectedIndex ? 1 : 0.5}
-                                ]}
-                            />
-                        ))}
-                    </View>
-                </View>
-                <Text style={DecisionStyle.cardsText}>{restaurant.name}</Text>
-                <View style={DecisionStyle.yelpContainer}>
-                    <View style={DecisionStyle.yelpStars}>
-                        <View>
-                            <View style={DecisionStyle.yelpInformation}>
-                                <Text style={DecisionStyle.yelpText}>{restaurant.location.address1}</Text>
-                                <Text style={DecisionStyle.yelpText}>{restaurant.location.city}, {restaurant.location.state}</Text>
-                                <Text style={DecisionStyle.yelpText}>Based on {restaurant.review_count} Reviews</Text>
-                            </View>
-                            <Image source={rating} style={DecisionStyle.yelpStarReview}/>
+                        </ScrollView>
+                        <View style={DecisionStyle.circleDiv}>
+                            {restaurant.photos.map((image,i) => (
+                                <View
+                                    key={image}
+                                    style={[
+                                        DecisionStyle.whiteCircle,
+                                        {opacity: i === selectedIndex ? 1 : 0.5}
+                                    ]}
+                                />
+                            ))}
                         </View>
-                        <TouchableOpacity style={{width:'25%', alignItems:"center"}} onPress={() => WebBrowser.openBrowserAsync(restaurant.url)}>
-                            <Image style={DecisionStyle.yelpImage} source={YelpImage}/>
+                    </View>
+                    <Text style={DecisionStyle.cardsText}>{restaurant.name}</Text>
+                    <View style={DecisionStyle.yelpContainer}>
+                        <View style={DecisionStyle.yelpStars}>
+                            <View>
+                                <View style={DecisionStyle.yelpInformation}>
+                                    <Text style={DecisionStyle.yelpText}>{restaurant.location.address1}</Text>
+                                    <Text style={DecisionStyle.yelpText}>{restaurant.location.city}, {restaurant.location.state}</Text>
+                                    <Text style={DecisionStyle.yelpText}>Based on {restaurant.review_count} Reviews</Text>
+                                </View>
+                                <Image source={rating} style={DecisionStyle.yelpStarReview}/>
+                            </View>
+                            <TouchableOpacity style={{width:'25%', alignItems:"center"}} onPress={() => WebBrowser.openBrowserAsync(restaurant.url)}>
+                                <Image style={DecisionStyle.yelpImage} source={YelpImage}/>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View style={{padding:25}}>
+                        <TouchableOpacity style = {InputStyles.buttons} onPress={() => {callRestaurant(phone)}}>
+                            <Ionicons name="call" size={24} style={IconStyles.iconLeft} />
+                            <Text style={InputStyles.buttonText}>Call Now</Text>
+                            <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => Linking.openURL(googleURL)} style = {InputStyles.buttons}>
+                            <Ionicons style={IconStyles.iconLeft} name="map"/>
+                            <Text style={InputStyles.buttonText}>Open in Maps</Text>
+                            <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                        </TouchableOpacity>
+                        <TouchableOpacity  onPress={() => {setIsLoading(true); deleteDocument();}} style={InputStyles.buttons}>
+                            <Ionicons style={IconStyles.iconLeft} name="fast-food-outline"/>
+                            <Text style={InputStyles.buttonText}>Finished</Text>
+                            <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={{padding:25}}>
-                    <TouchableOpacity style = {InputStyles.buttons} onPress={() => {callRestaurant(phone)}}>
-                        <Ionicons name="call" size={24} style={IconStyles.iconLeft} />
-                        <Text style={InputStyles.buttonText}>Call Now</Text>
-                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => Linking.openURL(googleURL)} style = {InputStyles.buttons}>
-                        <Ionicons style={IconStyles.iconLeft} name="map"/>
-                        <Text style={InputStyles.buttonText}>Open in Maps</Text>
-                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
-                    </TouchableOpacity>
-                    <TouchableOpacity  onPress={() => deleteDocument()} style = {InputStyles.buttons}>
-                        <Ionicons style={IconStyles.iconLeft} name="fast-food-outline"/>
-                        <Text style={InputStyles.buttonText}>Finished</Text>
-                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        )
-    }
+            }
+        </>
+    )
 }
 
 export default Decision;

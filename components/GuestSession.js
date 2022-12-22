@@ -158,7 +158,7 @@ export default class GuestSession extends Component {
             [
                 {
                     text:"No",
-                    onPress:() => {}
+                    onPress:() => {this.setState({isExiting: false})}
                 },
                 {
                     text:"Yes",
@@ -247,7 +247,7 @@ export default class GuestSession extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
-                                <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={LobbyStyles.closeButton}>
+                                <TouchableOpacity onPress={()=>{this.setState({isExiting: true}); this.leaveLobby()}} style={LobbyStyles.closeButton}>
                                     <Ionicons style={IconStyles.iconLeft}  name="close-circle-outline"/>
                                     <Text style={InputStyles.buttonText}>Leave</Text>
                                 </TouchableOpacity>
