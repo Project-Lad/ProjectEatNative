@@ -98,7 +98,7 @@ export default function EditAccount(){
         return ref.put(blob)
     }
     const [isFocused, setIsFocused] = useState(false)
-// handlers for onPress TextInput style change
+    // handlers for onPress TextInput style change
     const handleInputFocus = () => {
         setIsFocused(true)
     }
