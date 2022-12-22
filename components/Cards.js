@@ -124,27 +124,6 @@ class LoadingCard extends React.Component {
                         overflow: 'hidden',
                         width: "100%",
                         backgroundColor:"#fff"
-                        overlayColor: 'white',
-
-                    }}/>
-                    <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
-                        <Text style={{color:"#000", fontSize:18}}>
-                            {this.props.loadingMessage === "" ?
-                                    "Finding Local Restaurants..."
-                                :
-                                    "All out of Restaurants!"
-                            }
-                        </Text>
-                        <Text style={{color:"#000", fontSize:18}}>
-                            {this.props.loadingMessage === "" ?
-                                    "Please remember, if you are waiting a long time for the restaurants to load, there may be no restaurants nearby or your connection was lost. If this is the case, please head back to the lobby and increase the distance or establish a connection."
-                                :
-                                    this.props.loadingMessage
-                            }
-                        </Text>
-                    </View>
-                    <TouchableOpacity style={CardStyle.backButton} onPress={() => {
-                        this.updateLobby();
                     }}>
                         <Image source={burgerGIF} style={{
                             width: "100%",

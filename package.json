@@ -36,7 +36,7 @@
     "sentry-expo": "^4.2.0",
     "expo-application": "~4.1.0",
     "expo-constants": "~13.1.1",
-    "expo-device": "~4.2.0"
+    "expo-device": "~4.2.0",
     "zipcodes": "^8.0.0"
   },
   "devDependencies": {
