@@ -35,6 +35,7 @@ LogBox.ignoreLogs(['Setting a timer']);
 import YelpAPI from "./YelpAPI.js";
 import * as Sentry from "sentry-expo";
 import * as WebBrowser from "expo-web-browser";
+import {FirebaseData} from "./YelpAPI.js";
 
 class Card extends React.Component {
     constructor(props) {
@@ -123,6 +124,27 @@ class LoadingCard extends React.Component {
                         overflow: 'hidden',
                         width: "100%",
                         backgroundColor:"#fff"
+                        overlayColor: 'white',
+
+                    }}/>
+                    <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
+                        <Text style={{color:"#000", fontSize:18}}>
+                            {this.props.loadingMessage === "" ?
+                                    "Finding Local Restaurants..."
+                                :
+                                    "All out of Restaurants!"
+                            }
+                        </Text>
+                        <Text style={{color:"#000", fontSize:18}}>
+                            {this.props.loadingMessage === "" ?
+                                    "Please remember, if you are waiting a long time for the restaurants to load, there may be no restaurants nearby or your connection was lost. If this is the case, please head back to the lobby and increase the distance or establish a connection."
+                                :
+                                    this.props.loadingMessage
+                            }
+                        </Text>
+                    </View>
+                    <TouchableOpacity style={CardStyle.backButton} onPress={() => {
+                        this.updateLobby();
                     }}>
                         <Image source={burgerGIF} style={{
                             width: "100%",
@@ -168,6 +190,7 @@ let unsubs = [];
 const Cards = (props) => {
     let [resData, setResData] = useState([]);
     let [offset, setOffset] = useState(props.offset);
+    let [calledFirebase, setCalledFirebase] = useState(false);
     let [calledYelp, setCalledYelp] = useState(false);
     let [loadingMessage, setLoadingMessage] = useState("");
     const handleCardSet = useCallback((value) => {
@@ -191,17 +214,28 @@ const Cards = (props) => {
 
     useEffect(() => {
         if(resData.length === 0) {
-            if(!calledYelp) {
-                getYelpData().then(r => {
-                    if(r.length !== 0) {
-                        setData(r)
-                        setResData(r)
-                    } else {
-                        setLoadingMessage("Oops! It seems you have run out of restaurants! Try increasing your distance to keep the search going!")
-                    }
+            if(calledFirebase) {
+                if(!calledYelp) {
+                    getYelpData().then(r => {
+                        console.log("hit api")
 
-                    setCalledYelp(true)
+                        if(r.length !== 0) {
+                            setData(r)
+                            setResData(r)
+                        } else {
+                            setLoadingMessage("Oops! Ran out of restaurants? Try increasing your distance!")
+                        }
+
+                        setCalledYelp(true)
+                    })
+                }
+            } else {
+                getFirebaseData().then(r => {
+                    console.log("hit firebase api")
+                    setData(r)
+                    setResData(r)
                 })
+                setCalledFirebase(true);
             }
         } else {
         }
@@ -209,6 +243,10 @@ const Cards = (props) => {
 
     async function getYelpData() {
         return await YelpAPI(props.zip, props.categories, offset, props.distance, props.latitude, props.longitude)
+    }
+
+    async function getFirebaseData() {
+        return await FirebaseData(props.zip, props.categories, offset, props.distance, props.latitude, props.longitude)
     }
 
     function setData(restaurantData) {
@@ -332,7 +370,6 @@ const Cards = (props) => {
 
                 counter = 0;
             }
-
             shuffleRestaurants();
         } catch (error) {
             Sentry.Native.captureException(error.message);
@@ -350,8 +387,7 @@ const Cards = (props) => {
             currentIndex--;
 
             // And swap it with the current element.
-            [data[currentIndex], data[randomIndex]] = [
-                data[randomIndex], data[currentIndex]];
+            [data[currentIndex], data[randomIndex]] = [data[randomIndex], data[currentIndex]];
         }
     }
 
@@ -459,7 +495,8 @@ const Cards = (props) => {
                         id: docSnapshot.id,
                         code: props.code,
                         unsubs: unsubs,
-                        isHost: props.isHost
+                        isHost: props.isHost,
+                        ourData: calledFirebase
                     })
                 }
             })

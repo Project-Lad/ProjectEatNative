@@ -49,15 +49,25 @@ const Decision = ({route}) => {
     let [isLoading, setIsLoading] = useState(true)
     let [selectedIndex, setSelectedIndex] = useState(0)
     let navigation = useNavigation()
-    let rating = ""
-    let phone = ""
-    let address = []
-    let name = []
-    let googleURL = "https://www.google.com/maps/search/?api=1&query=";
+    let [rating, setRating] = useState("");
+    let [phone, setPhone] = useState("");
+    let [address, setAddress] = useState([]);
+    let [name, setName] = useState([]);
+    let [googleURL, setGoogleURL] = useState("https://www.google.com/maps/search/?api=1&query=");
     let counter = 0
 
     useEffect(() => {
-        getData() //use API fetch only once to reduce amount of API calls
+        console.log("Getting Data")
+        console.log("Our Data: ", route.params.ourData)
+        if(route.params.ourData) {
+            getOurData().then(() => {
+
+            })
+        } else {
+            getData().then(() => {
+
+            }) //use API fetch only once to reduce amount of API calls
+        }
         clearSubs()
         setTimeout(() => {setIsLoading(false)}, 1500)
     }, []);
@@ -65,7 +75,7 @@ const Decision = ({route}) => {
     setData()   //called everytime an action occurs on the screen
                 //cannot call just one time otherwise googleURL doesn't work
 
-    function getData(){
+    async function getData() {
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${YELP_API_KEY}`);
 
@@ -75,7 +85,7 @@ const Decision = ({route}) => {
             redirect: 'follow'
         };
 
-        fetch(`https://api.yelp.com/v3/businesses/${route.params.id}`, requestOptions)
+        await fetch(`https://api.yelp.com/v3/businesses/${route.params.id}`, requestOptions)
             .then(response => response.json())
             .then(result => {
                 setRestaurant(result);
@@ -83,6 +93,32 @@ const Decision = ({route}) => {
             .catch((error) => {
                 Sentry.Native.captureException(error.message);
             });
+    }
+
+    async function getOurData() {
+        const restaurantRef = firebase.firestore().collection('restaurants').doc(route.params.id);
+        const doc = await restaurantRef.get();
+
+        if(!doc.exists) {
+            console.log("Document Doesn't Exist")
+        } else {
+            setRestaurant({
+                name: doc.data().name,
+                location: {
+                    address1: doc.data().location.address1,
+                    address2: doc.data().location.address2,
+                    address3: doc.data().location.address3,
+                    city: doc.data().location.city,
+                    state: doc.data().location.state
+                },
+                review_count: doc.data().review_count,
+                rating: doc.data().rating,
+                price_range: doc.data().price_range,
+                phone: doc.data().phone_numbers,
+                businessURL: doc.data().businessURL,
+                photos: [doc.data().imageURL]
+            })
+        }
     }
 
     function setData() {
