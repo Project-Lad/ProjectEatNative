@@ -27,7 +27,7 @@ export default function Dashboard(){
                 setNewProfileUsername(doc.data().username)
             })
 
-            setTimeout(() => {setIsLoading(false)}, 1000)
+            setTimeout(() => {setIsLoading(false)}, 1650)
         }, [isFocused])
     } catch (error) {
         Sentry.Native.captureException(error.message);
@@ -38,7 +38,19 @@ export default function Dashboard(){
         <>
             {isLoading ?
                 <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
-
+                    <AnimatedSVGPaths
+                        strokeColor={"black"}
+                        duration={1500}
+                        strokeWidth={3}
+                        strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                        height={400}
+                        width={400}
+                        scale={1}
+                        delay={0}
+                        rewind={false}
+                        ds={preloaderLines}
+                        loop={false}
+                    />
                 </View>
                 :
                 <View style={ProfileStyles.container}>
@@ -57,29 +69,16 @@ export default function Dashboard(){
                         </View>
                     </View>
 
-            <View style={{justifyContent:'space-evenly', padding:'10%'}}>
-                <SVGComponent/>
-               <AnimatedSVGPaths
-                    strokeColor={"green"}
-                    duration={2000}
-                    strokeWidth={2}
-                    strokeDashArray={[42.76482137044271, 42.76482137044271]}
-                    height={400}
-                    width={400}
-                    scale={1}
-                    delay={0}
-                    rewind={false}
-                    ds={preloaderLines}
-                    loop={false}
-                />
-            </View>
-            {/*Button View*/}
-            <View style={{flexDirection:"column", justifyContent:"space-between", width:"100%"}}>
-                    <TouchableOpacity onPress={() => navigation.navigate('HostSession')} style={ProfileStyles.buttons}>
-                        <Ionicons style={IconStyles.iconLeft} name="fast-food-outline"/>
-                        <Text style={InputStyles.buttonText}>Create Lobby</Text>
-                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
-                    </TouchableOpacity>
+                    <View style={{justifyContent:'space-evenly', padding:'10%'}}>
+                        <SVGComponent/>
+                    </View>
+                    {/*Button View*/}
+                    <View style={{flexDirection:"column", justifyContent:"space-between", width:"100%"}}>
+                        <TouchableOpacity onPress={() => navigation.navigate('HostSession')} style={ProfileStyles.buttons}>
+                            <Ionicons style={IconStyles.iconLeft} name="fast-food-outline"/>
+                            <Text style={InputStyles.buttonText}>Create Lobby</Text>
+                            <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                        </TouchableOpacity>
 
                         <TouchableOpacity style={ProfileStyles.buttons} onPress={() => navigation.navigate('Connect')}>
                             <Ionicons style={IconStyles.iconLeft} name="people"/>

@@ -31,6 +31,8 @@ import {Ionicons} from "@expo/vector-icons";
 import * as Sentry from "sentry-expo";
 import * as WebBrowser from "expo-web-browser";
 import burgerGIF from "../assets/burger.gif";
+import preloaderLines from "./AnimatedSVG";
+import {AnimatedSVGPaths} from "react-native-svg-animations";
 LogBox.ignoreLogs(['Setting a timer']);
 const Decision = ({route}) => {
     let [restaurant, setRestaurant] = useState({
@@ -59,7 +61,7 @@ const Decision = ({route}) => {
     useEffect(() => {
         getData() //use API fetch only once to reduce amount of API calls
         clearSubs()
-        setTimeout(() => {setIsLoading(false)}, 1500)
+        setTimeout(() => {setIsLoading(false)}, 1650)
     }, []);
 
     setData()   //called everytime an action occurs on the screen
@@ -250,24 +252,24 @@ const Decision = ({route}) => {
         }
         Linking.openURL(phoneNumber).then(() => {}).catch(() => {})
     }
-    const size = 50;
-    const cat = {
-        width: size,
-        height: size
-    };
 
     return(
         <>
             {isLoading ?
                 <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
-                    <Image source={burgerGIF} style={{
-                        width: "100%",
-                        height: undefined,
-                        aspectRatio: 1,
-                        borderTopLeftRadius:10,
-                        borderTopRightRadius:10,
-                        overlayColor: 'white',
-                    }}/>
+                    <AnimatedSVGPaths
+                        strokeColor={"black"}
+                        duration={1500}
+                        strokeWidth={3}
+                        strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                        height={400}
+                        width={400}
+                        scale={1}
+                        delay={0}
+                        rewind={false}
+                        ds={preloaderLines}
+                        loop={false}
+                    />
                 </View>
                 :
                 <View style={DecisionStyle.container}>

@@ -13,6 +13,8 @@ import {IconStyles, InputStyles, LobbyStyles, ProfileStyles} from "./InputStyles
 import {Ionicons} from "@expo/vector-icons";
 import * as Sentry from "sentry-expo";
 import burgerGIF from "../assets/burger.gif";
+import preloaderLines from "./AnimatedSVG";
+import {AnimatedSVGPaths} from "react-native-svg-animations";
 let unsubscribe;
 LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
@@ -168,11 +170,11 @@ export default class GuestSession extends Component {
                         //if yes, delete the user and navigate back to connection page
                         firebase.firestore().collection('sessions').doc(this.state.code)
                             .collection('users').doc(firebase.auth().currentUser.uid).delete()
-                            .then(this.props.navigation.navigate('Connect'))
+                            .then(setTimeout(() => {this.props.navigation.navigate('Connect')}))
                             .catch((error) => {
                                 Sentry.Native.captureException(error.message);
                                 //if an error occurs, display console log and navigate back to connect
-                                this.props.navigation.navigate('Connect')}
+                                setTimeout(() => {this.props.navigation.navigate('Connect')})}
                             )
                     }
                 }
@@ -205,14 +207,19 @@ export default class GuestSession extends Component {
             <>
                 {this.state.isExiting ?
                     <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
-                        <Image source={burgerGIF} style={{
-                            width: "100%",
-                            height: undefined,
-                            aspectRatio: 1,
-                            borderTopLeftRadius:10,
-                            borderTopRightRadius:10,
-                            overlayColor: 'white',
-                        }}/>
+                        <AnimatedSVGPaths
+                            strokeColor={"black"}
+                            duration={1500}
+                            strokeWidth={3}
+                            strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                            height={400}
+                            width={400}
+                            scale={1}
+                            delay={0}
+                            rewind={false}
+                            ds={preloaderLines}
+                            loop={false}
+                        />
                     </View>
                     :
                     <View style={LobbyStyles.container}>

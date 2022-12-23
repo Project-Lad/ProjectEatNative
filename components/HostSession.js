@@ -24,6 +24,8 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Location from "expo-location";
 import * as Sentry from "sentry-expo";
 import burgerGIF from "../assets/burger.gif";
+import preloaderLines from "./AnimatedSVG";
+import {AnimatedSVGPaths} from "react-native-svg-animations";
 LogBox.ignoreLogs(['Setting a timer']);
 
 //Declares lat and long vars
@@ -213,6 +215,7 @@ export default class HostSession extends Component {
                     text:"Yes",
                     onPress:() => {
                         this.setState({isExiting: true})
+
                         firebase.firestore()
                             .collection('sessions').doc(this.state.code)
                             .collection('users').get().then(snapshot => {
@@ -228,10 +231,10 @@ export default class HostSession extends Component {
 
                         //delete the firebase document
                         firebase.firestore().collection('sessions').doc(this.state.code).delete()
-                            .then(() => {this.props.navigation.navigate('Profile')})
+                            .then(() => {setTimeout(() => {this.props.navigation.navigate('Profile')}, 1650)})
                             .catch((error) => {
                                 Sentry.Native.captureException(error.message);
-                                this.props.navigation.navigate('Profile')
+                                setTimeout(() => {this.props.navigation.navigate('Profile')}, 1650)
                             })
                     }
                 }
@@ -295,14 +298,19 @@ export default class HostSession extends Component {
             <>
                 {this.state.isExiting ?
                     <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
-                        <Image source={burgerGIF} style={{
-                            width: "100%",
-                            height: undefined,
-                            aspectRatio: 1,
-                            borderTopLeftRadius:10,
-                            borderTopRightRadius:10,
-                            overlayColor: 'white',
-                        }}/>
+                        <AnimatedSVGPaths
+                            strokeColor={"black"}
+                            duration={1500}
+                            strokeWidth={3}
+                            strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                            height={400}
+                            width={400}
+                            scale={1}
+                            delay={0}
+                            rewind={false}
+                            ds={preloaderLines}
+                            loop={false}
+                        />
                     </View>
                     :
                     <View style={LobbyStyles.container}>

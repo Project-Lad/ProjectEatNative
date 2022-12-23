@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Defs, Path, Rect } from "react-native-svg";
-import SvgAnimatedLinearGradient from 'react-native-svg-animated-linear-gradient'
+
 let preloaderLines = [
     'M133.24,176.75l-16.72.11-20.16,79.4h14.73l3.21-15.06h21l3,15.39h14.4ZM131.68,230h-3.4l0-12.14h-1.89l0,12.12h-3.08V217.87h-1.88V230H118V213.2a5.78,5.78,0,0,1,4.49-4.24V190.59h5.1V209s3.9.62,4.09,4.17C131.77,215.58,131.68,230,131.68,230Z',
     'M55.27,257.21v-79.4H90.82V189.7H68.17v21.08h21v11h-21v23.44H91.94v12Z',

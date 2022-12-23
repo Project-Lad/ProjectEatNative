@@ -16,6 +16,8 @@ import {BackHandler, Image, View} from "react-native";
 import * as Sentry from 'sentry-expo';
 import burgerGIF from "./assets/burger.gif";
 import {ProfileStyles} from "./components/InputStyles";
+import preloaderLines from "./components/AnimatedSVG";
+import {AnimatedSVGPaths} from "react-native-svg-animations";
 
 function AuthStack() {
     return (
@@ -132,20 +134,25 @@ export default function App() {
             backAction
         );
 
-        setTimeout(() => {setIsLoading(false)}, 1000)
+        setTimeout(() => {setIsLoading(false)}, 1650)
     }, []);
     return (
         <NavigationContainer>
             {isLoading ?
                 <View style={ProfileStyles.container}>
-                    <Image source={burgerGIF} style={{
-                        width: "100%",
-                        height: undefined,
-                        aspectRatio: 1,
-                        borderTopLeftRadius:10,
-                        borderTopRightRadius:10,
-                        overlayColor: 'white',
-                    }}/>
+                    <AnimatedSVGPaths
+                        strokeColor={"black"}
+                        duration={1500}
+                        strokeWidth={3}
+                        strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                        height={400}
+                        width={400}
+                        scale={1}
+                        delay={0}
+                        rewind={false}
+                        ds={preloaderLines}
+                        loop={false}
+                    />
                 </View>
                 :
                 isLoggedIn ? (
