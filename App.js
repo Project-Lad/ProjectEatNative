@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import SwipeFeature from "./components/SwipeFeature";
 import {NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,9 +12,8 @@ import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import firebase from "./firebase";
-import {BackHandler, Image, View} from "react-native";
+import {BackHandler, View} from "react-native";
 import * as Sentry from 'sentry-expo';
-import burgerGIF from "./assets/burger.gif";
 import {ProfileStyles} from "./components/InputStyles";
 import preloaderLines from "./components/AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";

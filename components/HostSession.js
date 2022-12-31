@@ -23,7 +23,6 @@ import {InputStyles, IconStyles, LobbyStyles, CardStyle, ProfileStyles} from "./
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from "expo-location";
 import * as Sentry from "sentry-expo";
-import burgerGIF from "../assets/burger.gif";
 import preloaderLines from "./AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
 LogBox.ignoreLogs(['Setting a timer']);

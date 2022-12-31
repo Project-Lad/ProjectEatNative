@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity,LogBox} from "react-native";
 import {useNavigation} from '@react-navigation/native'
-import burgerGIF from '../assets/burger.gif';
 import burgerJPG from '../assets/burger_image.jpg';
 import YelpBurst from '../assets/yelp_burst.png'
 import androidStar0 from '../assets/android/stars_regular_0.png'
