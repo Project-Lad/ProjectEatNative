@@ -518,7 +518,7 @@ const Cards = (props) => {
                 }}>
                 <View style={CardStyle.modalView}>
                     <Text style={CardStyle.modalText}>Let's Eat!</Text>
-                    <Image source={{uri: `${props.card.imageURL}`}} style={CardStyle.cardImageModal}/>
+                    <Image source={props.card.imageURL === burgerJPG ? props.card.imageURL : {uri: `${props.card.imageURL}`}} style={CardStyle.cardImageModal}/>
                     <Text style={CardStyle.modalText}>The group chose {'\n' + props.card.name}</Text>
                     <Pressable style={InputStyles.buttons}
                                onPress={() => {
