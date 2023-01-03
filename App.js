@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import SwipeFeature from "./components/SwipeFeature";
 import {NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,8 +12,11 @@ import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import firebase from "./firebase";
-import {BackHandler} from "react-native";
+import {BackHandler, View} from "react-native";
 import * as Sentry from 'sentry-expo';
+import {ProfileStyles} from "./components/InputStyles";
+import preloaderLines from "./components/AnimatedSVG";
+import {AnimatedSVGPaths} from "react-native-svg-animations";
 
 function AuthStack() {
     return (
@@ -113,6 +116,7 @@ const Stack = createStackNavigator();
 
 export default function App() {
     const [isLoggedIn, setLogIn] = useState(false)
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(()=>{
         firebase.auth().onAuthStateChanged(user => {
             if(user) {
@@ -128,14 +132,34 @@ export default function App() {
             "hardwareBackPress",
             backAction
         );
+
+        setTimeout(() => {setIsLoading(false)}, 1650)
     }, []);
     return (
         <NavigationContainer>
-            {isLoggedIn ? (
-                <AuthStack/>
-            ) : (
-                <LoginSignup/>
-            )}
+            {isLoading ?
+                <View style={ProfileStyles.container}>
+                    <AnimatedSVGPaths
+                        strokeColor={"black"}
+                        duration={1500}
+                        strokeWidth={3}
+                        strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                        height={400}
+                        width={400}
+                        scale={1}
+                        delay={0}
+                        rewind={false}
+                        ds={preloaderLines}
+                        loop={false}
+                    />
+                </View>
+                :
+                isLoggedIn ? (
+                    <AuthStack/>
+                ) : (
+                    <LoginSignup/>
+                )
+            }
         </NavigationContainer>
     );
 }

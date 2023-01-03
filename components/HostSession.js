@@ -14,15 +14,17 @@ import {
     KeyboardAvoidingView,
     Platform,
     BackHandler,
-    LogBox
+    LogBox, ActivityIndicator
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import firebase from "../firebase";
 import "firebase/firestore";
-import {InputStyles, IconStyles, LobbyStyles, CardStyle} from "./InputStyles";
+import {InputStyles, IconStyles, LobbyStyles, CardStyle, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from "expo-location";
 import * as Sentry from "sentry-expo";
+import preloaderLines from "./AnimatedSVG";
+import {AnimatedSVGPaths} from "react-native-svg-animations";
 LogBox.ignoreLogs(['Setting a timer']);
 
 //Declares lat and long vars
@@ -74,6 +76,7 @@ export default class HostSession extends Component {
 
     state = {
         isLoading: true,
+        isExiting: false,
         isFocused: false,
         onFocus: false,
         users: [],
@@ -146,8 +149,6 @@ export default class HostSession extends Component {
             })
 
         this.checkForUsers()
-
-        this.state.isLoading = false
     }
 
     createCode = () => {
@@ -183,6 +184,7 @@ export default class HostSession extends Component {
 
         //creates an observer to watch for new documents that may appear
         usersRef.onSnapshot(querySnapshot => {
+            this.setState({isLoading: true})
             //for each document in the collection, push them onto the usersLocal array
             querySnapshot.forEach(documentSnapshot => {
                 usersLocal.push({
@@ -193,7 +195,7 @@ export default class HostSession extends Component {
             })
 
             //resets the users state to the new array when updated
-            this.setState({users: usersLocal})
+            this.setState({users: usersLocal, isLoading: false})
 
             //usersLocal is reset so duplicate users are not created in lobby
             usersLocal = []
@@ -211,6 +213,8 @@ export default class HostSession extends Component {
                 {
                     text:"Yes",
                     onPress:() => {
+                        this.setState({isExiting: true})
+
                         firebase.firestore()
                             .collection('sessions').doc(this.state.code)
                             .collection('users').get().then(snapshot => {
@@ -226,10 +230,10 @@ export default class HostSession extends Component {
 
                         //delete the firebase document
                         firebase.firestore().collection('sessions').doc(this.state.code).delete()
-                            .then(() => {this.props.navigation.navigate('Profile')})
+                            .then(() => {setTimeout(() => {this.props.navigation.navigate('Profile')}, 1650)})
                             .catch((error) => {
                                 Sentry.Native.captureException(error.message);
-                                this.props.navigation.navigate('Profile')
+                                setTimeout(() => {this.props.navigation.navigate('Profile')}, 1650)
                             })
                     }
                 }
@@ -290,284 +294,315 @@ export default class HostSession extends Component {
 
     render() {
         return (
-            <View style={LobbyStyles.container}>
-                <Modal
-                    animationType="slide"
-                    visible={this.state.modalVisible}
-                    transparent={true}
-                    onRequestClose={() => {
-                        this.setState({modalVisible: !this.state.modalVisible});
-                    }}>
-                    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={LobbyStyles.modalView}>
-                        <Text style={CardStyle.modalText}>Choose your Filter!</Text>
+            <>
+                {this.state.isExiting ?
+                    <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
+                        <AnimatedSVGPaths
+                            strokeColor={"black"}
+                            duration={1500}
+                            strokeWidth={3}
+                            strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                            height={400}
+                            width={400}
+                            scale={1}
+                            delay={0}
+                            rewind={false}
+                            ds={preloaderLines}
+                            loop={false}
+                        />
+                    </View>
+                    :
+                    <View style={LobbyStyles.container}>
+                        <Modal
+                            animationType="slide"
+                            visible={this.state.modalVisible}
+                            transparent={true}
+                            onRequestClose={() => {
+                                this.setState({modalVisible: !this.state.modalVisible});
+                            }}>
+                            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={LobbyStyles.modalView}>
+                                <Text style={CardStyle.modalText}>Choose your Filter!</Text>
 
-                        <View style={{flexDirection: 'row'}}>
-                            <View style={{flexDirection: 'column', width: '50%'}}>
-                                <View style={LobbyStyles.modalSlider}>
-                                    <Text style={{color:'#eee'}}>All Restaurants</Text>
-                                    <Switch
-                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
-                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={() => {
-                                            this.setState({isAfrican: false, isAmerican: false, isAsian: false, isCaribbean: false, isEuropean: false,
-                                                isItalian: false, isMexican: false, isMiddleEast: false, isSeafood: false, isVegan: false, isAll: !this.state.isAll})
-                                        }}
-                                        value={this.state.isAll}
-                                    />
+                                <View style={{flexDirection: 'row'}}>
+                                    <View style={{flexDirection: 'column', width: '50%'}}>
+                                        <View style={LobbyStyles.modalSlider}>
+                                            <Text style={{color:'#eee'}}>All Restaurants</Text>
+                                            <Switch
+                                                trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                                thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={() => {
+                                                    this.setState({isAfrican: false, isAmerican: false, isAsian: false, isCaribbean: false, isEuropean: false,
+                                                        isItalian: false, isMexican: false, isMiddleEast: false, isSeafood: false, isVegan: false, isAll: !this.state.isAll})
+                                                }}
+                                                value={this.state.isAll}
+                                            />
+                                        </View>
+
+                                        <View style={LobbyStyles.modalSlider}>
+                                            <Text style={{color:'#eee'}}>American: </Text>
+                                            <Switch
+                                                trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                                thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={() => {this.setState({isAmerican: !this.state.isAmerican, isAll: false})}}
+                                                value={this.state.isAmerican}
+                                            />
+                                        </View>
+
+                                        <View style={LobbyStyles.modalSlider}>
+                                            <Text style={{color:'#eee'}}>African: </Text>
+                                            <Switch
+                                                trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                                thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={() => {this.setState({isAfrican: !this.state.isAfrican, isAll: false})}}
+                                                value={this.state.isAfrican}
+                                            />
+                                        </View>
+
+                                        <View style={LobbyStyles.modalSlider}>
+                                            <Text style={{color:'#eee'}}>Italian: </Text>
+                                            <Switch
+                                                trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                                thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={() => {this.setState({isItalian: !this.state.isItalian, isAll: false})}}
+                                                value={this.state.isItalian}
+                                            />
+                                        </View>
+
+                                        <View style={LobbyStyles.modalSlider}>
+                                            <Text style={{color:'#eee'}}>Caribbean: </Text>
+                                            <Switch
+                                                trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                                thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={() => {this.setState({isCaribbean: !this.state.isCaribbean, isAll: false})}}
+                                                value={this.state.isCaribbean}
+                                            />
+                                        </View>
+                                    </View>
+                                    <View style={{flexDirection: 'column', width: '50%'}}>
+                                        <View style={LobbyStyles.modalSlider}>
+                                            <Text style={{color:'#eee'}}>Asian: </Text>
+                                            <Switch
+                                                trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                                thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={() => {this.setState({isAsian: !this.state.isAsian, isAll: false})}}
+                                                value={this.state.isAsian}
+                                            />
+                                        </View>
+
+                                        <View style={LobbyStyles.modalSlider}>
+                                            <Text style={{color:'#eee'}}>European: </Text>
+                                            <Switch
+                                                trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                                thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={() => {this.setState({isEuropean: !this.state.isEuropean, isAll: false})}}
+                                                value={this.state.isEuropean}
+                                            />
+                                        </View>
+
+                                        <View style={LobbyStyles.modalSlider}>
+                                            <Text style={{color:'#eee'}}>Mexican: </Text>
+                                            <Switch
+                                                trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                                thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={() => {this.setState({isMexican: !this.state.isMexican, isAll: false})}}
+                                                value={this.state.isMexican}
+                                            />
+                                        </View>
+
+                                        <View style={LobbyStyles.modalSlider}>
+                                            <Text style={{color:'#eee'}}>Middle Eastern: </Text>
+                                            <Switch
+                                                trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                                thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={() => {this.setState({isMiddleEast: !this.state.isMiddleEast, isAll: false})}}
+                                                value={this.state.isMiddleEast}
+                                            />
+                                        </View>
+
+                                        <View style={LobbyStyles.modalSlider}>
+                                            <Text style={{color:'#eee'}}>Seafood/Sushi: </Text>
+                                            <Switch
+                                                trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                                thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={() => {this.setState({isSeafood: !this.state.isSeafood, isAll: false})}}
+                                                value={this.state.isSeafood}
+                                            />
+                                        </View>
+
+                                        <View style={LobbyStyles.modalSlider}>
+                                            <Text style={{color:'#eee'}}>Vegan: </Text>
+                                            <Switch
+                                                trackColor={{ false: '#767577', true: '#f97c4d' }}
+                                                thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={() => {this.setState({isVegan: !this.state.isVegan, isAll: false})}}
+                                                value={this.state.isVegan}
+                                            />
+                                        </View>
+                                    </View>
                                 </View>
 
-                                <View style={LobbyStyles.modalSlider}>
-                                    <Text style={{color:'#eee'}}>American: </Text>
-                                    <Switch
-                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
-                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={() => {this.setState({isAmerican: !this.state.isAmerican, isAll: false})}}
-                                        value={this.state.isAmerican}
-                                    />
-                                </View>
+                                <Pressable style={LobbyStyles.filterButton}
+                                           onPress={() => {
+                                               if(this.state.isAll === true) {
+                                                   this.state.categories = ['all']
+                                                   this.setState({modalVisible: !this.state.modalVisible})
+                                               } else if(this.state.isAll === false && this.state.isItalian === false && this.state.isAfrican === false &&
+                                                   this.state.isAmerican === false && this.state.isAsian === false && this.state.isMiddleEast === false &&
+                                                   this.state.isEuropean === false && this.state.isVegan === false && this.state.isCaribbean === false &&
+                                                   this.state.isSeafood === false && this.state.isMexican === false) {
+                                                   Alert.alert("Whoops!", "Must apply at least one filter!")
+                                               } else {
+                                                   this.state.categories = [];
+                                                   if(this.state.isAmerican === true) {
+                                                       this.state.categories.push('newamerican', 'tradamerican', 'bbq', 'breakfast_brunch', 'cafeteria', 'cajun', 'steak', 'newcanadian')
+                                                   }
 
-                                <View style={LobbyStyles.modalSlider}>
-                                    <Text style={{color:'#eee'}}>African: </Text>
-                                    <Switch
-                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
-                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={() => {this.setState({isAfrican: !this.state.isAfrican, isAll: false})}}
-                                        value={this.state.isAfrican}
-                                    />
-                                </View>
+                                                   if(this.state.isAfrican === true) {
+                                                       this.state.categories.push('african')
+                                                   }
 
-                                <View style={LobbyStyles.modalSlider}>
-                                    <Text style={{color:'#eee'}}>Italian: </Text>
-                                    <Switch
-                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
-                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={() => {this.setState({isItalian: !this.state.isItalian, isAll: false})}}
-                                        value={this.state.isItalian}
-                                    />
-                                </View>
+                                                   if(this.state.isAsian === true) {
+                                                       this.state.categories.push('chinese', 'japanese', 'korean', 'singaporean', 'thai', 'vietnamese', 'taiwanese')
+                                                   }
 
-                                <View style={LobbyStyles.modalSlider}>
-                                    <Text style={{color:'#eee'}}>Caribbean: </Text>
-                                    <Switch
-                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
-                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={() => {this.setState({isCaribbean: !this.state.isCaribbean, isAll: false})}}
-                                        value={this.state.isCaribbean}
-                                    />
-                                </View>
-                            </View>
-                            <View style={{flexDirection: 'column', width: '50%'}}>
-                                <View style={LobbyStyles.modalSlider}>
-                                    <Text style={{color:'#eee'}}>Asian: </Text>
-                                    <Switch
-                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
-                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={() => {this.setState({isAsian: !this.state.isAsian, isAll: false})}}
-                                        value={this.state.isAsian}
-                                    />
-                                </View>
+                                                   if(this.state.isCaribbean === true) {
+                                                       this.state.categories.push('caribbean', 'cuban', 'dominican', 'puertorican', 'filipino')
+                                                   }
 
-                                <View style={LobbyStyles.modalSlider}>
-                                    <Text style={{color:'#eee'}}>European: </Text>
-                                    <Switch
-                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
-                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={() => {this.setState({isEuropean: !this.state.isEuropean, isAll: false})}}
-                                        value={this.state.isEuropean}
-                                    />
-                                </View>
+                                                   if(this.state.isEuropean === true) {
+                                                       this.state.categories.push('danish', 'french', 'belgian', 'british', 'german', 'greek', 'irish', 'polish')
+                                                   }
 
-                                <View style={LobbyStyles.modalSlider}>
-                                    <Text style={{color:'#eee'}}>Mexican: </Text>
-                                    <Switch
-                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
-                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={() => {this.setState({isMexican: !this.state.isMexican, isAll: false})}}
-                                        value={this.state.isMexican}
-                                    />
-                                </View>
+                                                   if(this.state.isItalian === true) {
+                                                       this.state.categories.push('italian', 'pizza', 'mediterranean')
+                                                   }
 
-                                <View style={LobbyStyles.modalSlider}>
-                                    <Text style={{color:'#eee'}}>Middle Eastern: </Text>
-                                    <Switch
-                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
-                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={() => {this.setState({isMiddleEast: !this.state.isMiddleEast, isAll: false})}}
-                                        value={this.state.isMiddleEast}
-                                    />
-                                </View>
+                                                   if(this.state.isMexican === true) {
+                                                       this.state.categories.push('mexican', 'newmexican', 'spanish', 'latin')
+                                                   }
 
-                                <View style={LobbyStyles.modalSlider}>
-                                    <Text style={{color:'#eee'}}>Seafood/Sushi: </Text>
-                                    <Switch
-                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
-                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={() => {this.setState({isSeafood: !this.state.isSeafood, isAll: false})}}
-                                        value={this.state.isSeafood}
-                                    />
-                                </View>
+                                                   if(this.state.isMiddleEast === true) {
+                                                       this.state.categories.push('mideastern', 'egyptian', 'pakistani', 'persian', 'afghani', 'indpak')
+                                                   }
 
-                                <View style={LobbyStyles.modalSlider}>
-                                    <Text style={{color:'#eee'}}>Vegan: </Text>
-                                    <Switch
-                                        trackColor={{ false: '#767577', true: '#f97c4d' }}
-                                        thumbColor={this.state.isMexican ? '#2E354E' : '#f4f3f4'}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={() => {this.setState({isVegan: !this.state.isVegan, isAll: false})}}
-                                        value={this.state.isVegan}
-                                    />
-                                </View>
-                            </View>
+                                                   if(this.state.isSeafood === true) {
+                                                       this.state.categories.push('seafood', 'sushi')
+                                                   }
+
+                                                   if(this.state.isVegan === true) {
+                                                       this.state.categories.push('vegan', 'vegetarian')
+                                                   }
+                                                   this.setState({modalVisible: !this.state.modalVisible})
+                                               }
+                                           }}>
+                                    <Text style={InputStyles.buttonText}>Apply Filters</Text>
+                                </Pressable>
+                                <Pressable style={LobbyStyles.filterButton}
+                                           onPress={() => {
+                                               this.setState({modalVisible: !this.state.modalVisible})
+                                           }}>
+                                    <Text style={InputStyles.buttonText}>Close Filters</Text>
+                                </Pressable>
+                            </KeyboardAvoidingView>
+                        </Modal>
+                        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly'}}>
+                            <TextInput
+                                onChangeText={(text) => {this.setState({zip: text})}}
+                                value={this.state.zip}
+                                placeholder="Enter Zipcode"
+                                placeholderTextColor={"#000"}
+                                style={this.state.isFocused ? InputStyles.focusZipInputStyle : InputStyles.zipInputStyle}
+                                onFocus={()=>{this.setState({isFocused:true})}}
+                                onBlur={()=>{this.setState({isFocused:false})}}
+                            />
+                            <TouchableOpacity style={{alignSelf:'flex-start'}} onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}>
+                                <Ionicons name="filter-sharp" size={30} color="#2e344f" />
+                            </TouchableOpacity>
                         </View>
 
-                        <Pressable style={LobbyStyles.filterButton}
-                                   onPress={() => {
-                                       if(this.state.isAll === true) {
-                                           this.state.categories = ['all']
-                                           this.setState({modalVisible: !this.state.modalVisible})
-                                       } else if(this.state.isAll === false && this.state.isItalian === false && this.state.isAfrican === false &&
-                                           this.state.isAmerican === false && this.state.isAsian === false && this.state.isMiddleEast === false &&
-                                           this.state.isEuropean === false && this.state.isVegan === false && this.state.isCaribbean === false &&
-                                           this.state.isSeafood === false && this.state.isMexican === false) {
-                                           Alert.alert("Whoops!", "Must apply at least one filter!")
-                                       } else {
-                                           this.state.categories = [];
-                                           if(this.state.isAmerican === true) {
-                                               this.state.categories.push('newamerican', 'tradamerican', 'bbq', 'breakfast_brunch', 'cafeteria', 'cajun', 'steak', 'newcanadian')
-                                           }
-
-                                           if(this.state.isAfrican === true) {
-                                               this.state.categories.push('african')
-                                           }
-
-                                           if(this.state.isAsian === true) {
-                                               this.state.categories.push('chinese', 'japanese', 'korean', 'singaporean', 'thai', 'vietnamese', 'taiwanese')
-                                           }
-
-                                           if(this.state.isCaribbean === true) {
-                                               this.state.categories.push('caribbean', 'cuban', 'dominican', 'puertorican', 'filipino')
-                                           }
-
-                                           if(this.state.isEuropean === true) {
-                                               this.state.categories.push('danish', 'french', 'belgian', 'british', 'german', 'greek', 'irish', 'polish')
-                                           }
-
-                                           if(this.state.isItalian === true) {
-                                               this.state.categories.push('italian', 'pizza', 'mediterranean')
-                                           }
-
-                                           if(this.state.isMexican === true) {
-                                               this.state.categories.push('mexican', 'newmexican', 'spanish', 'latin')
-                                           }
-
-                                           if(this.state.isMiddleEast === true) {
-                                               this.state.categories.push('mideastern', 'egyptian', 'pakistani', 'persian', 'afghani', 'indpak')
-                                           }
-
-                                           if(this.state.isSeafood === true) {
-                                               this.state.categories.push('seafood', 'sushi')
-                                           }
-
-                                           if(this.state.isVegan === true) {
-                                               this.state.categories.push('vegan', 'vegetarian')
-                                           }
-                                           this.setState({modalVisible: !this.state.modalVisible})
-                                       }
-                                   }}>
-                            <Text style={InputStyles.buttonText}>Apply Filters</Text>
-                        </Pressable>
-                        <Pressable style={LobbyStyles.filterButton}
-                                   onPress={() => {
-                                       this.setState({modalVisible: !this.state.modalVisible})
-                                   }}>
-                            <Text style={InputStyles.buttonText}>Close Filters</Text>
-                        </Pressable>
-                    </KeyboardAvoidingView>
-                </Modal>
-                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly'}}>
-                    <TextInput
-                        onChangeText={(text) => {this.setState({zip: text})}}
-                        value={this.state.zip}
-                        placeholder="Enter Zipcode"
-                        placeholderTextColor={"#000"}
-                        style={this.state.isFocused ? InputStyles.focusZipInputStyle : InputStyles.zipInputStyle}
-                        onFocus={()=>{this.setState({isFocused:true})}}
-                        onBlur={()=>{this.setState({isFocused:false})}}
-                    />
-                    <TouchableOpacity style={{alignSelf:'flex-start'}} onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}>
-                        <Ionicons name="filter-sharp" size={30} color="#2e344f" />
-                    </TouchableOpacity>
-                </View>
-
-                <ScrollView>
-                    {this.state.users.map(user=>{
-                        return(
-                            <View style={LobbyStyles.listContainer} key={user.id}>
-                                <Image source={{uri:user.photoURL}} style={LobbyStyles.image}/>
-                                <Text style={LobbyStyles.userName}>{user.displayName}</Text>
+                        {this.state.isLoading ?
+                            <View style={{flex: 1, justifyContent: 'center'}}>
+                                <ActivityIndicator size="large" color="#f97c4d"/>
+                                <Text style={LobbyStyles.userName}>Loading...</Text>
                             </View>
-                        )
-                    })}
-                </ScrollView>
-                <View style={LobbyStyles.sliderContainer}>
-                    <Text>Distance: {this.state.distance} mi</Text>
-                    <Slider
-                        value={this.state.distance}
-                        useNativeDriver={true}
-                        minimumValue={1}
-                        maximumValue={20}
-                        step={1}
-                        onValueChange={value => this.setState({distance: value})}
-                        minimumTrackTintColor='#f97c4d'
-                        thumbTintColor='#f97c4d'
-                        />
-                </View>
+                            :
+                            <ScrollView>
+                                {this.state.users.map(user=>{
+                                    return(
+                                        <View style={LobbyStyles.listContainer} key={user.id}>
+                                            <Image
+                                                source={{uri:user.photoURL}}
+                                                style={LobbyStyles.image}
+                                                loadingIndicatorSource={<ActivityIndicator size="large" color="#f97c4d"/>}
+                                            />
+                                            <Text style={LobbyStyles.userName}>{user.displayName}</Text>
+                                        </View>
+                                    )
+                                })}
+                            </ScrollView>
+                        }
+                        <View style={LobbyStyles.sliderContainer}>
+                            <Text>Distance: {this.state.distance} mi</Text>
+                            <Slider
+                                value={this.state.distance}
+                                useNativeDriver={true}
+                                minimumValue={1}
+                                maximumValue={20}
+                                step={1}
+                                onValueChange={value => this.setState({distance: value})}
+                                minimumTrackTintColor='#f97c4d'
+                                thumbTintColor='#f97c4d'
+                            />
+                        </View>
 
-                <Text style={{color:'#2e344f', fontSize:20, paddingBottom:10}}>Share Code</Text>
+                        <Text style={{color:'#2e344f', fontSize:20, paddingBottom:10}}>Share Code</Text>
 
-                <View>
-                    <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
-                        <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
-                        <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
-                    </TouchableOpacity>
-                </View>
+                        <View>
+                            <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
+                                <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
+                                <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
+                            </TouchableOpacity>
+                        </View>
 
-                <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
-                    <TouchableOpacity onPress={()=>{this.endLobby()}} style={LobbyStyles.closeButton}>
-                        <Ionicons style={IconStyles.iconLeft} name="close-circle-outline"/>
-                        <Text style={InputStyles.buttonText}> Close</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {
-                        Alert.alert(
-                            "Ready to Play?",
-                            "Is everyone in the lobby and ready to begin?",
-                            [
-                                {
-                                    text: "Wait, go back!",
-                                    onPress: () => {},
-                                    style: "cancel"
-                                },
-                                { text: "Let's Eat!!", onPress: () => {this.changeScreens()} }
-                            ],
-                            {cancelable: true}
-                        )
-                    }} style={LobbyStyles.buttons}>
-                        <Ionicons style={IconStyles.iconLeft} name="play-circle-outline"/>
-                        <Text style={InputStyles.buttonText}>Start</Text>
-                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
-                    </TouchableOpacity>
-                </View>
-            </View>
+                        <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
+                            <TouchableOpacity onPress={()=>{this.endLobby()}} style={LobbyStyles.closeButton}>
+                                <Ionicons style={IconStyles.iconLeft} name="close-circle-outline"/>
+                                <Text style={InputStyles.buttonText}> Close</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => {
+                                Alert.alert(
+                                    "Ready to Play?",
+                                    "Is everyone in the lobby and ready to begin?",
+                                    [
+                                        {
+                                            text: "Wait, go back!",
+                                            onPress: () => {},
+                                            style: "cancel"
+                                        },
+                                        { text: "Let's Eat!!", onPress: () => {this.changeScreens()} }
+                                    ],
+                                    {cancelable: true}
+                                )
+                            }} style={LobbyStyles.buttons}>
+                                <Ionicons style={IconStyles.iconLeft} name="play-circle-outline"/>
+                                <Text style={InputStyles.buttonText}>Start</Text>
+                                <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                }
+            </>
         )
     }
 }

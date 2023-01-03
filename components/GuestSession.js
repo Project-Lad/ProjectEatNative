@@ -9,14 +9,17 @@ import {
 } from 'react-native';
 import firebase from "../firebase";
 import "firebase/firestore";
-import {IconStyles, InputStyles, LobbyStyles} from "./InputStyles";
+import {IconStyles, InputStyles, LobbyStyles, ProfileStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 import * as Sentry from "sentry-expo";
+import preloaderLines from "./AnimatedSVG";
+import {AnimatedSVGPaths} from "react-native-svg-animations";
 let unsubscribe;
 LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
     state = {
-        isLoading: false,
+        areUsersLoading: true,
+        isExiting: false,
         users: [],
         code: 0,
         photoURL: "",
@@ -65,8 +68,6 @@ export default class GuestSession extends Component {
 
                          this.checkForUsers()
                          this.checkForSessionStart()
-
-                         this.setState({isLoading: true})
                      } else {
                          alert("Session could not be found, please re-enter code")
                          this.props.navigation.navigate('Connect')
@@ -80,7 +81,6 @@ export default class GuestSession extends Component {
              .catch((error) => {
                  Sentry.Native.captureException(error.message);
              })
-         this.state.isLoading = false
      }
 
     checkForUsers = () => {
@@ -88,6 +88,7 @@ export default class GuestSession extends Component {
         let usersLocal = [];
 
         usersRef.onSnapshot(querySnapshot => {
+            this.setState({areUsersLoading: true})
             //check the entire query, for each document push them onto local array
             querySnapshot.forEach(documentSnapshot => {
                 //push their id and displayName onto the array
@@ -99,7 +100,7 @@ export default class GuestSession extends Component {
             })
 
             //add the user to usersLocal array
-            this.setState({users: usersLocal})
+            this.setState({users: usersLocal, areUsersLoading: false})
 
             //reset the usersLocal array to avoid duplicates
             usersLocal = []
@@ -158,20 +159,22 @@ export default class GuestSession extends Component {
             [
                 {
                     text:"No",
-                    onPress:() => {}
+                    onPress:() => {this.setState({isExiting: false})}
                 },
                 {
                     text:"Yes",
                     onPress:() => {
+                        this.setState({isExiting: true})
                         unsubscribe();
                         //if yes, delete the user and navigate back to connection page
                         firebase.firestore().collection('sessions').doc(this.state.code)
                             .collection('users').doc(firebase.auth().currentUser.uid).delete()
-                            .then(this.props.navigation.navigate('Connect'))
+                            .then(setTimeout(() => {this.props.navigation.navigate('Connect')}))
                             .catch((error) => {
                                 Sentry.Native.captureException(error.message);
                                 //if an error occurs, display console log and navigate back to connect
-                                this.props.navigation.navigate('Connect')})
+                                setTimeout(() => {this.props.navigation.navigate('Connect')})}
+                            )
                     }
                 }
             ]
@@ -199,64 +202,86 @@ export default class GuestSession extends Component {
     };
 
     render() {
-        if(!this.state.isLoading) {
-            return (
-                <View style={{flex: 1, justifyContent: 'center'}}>
-                    <ActivityIndicator size="large" color="#f97c4d"/>
-                    <Text style={LobbyStyles.userName}>Joining Lobby...</Text>
-                </View>
-            )
-        } else {
-            return (
-                <View style={LobbyStyles.container}>
-                    <ScrollView>
-                        {this.state.users.map(user=>{
-                            return(
-                                <View style={LobbyStyles.listContainer} key={user.id}>
-                                    <Image source={{uri:user.photoURL}} style={LobbyStyles.image}/>
-                                    <Text style={LobbyStyles.userName}>{user.displayName}</Text>
-                                </View>
-                            )
-                        })}
-                    </ScrollView>
-                    <View>
-                        <Text style={{fontSize:18, color:'#2e344f'}}>Share Code</Text>
-
+        return(
+            <>
+                {this.state.isExiting ?
+                    <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
+                        <AnimatedSVGPaths
+                            strokeColor={"black"}
+                            duration={1500}
+                            strokeWidth={3}
+                            strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                            height={400}
+                            width={400}
+                            scale={1}
+                            delay={0}
+                            rewind={false}
+                            ds={preloaderLines}
+                            loop={false}
+                        />
+                    </View>
+                    :
+                    <View style={LobbyStyles.container}>
+                        {this.state.areUsersLoading ?
+                            <View style={{flex: 1, justifyContent: 'center'}}>
+                                <ActivityIndicator size="large" color="#f97c4d"/>
+                                <Text style={LobbyStyles.userName}>Loading Users...</Text>
+                            </View>
+                            :
+                            <ScrollView>
+                                {this.state.users.map(user=>{
+                                    return(
+                                        <View style={LobbyStyles.listContainer} key={user.id}>
+                                            <Image
+                                                source={{uri:user.photoURL}}
+                                                style={LobbyStyles.image}
+                                                loadingIndicatorSource={<ActivityIndicator size="small" color="#f97c4d"/>}
+                                            />
+                                            <Text style={LobbyStyles.userName}>{user.displayName}</Text>
+                                        </View>
+                                    )
+                                })}
+                            </ScrollView>
+                        }
                         <View>
-                            <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
-                                <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
-                                <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
-                            <TouchableOpacity onPress={()=>{this.leaveLobby()}} style={LobbyStyles.closeButton}>
-                                <Ionicons style={IconStyles.iconLeft}  name="close-circle-outline"/>
-                                <Text style={InputStyles.buttonText}>Leave</Text>
-                            </TouchableOpacity>
-                            {this.state.start ?
-                                <TouchableOpacity
-                                    onPress={() =>
-                                        this.props.navigation.navigate('Swipe Feature',{
-                                            code:this.state.code,
-                                            zip:this.state.zip,
-                                            distance: this.state.distance,
-                                            isHost:false,
-                                            categories: this.state.categories,
-                                            latitude: this.state.latitude,
-                                            longitude: this.state.longitude
-                                        })
-                                    }
-                                    style={LobbyStyles.buttons}
-                                >
-                                    <Text style={InputStyles.buttonText}>Back 2 Swiping</Text>
+                            <Text style={{fontSize:18, color:'#2e344f'}}>Share Code</Text>
+
+                            <View>
+                                <TouchableOpacity onPress={this.onShare} style={LobbyStyles.shareCodeContainer}>
+                                    <Text style={LobbyStyles.shareCodeText}>{this.state.code}</Text>
+                                    <Ionicons style={IconStyles.iconShare} name="share-social-outline"/>
                                 </TouchableOpacity>
-                                :
-                                null
-                            }
+                            </View>
+                            <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
+                                <TouchableOpacity onPress={()=>{this.setState({isExiting: true}); this.leaveLobby()}} style={LobbyStyles.closeButton}>
+                                    <Ionicons style={IconStyles.iconLeft}  name="close-circle-outline"/>
+                                    <Text style={InputStyles.buttonText}>Leave</Text>
+                                </TouchableOpacity>
+                                {this.state.start ?
+                                    <TouchableOpacity
+                                        onPress={() =>
+                                            this.props.navigation.navigate('Swipe Feature',{
+                                                code:this.state.code,
+                                                zip:this.state.zip,
+                                                distance: this.state.distance,
+                                                isHost:false,
+                                                categories: this.state.categories,
+                                                latitude: this.state.latitude,
+                                                longitude: this.state.longitude
+                                            })
+                                        }
+                                        style={LobbyStyles.buttons}
+                                    >
+                                        <Text style={InputStyles.buttonText}>Back 2 Swiping</Text>
+                                    </TouchableOpacity>
+                                    :
+                                    null
+                                }
+                            </View>
                         </View>
                     </View>
-                </View>
-            );
-        }
+                }
+            </>
+        );
     }
 }
