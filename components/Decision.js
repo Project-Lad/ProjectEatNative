@@ -32,6 +32,7 @@ import * as Sentry from "sentry-expo";
 import * as WebBrowser from "expo-web-browser";
 import preloaderLines from "./AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
+import burgerJPG from '../assets/burger_image.jpg';
 LogBox.ignoreLogs(['Setting a timer']);
 const Decision = ({route}) => {
     let [restaurant, setRestaurant] = useState({
@@ -189,6 +190,10 @@ const Decision = ({route}) => {
             googleURL += "+";
             counter++;
         }
+
+        if(restaurant.photos.length === 0) {
+            restaurant.photos = [burgerJPG];
+        }
     }
 
     function clearSubs() {
@@ -280,7 +285,7 @@ const Decision = ({route}) => {
                             {restaurant.photos.map(image => (
                                 <Image
                                     key={image}
-                                    source={{uri: image}}
+                                    source={image === burgerJPG ? burgerJPG : {uri: image}}
                                     style={DecisionStyle.cardImages}
                                 />
                             ))}

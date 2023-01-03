@@ -34,7 +34,7 @@ export default function SwipeFeature({route}) {
                 navigation.navigate('Guest Session', {code: route.params.code})
             }
 
-            if(!!docSnapshot.data().start || docSnapshot === 'undefined') {
+            if(docSnapshot === 'undefined' || !!docSnapshot.data().start) {
                 unsub();
             }
         }, error => {

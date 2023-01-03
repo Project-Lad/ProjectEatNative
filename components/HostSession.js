@@ -525,6 +525,8 @@ export default class HostSession extends Component {
                                 style={this.state.isFocused ? InputStyles.focusZipInputStyle : InputStyles.zipInputStyle}
                                 onFocus={()=>{this.setState({isFocused:true})}}
                                 onBlur={()=>{this.setState({isFocused:false})}}
+                                maxLength={5}
+                                keyboardType={"number-pad"}
                             />
                             <TouchableOpacity style={{alignSelf:'flex-start'}} onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}>
                                 <Ionicons name="filter-sharp" size={30} color="#2e344f" />

@@ -191,6 +191,7 @@ export default function EditAccount(){
                         <Text style={InputStyles.buttonText}>Logout</Text>
                         <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
                     </TouchableOpacity>
+                    <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%", textAlign:"center"}}>{'\u00A9'} Copyright {new Date().getFullYear()}</Text>
                 </View>
             </View>
         </View>
