@@ -9,6 +9,7 @@ import SVGComponent from "./SVGLogo";
 import * as Sentry from "sentry-expo";
 import { AnimatedSVGPaths } from "react-native-svg-animations";
 import preloaderLines from "./AnimatedSVG";
+import userPhoto from "../assets/user-placeholder.png";
 LogBox.ignoreLogs(['Setting a timer']);
 
 export default function Dashboard(){
@@ -20,11 +21,16 @@ export default function Dashboard(){
     const isFocused = useIsFocused();
     try {
         useEffect(() => {
-           firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL().then((url)=>{
-               setNewProfilePicture(url)
-           })
             firebase.firestore().collection('users').doc(user).get().then((doc) => {
                 setNewProfileUsername(doc.data().username)
+
+                if(doc.data().photoURL !== "assets_userplaceholder") {
+                    firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL().then((url)=>{
+                        setNewProfilePicture(url)
+                    })
+                } else {
+                    setNewProfilePicture(Image.resolveAssetSource(userPhoto).uri)
+                }
             })
 
             setTimeout(() => {setIsLoading(false)}, 1650)
@@ -32,7 +38,6 @@ export default function Dashboard(){
     } catch (error) {
         Sentry.Native.captureException(error.message);
     }
-
 
     return(
         <>

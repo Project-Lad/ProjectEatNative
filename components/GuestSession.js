@@ -14,6 +14,7 @@ import {Ionicons} from "@expo/vector-icons";
 import * as Sentry from "sentry-expo";
 import preloaderLines from "./AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
+import userPhoto from "../assets/user-placeholder.png";
 let unsubscribe;
 LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
@@ -46,42 +47,46 @@ export default class GuestSession extends Component {
     constructor(props) {
          super(props);
 
-         let displayName = firebase.auth().currentUser.displayName
-
          this.state.code = props.route.params.code
-
-         //obtain a doc reference to the session that was input on the Connect screen
-         const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
 
          //retrieve image
          firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL()
              .then((url) => {
-                 docRef.get().then((docSnapshot) => {
-                     //if this document exists
-                     if (docSnapshot.exists) {
-                         //add the user to the document, merge so that way everyone's lobby updates properly
-                         docRef.collection('users').doc(firebase.auth().currentUser.uid).set({
-                             displayName: displayName,
-                             photoURL: url
-                         }, {merge: true}).then(() => {})
-                             .catch(() => {});
-
-                         this.checkForUsers()
-                         this.checkForSessionStart()
-                     } else {
-                         alert("Session could not be found, please re-enter code")
-                         this.props.navigation.navigate('Connect')
-                     }
-                 }).catch((error) => {
-                     Sentry.Native.captureException(error.message);
-                     alert("There was an issue connecting to the Session, please re-enter code")
-                     this.props.navigation.navigate('Connect')
-                 })
+                 this.joinSession(url);
              })
              .catch((error) => {
+                 this.joinSession("assets_userplaceholder");
                  Sentry.Native.captureException(error.message);
              })
      }
+
+    joinSession = (url) => {
+        //obtain a doc reference to the session that was input on the Connect screen
+        const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
+        let displayName = firebase.auth().currentUser.displayName
+
+        docRef.get().then((docSnapshot) => {
+            //if this document exists
+            if (docSnapshot.exists) {
+                //add the user to the document, merge so that way everyone's lobby updates properly
+                docRef.collection('users').doc(firebase.auth().currentUser.uid).set({
+                    displayName: displayName,
+                    photoURL: url
+                }, {merge: true}).then(() => {})
+                    .catch(() => {});
+
+                this.checkForUsers()
+                this.checkForSessionStart()
+            } else {
+                alert("Session could not be found, please re-enter code")
+                this.props.navigation.navigate('Connect')
+            }
+        }).catch((error) => {
+            Sentry.Native.captureException(error.message);
+            alert("There was an issue connecting to the Session, please re-enter code")
+            this.props.navigation.navigate('Connect')
+        })
+    }
 
     checkForUsers = () => {
         const usersRef = firebase.firestore().collection('sessions').doc(this.state.code).collection('users')
@@ -233,7 +238,7 @@ export default class GuestSession extends Component {
                                     return(
                                         <View style={LobbyStyles.listContainer} key={user.id}>
                                             <Image
-                                                source={{uri:user.photoURL}}
+                                                source={user.photoURL === "assets_userplaceholder" ? {uri: Image.resolveAssetSource(userPhoto).uri} : {uri:user.photoURL}}
                                                 style={LobbyStyles.image}
                                                 loadingIndicatorSource={<ActivityIndicator size="small" color="#f97c4d"/>}
                                             />

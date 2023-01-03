@@ -25,6 +25,7 @@ import * as Location from "expo-location";
 import * as Sentry from "sentry-expo";
 import preloaderLines from "./AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
+import userPhoto from "../assets/user-placeholder.png";
 LogBox.ignoreLogs(['Setting a timer']);
 
 //Declares lat and long vars
@@ -123,28 +124,13 @@ export default class HostSession extends Component {
             counter = this.checkForDocument(this.state.code);
         }
 
-        let displayName = firebase.auth().currentUser.displayName
-
         //retrieve image
         firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL()
             .then((url) => {
-                //creates session using the newly generated code
-                firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false, latitude: latitude, longitude: longitude})
-                    .then(() => {
-                        //adds the current host user to the document
-                        firebase.firestore().collection('sessions').doc(this.state.code)
-                            .collection('users').doc(firebase.auth().currentUser.uid).set({
-                            displayName: displayName,
-                            photoURL: url
-                        }).then(() => {})
-                        .catch((error) => {
-                            Sentry.Native.captureException(error.message);
-                        })
-                    }).catch((error) => {
-                    Sentry.Native.captureException(error.message);
-                })
+                this.createSession(url);
             })
             .catch((error) => {
+                this.createSession("assets_userplaceholder");
                 Sentry.Native.captureException(error.message);
             })
 
@@ -160,6 +146,26 @@ export default class HostSession extends Component {
         }
 
         return result;
+    }
+
+    createSession = (url) => {
+        let displayName = firebase.auth().currentUser.displayName
+        
+        //creates session using the newly generated code
+        firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false, latitude: latitude, longitude: longitude})
+            .then(() => {
+                //adds the current host user to the document
+                firebase.firestore().collection('sessions').doc(this.state.code)
+                    .collection('users').doc(firebase.auth().currentUser.uid).set({
+                    displayName: displayName,
+                    photoURL: url
+                }).then(() => {})
+                    .catch((error) => {
+                        Sentry.Native.captureException(error.message);
+                    })
+            }).catch((error) => {
+            Sentry.Native.captureException(error.message);
+        })
     }
 
     checkForDocument = (code) => {
@@ -544,7 +550,7 @@ export default class HostSession extends Component {
                                     return(
                                         <View style={LobbyStyles.listContainer} key={user.id}>
                                             <Image
-                                                source={{uri:user.photoURL}}
+                                                source={user.photoURL === "assets_userplaceholder" ? {uri: Image.resolveAssetSource(userPhoto).uri} : {uri:user.photoURL}}
                                                 style={LobbyStyles.image}
                                                 loadingIndicatorSource={<ActivityIndicator size="large" color="#f97c4d"/>}
                                             />

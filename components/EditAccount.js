@@ -20,6 +20,7 @@ import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 LogBox.ignoreLogs(['Setting a timer']);
 import * as WebBrowser from 'expo-web-browser';
+import userPhoto from "../assets/user-placeholder.png";
 export default function EditAccount(){
     const navigation = useNavigation()
     const currentUser = firebase.auth().currentUser
@@ -31,6 +32,9 @@ export default function EditAccount(){
     useEffect(() => {
         firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL().then((url)=>{
             setNewProfilePicture({photoURL:url})
+        })
+        .catch(() => {
+            setNewProfilePicture({photoURL: Image.resolveAssetSource(userPhoto).uri});
         })
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
         return () => backHandler.remove()
