@@ -35,7 +35,7 @@
       "bundleIdentifier": "Out2Eat"
     },
     "android": {
-      "versionCode": 5,
+      "versionCode": 6,
       "adaptiveIcon": {
         "foregroundImage": "./assets/androidAFI.png",
         "backgroundImage": "./assets/androidABI.png"
