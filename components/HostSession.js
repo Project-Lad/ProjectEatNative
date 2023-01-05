@@ -27,11 +27,9 @@ import preloaderLines from "./AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
 import userPhoto from "../assets/user-placeholder.png";
 LogBox.ignoreLogs(['Setting a timer']);
-
 //Declares lat and long vars
 let latitude;
 let longitude;
-
 (async () => {
     let location;
     let locationSuccess = false;
@@ -40,6 +38,9 @@ let longitude;
 
     if (status === 'denied') {
         Alert.alert('Please enable Location Services in your Settings');
+        latitude=null
+        longitude=null
+        return;
     } else {
         while (!locationSuccess) {
             try {
@@ -63,18 +64,6 @@ let longitude;
 })();
 
 export default class HostSession extends Component {
-    componentDidMount() {
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    }
-
-    componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-    }
-
-    handleBackButton() {
-        return true;
-    }
-
     state = {
         isLoading: true,
         isExiting: false,
@@ -99,8 +88,73 @@ export default class HostSession extends Component {
         isMexican: false,
         isMiddleEast: false,
         isSeafood: false,
-        isVegan: false
+        isVegan: false,
+        isMounted:false
     }
+    async componentDidMount() {
+        /*
+        * backhandler event listener to prevent user from swiping between screens
+        * added new State isMounted to prevent memory leak warning
+        * check users location status. If denied user can not hose a lobby unless they turn on location
+        * if location is turned on and the component did mount it will set lat and long vars
+        * set isMounted state to false when component unmounts to prevent memory leak
+        */
+
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+        this.setState({isMounted:true})
+        let {status} = await Location.requestForegroundPermissionsAsync();
+        if(status === 'denied'){
+            Alert.alert('Please enable Location Services in your Settings');
+            this.props.navigation.navigate('Profile')
+        }else{
+            let location;
+            location = await Location.getCurrentPositionAsync({
+                accuracy: Location.Accuracy.Lowest,
+            });
+            if(this.state.isMounted){
+                latitude = location.coords.latitude;
+                longitude = location.coords.longitude;
+            }
+
+        }
+    }
+
+    componentWillUnmount() {
+        this.setState({isMounted:false})
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        return true;
+    }
+
+    /*state ={
+        isLoading: true,
+        isExiting: false,
+        isFocused: false,
+        onFocus: false,
+        users: [],
+        code:0,
+        photoURL: "",
+        photoFound: 0,
+        zip: null,
+        distance: 1,
+        copyClipboard:'',
+        categories: ['all'],
+        modalVisible: false,
+        isAll: true,
+        isAmerican: false,
+        isAfrican: false,
+        isItalian: false,
+        isCaribbean: false,
+        isAsian: false,
+        isEuropean: false,
+        isMexican: false,
+        isMiddleEast: false,
+        isSeafood: false,
+        isVegan: false,
+        isMounted:false
+    }*/
 
     onFocus() {
         this.setState({
@@ -150,7 +204,7 @@ export default class HostSession extends Component {
 
     createSession = (url) => {
         let displayName = firebase.auth().currentUser.displayName
-        
+
         //creates session using the newly generated code
         firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false, latitude: latitude, longitude: longitude})
             .then(() => {
