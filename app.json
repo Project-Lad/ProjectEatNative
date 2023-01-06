@@ -31,10 +31,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "Out2Eat",
       "infoPlist": {
-        "NSLocationAlwaysUsageDescription": "This app uses your phones location data to find restaurants within your immediate area. We recommend using Allow While Using App, this ensure that we do not track your location while the app is not in use. Denying this permission will only allow you to look for restaurants based on a zip code you provide."
+        "NSLocationAlwaysUsageDescription": "This app uses your phones location data to find restaurants within your immediate area. We recommend using Allow While Using App, this ensure that we do not track your location while the app is not in use. Denying this permission will only allow you to join other peoples lobbies not host your own!"
       }
     },
     "android": {
