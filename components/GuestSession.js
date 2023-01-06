@@ -15,7 +15,7 @@ import * as Sentry from "sentry-expo";
 import preloaderLines from "./AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
 import userPhoto from "../assets/user-placeholder.png";
-let unsubscribe;
+
 LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
     state = {
@@ -26,15 +26,25 @@ export default class GuestSession extends Component {
         photoURL: "",
         photoFound: 0,
         categories: [],
-        isFocused:false,
+        isActive:false,
         start: false,
         zip: "0",
         distance: 1,
         latitude: 0,
         longitude: 0
     }
+
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+        let unsubscribe;
+
+        this.props.navigation.addListener('focus', () => {
+            unsubscribe = this.checkForSessionStart()
+        })
+
+        this.props.navigation.addListener('blur', () => {
+            unsubscribe();
+        })
     }
 
     componentWillUnmount() {
@@ -76,7 +86,6 @@ export default class GuestSession extends Component {
                     .catch(() => {});
 
                 this.checkForUsers()
-                this.checkForSessionStart()
             } else {
                 alert("Session could not be found, please re-enter code")
                 this.props.navigation.navigate('Connect')
@@ -117,11 +126,11 @@ export default class GuestSession extends Component {
         const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
 
         //observer is created that when .start changes to true, it navigates to the swipe feature
-        unsubscribe = docRef.onSnapshot((documentSnapshot) => {
+        let unsubscribe = docRef.onSnapshot((documentSnapshot) => {
             //if document exists
             if (documentSnapshot.exists) {
                 //and lobby has not started
-                if(documentSnapshot.data().start) {
+                if(documentSnapshot.data().start && !this.state.isActive) {
                     this.setState({
                         categories: [],
                         start: true,
@@ -135,6 +144,10 @@ export default class GuestSession extends Component {
                         this.state.categories.push(category)
                     })
 
+                    unsubscribe();
+
+                    this.setState({isActive: true})
+
                     this.props.navigation.navigate('Swipe Feature',{
                         code:this.state.code,
                         zip:this.state.zip,
@@ -145,7 +158,9 @@ export default class GuestSession extends Component {
                         longitude: this.state.longitude
                     })
                 } else {
-                    this.setState({start: false})
+                    if(!documentSnapshot.data().start){
+                        this.setState({start: false, isActive: false})
+                    }
                 }
             } else {
                 //if lobby no longer exists, display lobby closed alert and return to main page
@@ -156,6 +171,8 @@ export default class GuestSession extends Component {
         }, (error) => {
             Sentry.Native.captureException(error.message);
         })
+
+        return unsubscribe;
     }
 
     leaveLobby = () => {
@@ -170,7 +187,6 @@ export default class GuestSession extends Component {
                     text:"Yes",
                     onPress:() => {
                         this.setState({isExiting: true})
-                        unsubscribe();
                         //if yes, delete the user and navigate back to connection page
                         firebase.firestore().collection('sessions').doc(this.state.code)
                             .collection('users').doc(firebase.auth().currentUser.uid).delete()
