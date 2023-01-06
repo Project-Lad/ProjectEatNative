@@ -109,7 +109,8 @@ function LoginSignup(){
 Sentry.init({
     dsn: "https://767ea43956cc4dbdbbb48abbeb8dffa7@o1403110.ingest.sentry.io/6735768",
     enableInExpoDevelopment: true,
-    debug:true
+    debug:true,
+    enableNative:true
 });
 
 const Stack = createStackNavigator();
