@@ -5,19 +5,24 @@ import {useNavigation} from '@react-navigation/native'
 import {IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 LogBox.ignoreLogs(['Setting a timer']);
-export default function Connect() {
+export default function Connect({ route }) {
     const navigation = useNavigation()
     const [inputCode, setCode] = useState()
+    const[] =useState(false)
     const [isFocused, setFocus] = useState(false)
 
     useEffect(() => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
-        return () => backHandler.remove()
+        if(route.params !== undefined){
+            setCode(route.params.code)
+        }
+        return () => backHandler.remove();
     }, [])
 
     let convertUpper = () => {
         return inputCode.toString().toUpperCase()
     }
+
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>

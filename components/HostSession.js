@@ -320,8 +320,9 @@ export default class HostSession extends Component {
 
     onShare = async () => {
         try {
+            const link = `out2eat://path/screen/Connect/${this.state.code}`;
             const result = await Share.share({
-                message: `Your Lobby Code is: ${this.state.code}`
+                message: `You have been invited to Out2Eat! Here is your link: ${link}`
             });
             if (result.action === Share.sharedAction) {
                 if (result.activityType) {
