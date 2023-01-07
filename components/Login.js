@@ -105,6 +105,7 @@ export default class Login extends Component {
                 <TextInput
                     style={this.state.onFocus ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                     placeholder="Password"
+                    autoComplete='password'
                     value={this.state.password}
                     onChangeText={(val) => this.updateInputVal(val, 'password')}
                     maxLength={15}
