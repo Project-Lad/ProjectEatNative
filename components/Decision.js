@@ -240,9 +240,12 @@ const Decision = ({route}) => {
                 })
         } else {
             currentSession.collection('users').doc(firebase.auth().currentUser.uid).delete()
-                .then(() => {navigation.navigate('Profile')})
+                .then(() => {
+                    navigation.navigate('Profile')
+                })
                 .catch((error) => {
                     Sentry.Native.captureException(error.message);
+                    navigation.navigate('Profile')
                 })
         }
     }
