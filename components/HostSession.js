@@ -322,7 +322,7 @@ export default class HostSession extends Component {
         try {
             const link = `out2eat://path/screen/Connect/${this.state.code}`;
             const result = await Share.share({
-                message: `You have been invited to Out2Eat! Here is your link: ${link}`
+                message: `You have been invited to Out2Eat! Open the App and enter code: ${this.state.code} or use this ${link} `
             });
             if (result.action === Share.sharedAction) {
                 if (result.activityType) {

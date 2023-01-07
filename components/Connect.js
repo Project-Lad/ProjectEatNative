@@ -8,7 +8,6 @@ LogBox.ignoreLogs(['Setting a timer']);
 export default function Connect({ route }) {
     const navigation = useNavigation()
     const [inputCode, setCode] = useState()
-    const[] =useState(false)
     const [isFocused, setFocus] = useState(false)
 
     useEffect(() => {
