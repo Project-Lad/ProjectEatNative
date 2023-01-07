@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import SwipeFeature from "./components/SwipeFeature";
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
@@ -12,13 +12,16 @@ import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import firebase from "./firebase";
-import {BackHandler, View} from "react-native";
+import {BackHandler, View, TouchableOpacity,Text,Platform} from "react-native";
 import * as Sentry from 'sentry-expo';
-import {ProfileStyles} from "./components/InputStyles";
+import * as Linking from 'expo-linking';
+import {IconStyles, LobbyStyles, ProfileStyles} from "./components/InputStyles";
 import preloaderLines from "./components/AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
+import {Ionicons} from "@expo/vector-icons";
 
 function AuthStack() {
+    const navigation = useNavigation()
     return (
         <Stack.Navigator
             initialRouteName="Profile"
@@ -30,6 +33,11 @@ function AuthStack() {
                 },
                 gestureEnabled:false
             }}>
+            <Stack.Screen
+                name="Profile"
+                component={Profile}
+                options={{ headerShown: false,}}
+            />
             <Stack.Screen
                 name="Swipe Feature"
                 component={SwipeFeature}
@@ -45,13 +53,9 @@ function AuthStack() {
                 component={ForgotPassword}
                 options={{ headerShown: false, headerLeft: null}}
             />
+
             <Stack.Screen
-                name="Profile"
-                component={Profile}
-                options={{ headerShown: false,}}
-            />
-            <Stack.Screen
-                name="Edit Account"
+                name="EditAccount"
                 component={EditAccount}
                 options={{ title: 'Edit Account',headerTintColor:'#2e344f'}}
             />
@@ -71,7 +75,13 @@ function AuthStack() {
                 options={{
                     headerShown: true,
                     headerTitle:'',
-                    headerTintColor:'#2e344f'
+                    headerTintColor:'#2e344f',
+                    headerLeft:()=>(
+                        <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={{flexDirection:'row', alignItems:'center',justifyContent:'flex-start'}}>
+                            <Ionicons style={{color:'#2e344f', fontSize:22}}  name="arrow-back"/>
+                            {Platform.OS === 'ios'?<Text style={{color:'#2e344f', fontSize:18}}>Profile</Text>:null}
+                        </TouchableOpacity>
+                        ),
                     }}
             />
         </Stack.Navigator>
@@ -113,7 +123,20 @@ Sentry.init({
 });
 
 const Stack = createStackNavigator();
-
+let linkPrefix = Linking.createURL('path/screen/')
+const linking = {
+    prefixes: [linkPrefix],
+    config:{
+        screens:{
+            Connect:{
+                path:'Connect/:code',
+                parse: {
+                    code: (code) => `${code}`,
+                },
+            },
+        }
+    }
+}
 export default function App() {
     const [isLoggedIn, setLogIn] = useState(false)
     const [isLoading, setIsLoading] = useState(true);
@@ -135,8 +158,9 @@ export default function App() {
 
         setTimeout(() => {setIsLoading(false)}, 1650)
     }, []);
+
     return (
-        <NavigationContainer>
+        <NavigationContainer linking={linking}>
             {isLoading ?
                 <View style={ProfileStyles.container}>
                     <AnimatedSVGPaths

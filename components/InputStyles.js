@@ -527,7 +527,7 @@ const CardStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent:'space-between',
         position:'relative',
-        top:ScreenHeight-400,
+        top:ScreenHeight * .5,
         left:0
     },
     yelpStars:{

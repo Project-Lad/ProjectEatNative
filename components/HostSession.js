@@ -27,12 +27,10 @@ import preloaderLines from "./AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
 import userPhoto from "../assets/user-placeholder.png";
 LogBox.ignoreLogs(['Setting a timer']);
-
 //Declares lat and long vars
 let latitude;
 let longitude;
-
-(async () => {
+/*(async () => {
     let location;
     let locationSuccess = false;
     let count = 0;
@@ -40,6 +38,9 @@ let longitude;
 
     if (status === 'denied') {
         Alert.alert('Please enable Location Services in your Settings');
+        latitude=null
+        longitude=null
+        return;
     } else {
         while (!locationSuccess) {
             try {
@@ -60,21 +61,9 @@ let longitude;
 
     latitude = location.coords.latitude;
     longitude = location.coords.longitude;
-})();
+})();*/
 
 export default class HostSession extends Component {
-    componentDidMount() {
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    }
-
-    componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-    }
-
-    handleBackButton() {
-        return true;
-    }
-
     state = {
         isLoading: true,
         isExiting: false,
@@ -99,7 +88,57 @@ export default class HostSession extends Component {
         isMexican: false,
         isMiddleEast: false,
         isSeafood: false,
-        isVegan: false
+        isVegan: false,
+        isMounted:false
+    }
+    async componentDidMount() {
+        /*
+        * back handler event listener to prevent user from swiping between screens
+        * added new State isMounted to prevent memory leak warning
+        * check users location status. If denied user can not hose a lobby unless they turn on location
+        * if location is turned on and the component did mount it will set lat and long vars
+        * set isMounted state to false when component unmounts to prevent memory leak
+        */
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+        this.setState({isMounted:true})
+        let {status} = await Location.requestForegroundPermissionsAsync();
+        if(status === 'denied'){
+            latitude=null
+            longitude=null
+            Alert.alert('Please enable Location Services in your Device Settings');
+            this.props.navigation.navigate('Profile')
+        }else{
+            if(this.state.isMounted){
+                let location;
+                let locationSuccess = false;
+                let count = 0;
+                while (!locationSuccess) {
+                    try {
+                        location = await Location.getCurrentPositionAsync({
+                            accuracy: Location.Accuracy.Lowest,
+                        });
+                        locationSuccess = true;
+                    } catch (ex) {
+                        count++;
+                        if (count === 500) {
+                            Alert.alert("Location Unreachable", "Your location cannot be found.", ["Cancel", "OK"])
+                            locationSuccess = true;
+                        }
+                    }
+                }
+                latitude = location.coords.latitude;
+                longitude = location.coords.longitude;
+            }
+        }
+    }
+
+    componentWillUnmount() {
+        this.setState({isMounted:false})
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        return true;
     }
 
     onFocus() {
@@ -150,7 +189,7 @@ export default class HostSession extends Component {
 
     createSession = (url) => {
         let displayName = firebase.auth().currentUser.displayName
-        
+
         //creates session using the newly generated code
         firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false, latitude: latitude, longitude: longitude})
             .then(() => {
@@ -281,8 +320,9 @@ export default class HostSession extends Component {
 
     onShare = async () => {
         try {
+            const link = `out2eat://path/screen/Connect/${this.state.code}`;
             const result = await Share.share({
-                message: `Your Lobby Code is: ${this.state.code}`
+                message: `You have been invited to Out2Eat! Here is your link: ${link}`
             });
             if (result.action === Share.sharedAction) {
                 if (result.activityType) {

@@ -62,7 +62,7 @@ export default function Dashboard(){
                     {/*Profile Card View*/}
                     <View style={ProfileStyles.card}>
                         <View style={{flexDirection: "row", alignItems: "center", justifyContent:'space-between', position:"absolute", width:'100%'}}>
-                            <TouchableOpacity onPress={() => navigation.navigate('Edit Account')}>
+                            <TouchableOpacity onPress={() => navigation.navigate('EditAccount')}>
                                 {newProfilePicture && <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />}
                                 <View style={ProfileStyles.profilePenContainer}>
                                     <Ionicons style={ProfileStyles.profilePen} name="settings-outline"/>
