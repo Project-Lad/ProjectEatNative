@@ -3,7 +3,7 @@
     "name": "Out2Eat",
     "slug": "out2eat",
     "owner": "out2eat",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "out2eat",
@@ -44,7 +44,7 @@
       }
     },
     "android": {
-      "versionCode": 9,
+      "versionCode": 10,
       "adaptiveIcon": {
         "foregroundImage": "./assets/androidAFI.png",
         "backgroundImage": "./assets/androidABI.png"
@@ -69,6 +69,11 @@
     "description": "",
     "plugins": [
       "sentry-expo"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "39ace77c-aecc-4b8d-ab50-d7f67a70f2d9"
+      }
+    }
   }
 }

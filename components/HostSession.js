@@ -27,41 +27,10 @@ import preloaderLines from "./AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
 import userPhoto from "../assets/user-placeholder.png";
 LogBox.ignoreLogs(['Setting a timer']);
+
 //Declares lat and long vars
 let latitude;
 let longitude;
-/*(async () => {
-    let location;
-    let locationSuccess = false;
-    let count = 0;
-    let { status } = await Location.requestForegroundPermissionsAsync();
-
-    if (status === 'denied') {
-        Alert.alert('Please enable Location Services in your Settings');
-        latitude=null
-        longitude=null
-        return;
-    } else {
-        while (!locationSuccess) {
-            try {
-                location = await Location.getCurrentPositionAsync({
-                    accuracy: Location.Accuracy.Lowest,
-                });
-                locationSuccess = true;
-            } catch (ex) {
-                count++;
-
-                if (count === 500) {
-                    Alert.alert("Location Unreachable", "Your location cannot be found.", ["Cancel", "OK"])
-                    locationSuccess = true;
-                }
-            }
-        }
-    }
-
-    latitude = location.coords.latitude;
-    longitude = location.coords.longitude;
-})();*/
 
 export default class HostSession extends Component {
     state = {
@@ -128,6 +97,8 @@ export default class HostSession extends Component {
                 }
                 latitude = location.coords.latitude;
                 longitude = location.coords.longitude;
+
+                this.awaitingLocationData()
             }
         }
     }
@@ -162,7 +133,9 @@ export default class HostSession extends Component {
             this.state.code = this.createCode();
             counter = this.checkForDocument(this.state.code);
         }
+    }
 
+    awaitingLocationData = () => {
         //retrieve image
         firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL()
             .then((url) => {
@@ -170,7 +143,10 @@ export default class HostSession extends Component {
             })
             .catch((error) => {
                 this.createSession("assets_userplaceholder");
-                Sentry.Native.captureException(error.message);
+
+                if(!error.message.includes("storage/object-not-found")) {
+                    Sentry.Native.captureException(error.message);
+                }
             })
 
         this.checkForUsers()
