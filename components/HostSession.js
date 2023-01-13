@@ -29,8 +29,8 @@ import userPhoto from "../assets/user-placeholder.png";
 LogBox.ignoreLogs(['Setting a timer']);
 
 //Declares lat and long vars
-let latitude;
-let longitude;
+let latitude = null;
+let longitude = null;
 
 export default class HostSession extends Component {
     state = {
@@ -70,37 +70,7 @@ export default class HostSession extends Component {
         */
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.setState({isMounted:true})
-        let {status} = await Location.requestForegroundPermissionsAsync();
-        if(status === 'denied'){
-            latitude=null
-            longitude=null
-            Alert.alert('Please enable Location Services in your Device Settings');
-            this.props.navigation.navigate('Profile')
-        }else{
-            if(this.state.isMounted){
-                let location;
-                let locationSuccess = false;
-                let count = 0;
-                while (!locationSuccess) {
-                    try {
-                        location = await Location.getCurrentPositionAsync({
-                            accuracy: Location.Accuracy.Lowest,
-                        });
-                        locationSuccess = true;
-                    } catch (ex) {
-                        count++;
-                        if (count === 500) {
-                            Alert.alert("Location Unreachable", "Your location cannot be found.", ["Cancel", "OK"])
-                            locationSuccess = true;
-                        }
-                    }
-                }
-                latitude = location.coords.latitude;
-                longitude = location.coords.longitude;
-
-                this.awaitingLocationData()
-            }
-        }
+        await this.awaitingLocationData()
     }
 
     componentWillUnmount() {
@@ -135,7 +105,8 @@ export default class HostSession extends Component {
         }
     }
 
-    awaitingLocationData = () => {
+    awaitingLocationData = async () => {
+        await this.checkLocationPermissions();
         //retrieve image
         firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL()
             .then((url) => {
@@ -144,7 +115,7 @@ export default class HostSession extends Component {
             .catch((error) => {
                 this.createSession("assets_userplaceholder");
 
-                if(!error.message.includes("storage/object-not-found")) {
+                if (!error.message.includes("storage/object-not-found")) {
                     Sentry.Native.captureException(error.message);
                 }
             })
@@ -223,6 +194,35 @@ export default class HostSession extends Component {
         })
     }
 
+    checkLocationPermissions = async () => {
+        let {status} = await Location.requestForegroundPermissionsAsync();
+        if (status === 'denied') {
+            Alert.alert('Location Permissions', 'Please enable Location Services in your Device Settings if you wish to use your current location.');
+        } else {
+            if (this.state.isMounted) {
+                let location;
+                let locationSuccess = false;
+                let count = 0;
+                while (!locationSuccess) {
+                    try {
+                        location = await Location.getCurrentPositionAsync({
+                            accuracy: Location.Accuracy.Lowest,
+                        });
+                        locationSuccess = true;
+                    } catch (ex) {
+                        count++;
+                        if (count === 500) {
+                            Alert.alert("Location Unreachable", "Your location cannot be found.", ["Cancel", "OK"])
+                            locationSuccess = true;
+                        }
+                    }
+                }
+                latitude = location.coords.latitude;
+                longitude = location.coords.longitude;
+            }
+        }
+    }
+
     endLobby = () => {
         Alert.alert("End Lobby",
             "Are you sure you want to end this lobby?",
@@ -262,35 +262,65 @@ export default class HostSession extends Component {
         )
     }
 
-    changeScreens = () => {
-        if(this.state.zip !== null && this.state.zip !== "") {
+    changeScreens = async () => {
+        if (this.state.zip !== null && this.state.zip !== "") {
             let zipCodePattern = /^\d{5}$|^\d{5}-\d{4}$/;
 
-            if(zipCodePattern.test(this.state.zip)) {
+            if (zipCodePattern.test(this.state.zip)) {
                 //updates the start field in the current session to true to send everyone to the swipe feature
                 firebase.firestore().collection('sessions')
-                    .doc(this.state.code).update({zip: this.state.zip, start: true, distance: this.state.distance, categories: this.state.categories})
-                    .then(() => {})
+                    .doc(this.state.code).update({
+                    zip: this.state.zip,
+                    start: true,
+                    distance: this.state.distance,
+                    categories: this.state.categories
+                })
+                    .then(() => {
+                    })
                     .catch((error) => {
                         Sentry.Native.captureException(error.message);
-                })
+                    })
 
                 //navigate to the swipe page manually
-                this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance, isHost:true, categories: this.state.categories})
+                this.props.navigation.navigate('Swipe Feature', {
+                    code: this.state.code,
+                    zip: this.state.zip,
+                    distance: this.state.distance,
+                    isHost: true,
+                    categories: this.state.categories
+                })
             } else {
                 Alert.alert("Invalid ZipCode")
             }
         } else {
-            //updates the start field in the current session to true to send everyone to the swipe feature
-            firebase.firestore().collection('sessions')
-                .doc(this.state.code).update({start: true, distance: this.state.distance, categories: this.state.categories})
-                .then(() => {})
-                .catch((error) => {
-                    Sentry.Native.captureException(error.message);
+            await this.checkLocationPermissions();
+            if (latitude !== null && longitude !== null) {
+                //updates the start field in the current session to true to send everyone to the swipe feature
+                firebase.firestore().collection('sessions')
+                    .doc(this.state.code).update({
+                    start: true,
+                    latitude: latitude,
+                    longitude: longitude,
+                    distance: this.state.distance,
+                    categories: this.state.categories
                 })
+                    .then(() => {
+                    })
+                    .catch((error) => {
+                        Sentry.Native.captureException(error.message);
+                    })
 
-            //navigate to the swipe page manually
-            this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance, isHost:true, categories: this.state.categories, latitude: latitude, longitude: longitude})
+                //navigate to the swipe page manually
+                this.props.navigation.navigate('Swipe Feature', {
+                    code: this.state.code,
+                    zip: null,
+                    distance: this.state.distance,
+                    isHost: true,
+                    categories: this.state.categories,
+                    latitude: latitude,
+                    longitude: longitude
+                })
+            }
         }
     }
 
