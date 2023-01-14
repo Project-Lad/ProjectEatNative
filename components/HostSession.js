@@ -197,7 +197,7 @@ export default class HostSession extends Component {
     checkLocationPermissions = async () => {
         let {status} = await Location.requestForegroundPermissionsAsync();
         if (status === 'denied') {
-            Alert.alert('Location Permissions', 'Please enable Location Services in your Device Settings if you wish to use your current location.');
+            Alert.alert('Location Permissions', 'Please enter a Zip Code or enable Location Services in your Device Settings if you wish to use your current location.');
         } else {
             if (this.state.isMounted) {
                 let location;
