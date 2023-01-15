@@ -34,8 +34,12 @@
       "supportsTablet": false,
       "bundleIdentifier": "Out2Eat",
       "infoPlist": {
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses your phones location data to find restaurants within your immediate area. We recommend using Allow While Using App, this ensure that we do not track your location while the app is not in use. Denying this permission will only allow you to join other peoples lobbies not host your own!",
         "NSLocationAlwaysUsageDescription": "This app uses your phones location data to find restaurants within your immediate area. We recommend using Allow While Using App, this ensure that we do not track your location while the app is not in use. Denying this permission will only allow you to join other peoples lobbies not host your own!",
-        "NSLocationAlwaysAndWhenInUseUsageDescription":"This app uses your phones location data to find restaurants within your immediate area. We recommend using Allow While Using App, this ensure that we do not track your location while the app is not in use. Denying this permission will only allow you to join other peoples lobbies not host your own!",
+        "NSLocationWhenInUseUsageDescription": "This app uses your phones location data to find restaurants within your immediate area. We recommend using Allow While Using App, this ensure that we do not track your location while the app is not in use. Denying this permission will only allow you to join other peoples lobbies not host your own!",
+        "NSCameraUsageDescription": "If you wish to provide a profile picture we need access to your camera/photo library. Giving this access will ensure you can put your own custom profile picture. We do not view or do anything with your profile picture. This is only to for customizing your profile.",
+        "NSPhotoLibraryAddUsageDescription": "If you wish to provide a profile picture we need access to your camera/photo library. Giving this access will ensure you can put your own custom profile picture. We do not view or do anything with your profile picture. This is only to for customizing your profile.",
+        "NSPhotoLibraryUsageDescription": "If you wish to provide a profile picture we need access to your camera/photo library. Giving this access will ensure you can put your own custom profile picture. We do not view or do anything with your profile picture. This is only to for customizing your profile.",
         "LSApplicationQueriesSchemes": ["out2eat"]
       }
     },
