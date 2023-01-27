@@ -87,7 +87,7 @@ export default class Login extends Component {
         return (
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
                 {/*<Image source={require('../assets/branding/out2eat_image.png')}  style={{marginBottom:'5%'}}/>*/}
-                <SVGComponent style={{marginLeft:"auto", marginRight:"auto"}}/>
+                <SVGComponent />
 
                 <TextInput
                     style={this.state.isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
