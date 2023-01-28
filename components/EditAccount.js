@@ -20,6 +20,7 @@ import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 LogBox.ignoreLogs(['Setting a timer']);
 import * as WebBrowser from 'expo-web-browser';
+import userPhoto from "../assets/user-placeholder.png";
 export default function EditAccount(){
     const navigation = useNavigation()
     const currentUser = firebase.auth().currentUser
@@ -31,6 +32,9 @@ export default function EditAccount(){
     useEffect(() => {
         firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL().then((url)=>{
             setNewProfilePicture({photoURL:url})
+        })
+        .catch(() => {
+            setNewProfilePicture({photoURL: Image.resolveAssetSource(userPhoto).uri});
         })
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
         return () => backHandler.remove()
@@ -98,7 +102,7 @@ export default function EditAccount(){
         return ref.put(blob)
     }
     const [isFocused, setIsFocused] = useState(false)
-// handlers for onPress TextInput style change
+    // handlers for onPress TextInput style change
     const handleInputFocus = () => {
         setIsFocused(true)
     }
@@ -114,9 +118,37 @@ export default function EditAccount(){
         let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
         setResult(result);
     };
+    const user = firebase.auth().currentUser.uid
     async function signOut(){
         await firebase.auth().signOut()
     }
+    async function deleteAccount(){
+        try{
+            Alert.alert(
+                'Want To Delete your account',
+                'Deleting your account will remove all your data from our database. Username, Email, Password, and Photos tied to your user account will be deleted!',
+                [
+                    {
+                        text: 'Cancel',
+                        onPress: () => '',
+                    },
+                    {
+                        text: 'OK',
+                        onPress: async () => {
+                            await firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).delete()
+                            await firebase.firestore().collection('users').doc(user).delete()
+                            await firebase.auth().currentUser.delete()
+                            //navigation.navigate('SignUp')
+                            navigation.navigate("Login");
+                        },
+                    },
+                ]
+            );
+        }catch (e) {
+            console.log(e)
+        }
+    }
+
     return(
         <View  style={{
             flex:1,
@@ -184,12 +216,20 @@ export default function EditAccount(){
                         <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Terms of Service </Text>
                         <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
                     </TouchableOpacity>
+                    <Text style={{fontSize:18, flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start" }}>{'\u00A9'} Copyright {new Date().getFullYear()}</Text>
                 </View>
-                <View style={ProfileStyles.container}>
+                <View style={{
+                    flexDirection:"row",
+                    padding:'5%',
+                    alignContent: 'center',
+                    justifyContent:'space-between'}}>
                     <TouchableOpacity onPress={signOut} style = {ProfileStyles.buttons}>
                         <Ionicons style={IconStyles.iconLeft} name="log-out-outline"/>
                         <Text style={InputStyles.buttonText}>Logout</Text>
-                        <Ionicons style={IconStyles.arrowRight} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={deleteAccount} style = {ProfileStyles.buttons}>
+                        <Ionicons style={IconStyles.iconLeft} name="close"/>
+                        <Text style={InputStyles.buttonText}>Delete Account</Text>
                     </TouchableOpacity>
                 </View>
             </View>

@@ -12,8 +12,10 @@ import "firebase/firestore";
 import {IconStyles, InputStyles, LobbyStyles, ProfileStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 import * as Sentry from "sentry-expo";
-import burgerGIF from "../assets/burger.gif";
-let unsubscribe;
+import preloaderLines from "./AnimatedSVG";
+import {AnimatedSVGPaths} from "react-native-svg-animations";
+import userPhoto from "../assets/user-placeholder.png";
+
 LogBox.ignoreLogs(['Setting a timer']);
 export default class GuestSession extends Component {
     state = {
@@ -24,15 +26,25 @@ export default class GuestSession extends Component {
         photoURL: "",
         photoFound: 0,
         categories: [],
-        isFocused:false,
+        isActive:false,
         start: false,
         zip: "0",
         distance: 1,
         latitude: 0,
         longitude: 0
     }
+
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+        let unsubscribe;
+
+        this.props.navigation.addListener('focus', () => {
+            unsubscribe = this.checkForSessionStart()
+        })
+
+        this.props.navigation.addListener('blur', () => {
+            unsubscribe();
+        })
     }
 
     componentWillUnmount() {
@@ -45,42 +57,45 @@ export default class GuestSession extends Component {
     constructor(props) {
          super(props);
 
-         let displayName = firebase.auth().currentUser.displayName
-
          this.state.code = props.route.params.code
-
-         //obtain a doc reference to the session that was input on the Connect screen
-         const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
 
          //retrieve image
          firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL()
              .then((url) => {
-                 docRef.get().then((docSnapshot) => {
-                     //if this document exists
-                     if (docSnapshot.exists) {
-                         //add the user to the document, merge so that way everyone's lobby updates properly
-                         docRef.collection('users').doc(firebase.auth().currentUser.uid).set({
-                             displayName: displayName,
-                             photoURL: url
-                         }, {merge: true}).then(() => {})
-                             .catch(() => {});
-
-                         this.checkForUsers()
-                         this.checkForSessionStart()
-                     } else {
-                         alert("Session could not be found, please re-enter code")
-                         this.props.navigation.navigate('Connect')
-                     }
-                 }).catch((error) => {
-                     Sentry.Native.captureException(error.message);
-                     alert("There was an issue connecting to the Session, please re-enter code")
-                     this.props.navigation.navigate('Connect')
-                 })
+                 this.joinSession(url);
              })
              .catch((error) => {
+                 this.joinSession("assets_userplaceholder");
                  Sentry.Native.captureException(error.message);
              })
      }
+
+    joinSession = (url) => {
+        //obtain a doc reference to the session that was input on the Connect screen
+        const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
+        let displayName = firebase.auth().currentUser.displayName
+
+        docRef.get().then((docSnapshot) => {
+            //if this document exists
+            if (docSnapshot.exists) {
+                //add the user to the document, merge so that way everyone's lobby updates properly
+                docRef.collection('users').doc(firebase.auth().currentUser.uid).set({
+                    displayName: displayName,
+                    photoURL: url
+                }, {merge: true}).then(() => {})
+                    .catch(() => {});
+
+                this.checkForUsers()
+            } else {
+                alert("Session could not be found, please re-enter code")
+                this.props.navigation.navigate('Connect')
+            }
+        }).catch((error) => {
+            Sentry.Native.captureException(error.message);
+            alert("There was an issue connecting to the Session, please re-enter code")
+            this.props.navigation.navigate('Connect')
+        })
+    }
 
     checkForUsers = () => {
         const usersRef = firebase.firestore().collection('sessions').doc(this.state.code).collection('users')
@@ -111,11 +126,11 @@ export default class GuestSession extends Component {
         const docRef = firebase.firestore().collection('sessions').doc(this.state.code)
 
         //observer is created that when .start changes to true, it navigates to the swipe feature
-        unsubscribe = docRef.onSnapshot((documentSnapshot) => {
+        let unsubscribe = docRef.onSnapshot((documentSnapshot) => {
             //if document exists
             if (documentSnapshot.exists) {
                 //and lobby has not started
-                if(documentSnapshot.data().start) {
+                if(documentSnapshot.data().start && !this.state.isActive) {
                     this.setState({
                         categories: [],
                         start: true,
@@ -129,6 +144,10 @@ export default class GuestSession extends Component {
                         this.state.categories.push(category)
                     })
 
+                    unsubscribe();
+
+                    this.setState({isActive: true})
+
                     this.props.navigation.navigate('Swipe Feature',{
                         code:this.state.code,
                         zip:this.state.zip,
@@ -139,7 +158,9 @@ export default class GuestSession extends Component {
                         longitude: this.state.longitude
                     })
                 } else {
-                    this.setState({start: false})
+                    if(!documentSnapshot.data().start){
+                        this.setState({start: false, isActive: false})
+                    }
                 }
             } else {
                 //if lobby no longer exists, display lobby closed alert and return to main page
@@ -150,6 +171,8 @@ export default class GuestSession extends Component {
         }, (error) => {
             Sentry.Native.captureException(error.message);
         })
+
+        return unsubscribe;
     }
 
     leaveLobby = () => {
@@ -164,15 +187,14 @@ export default class GuestSession extends Component {
                     text:"Yes",
                     onPress:() => {
                         this.setState({isExiting: true})
-                        unsubscribe();
                         //if yes, delete the user and navigate back to connection page
                         firebase.firestore().collection('sessions').doc(this.state.code)
                             .collection('users').doc(firebase.auth().currentUser.uid).delete()
-                            .then(this.props.navigation.navigate('Connect'))
+                            .then(setTimeout(() => {this.props.navigation.navigate('Connect')}))
                             .catch((error) => {
                                 Sentry.Native.captureException(error.message);
                                 //if an error occurs, display console log and navigate back to connect
-                                this.props.navigation.navigate('Connect')}
+                                setTimeout(() => {this.props.navigation.navigate('Connect')})}
                             )
                     }
                 }
@@ -182,8 +204,9 @@ export default class GuestSession extends Component {
 
     onShare = async () => {
         try {
+            const link = `out2eat://Connect/${this.state.code}`;
             const result = await Share.share({
-                message: `Your Lobby Code is: ${this.state.code}`
+                message: `You have been invited to Out2Eat! Open the App and enter code: ${this.state.code} or use this ${link} `
             });
             if (result.action === Share.sharedAction) {
                 if (result.activityType) {
@@ -205,14 +228,19 @@ export default class GuestSession extends Component {
             <>
                 {this.state.isExiting ?
                     <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
-                        <Image source={burgerGIF} style={{
-                            width: "100%",
-                            height: undefined,
-                            aspectRatio: 1,
-                            borderTopLeftRadius:10,
-                            borderTopRightRadius:10,
-                            overlayColor: 'white',
-                        }}/>
+                        <AnimatedSVGPaths
+                            strokeColor={"black"}
+                            duration={1500}
+                            strokeWidth={3}
+                            strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                            height={400}
+                            width={400}
+                            scale={1}
+                            delay={0}
+                            rewind={false}
+                            ds={preloaderLines}
+                            loop={false}
+                        />
                     </View>
                     :
                     <View style={LobbyStyles.container}>
@@ -227,7 +255,7 @@ export default class GuestSession extends Component {
                                     return(
                                         <View style={LobbyStyles.listContainer} key={user.id}>
                                             <Image
-                                                source={{uri:user.photoURL}}
+                                                source={user.photoURL === "assets_userplaceholder" ? {uri: Image.resolveAssetSource(userPhoto).uri} : {uri:user.photoURL}}
                                                 style={LobbyStyles.image}
                                                 loadingIndicatorSource={<ActivityIndicator size="small" color="#f97c4d"/>}
                                             />

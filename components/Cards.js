@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity,LogBox} from "react-native";
 import {useNavigation} from '@react-navigation/native'
-import burgerGIF from '../assets/burger.gif';
 import burgerJPG from '../assets/burger_image.jpg';
 import YelpBurst from '../assets/yelp_burst.png'
 import androidStar0 from '../assets/android/stars_regular_0.png'
@@ -36,6 +35,8 @@ import YelpAPI from "./YelpAPI.js";
 import * as Sentry from "sentry-expo";
 import * as WebBrowser from "expo-web-browser";
 import {FirebaseData} from "./YelpAPI.js";
+import preloaderLines from "./AnimatedSVG";
+import {AnimatedSVGPaths} from "react-native-svg-animations";
 
 class Card extends React.Component {
     constructor(props) {
@@ -124,37 +125,21 @@ class LoadingCard extends React.Component {
                         overflow: 'hidden',
                         width: "100%",
                         backgroundColor:"#fff"
-                        overlayColor: 'white',
-
-                    }}/>
-                    <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
-                        <Text style={{color:"#000", fontSize:18}}>
-                            {this.props.loadingMessage === "" ?
-                                    "Finding Local Restaurants..."
-                                :
-                                    "All out of Restaurants!"
-                            }
-                        </Text>
-                        <Text style={{color:"#000", fontSize:18}}>
-                            {this.props.loadingMessage === "" ?
-                                    "Please remember, if you are waiting a long time for the restaurants to load, there may be no restaurants nearby or your connection was lost. If this is the case, please head back to the lobby and increase the distance or establish a connection."
-                                :
-                                    this.props.loadingMessage
-                            }
-                        </Text>
-                    </View>
-                    <TouchableOpacity style={CardStyle.backButton} onPress={() => {
-                        this.updateLobby();
                     }}>
-                        <Image source={burgerGIF} style={{
-                            width: "100%",
-                            height: undefined,
-                            aspectRatio: 1,
-                            borderTopLeftRadius:10,
-                            borderTopRightRadius:10,
-                            overlayColor: 'white',
-
-                        }}/>
+                        <AnimatedSVGPaths
+                            strokeColor={"black"}
+                            duration={1500}
+                            strokeWidth={3}
+                            strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                            height={400}
+                            width={400}
+                            scale={1}
+                            delay={100}
+                            rewind={true}
+                            reverse={false}
+                            ds={preloaderLines}
+                            loop={true}
+                        />
                         <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
                             <Text style={{color:"#000", fontSize:18}}>
                                 {this.props.loadingMessage === "" ?
@@ -548,7 +533,7 @@ const Cards = (props) => {
                 }}>
                 <View style={CardStyle.modalView}>
                     <Text style={CardStyle.modalText}>Let's Eat!</Text>
-                    <Image source={{uri: `${props.card.imageURL}`}} style={CardStyle.cardImageModal}/>
+                    <Image source={props.card.imageURL === burgerJPG ? props.card.imageURL : {uri: `${props.card.imageURL}`}} style={CardStyle.cardImageModal}/>
                     <Text style={CardStyle.modalText}>The group chose {'\n' + props.card.name}</Text>
                     <Pressable style={InputStyles.buttons}
                                onPress={() => {

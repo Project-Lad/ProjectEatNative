@@ -23,56 +23,16 @@ import {InputStyles, IconStyles, LobbyStyles, CardStyle, ProfileStyles} from "./
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from "expo-location";
 import * as Sentry from "sentry-expo";
-import burgerGIF from "../assets/burger.gif";
+import preloaderLines from "./AnimatedSVG";
+import {AnimatedSVGPaths} from "react-native-svg-animations";
+import userPhoto from "../assets/user-placeholder.png";
 LogBox.ignoreLogs(['Setting a timer']);
 
 //Declares lat and long vars
-let latitude;
-let longitude;
-
-(async () => {
-    let location;
-    let locationSuccess = false;
-    let count = 0;
-    let { status } = await Location.requestForegroundPermissionsAsync();
-
-    if (status === 'denied') {
-        Alert.alert('Please enable Location Services in your Settings');
-    } else {
-        while (!locationSuccess) {
-            try {
-                location = await Location.getCurrentPositionAsync({
-                    accuracy: Location.Accuracy.Lowest,
-                });
-                locationSuccess = true;
-            } catch (ex) {
-                count++;
-
-                if (count === 500) {
-                    Alert.alert("Location Unreachable", "Your location cannot be found.", ["Cancel", "OK"])
-                    locationSuccess = true;
-                }
-            }
-        }
-    }
-
-    latitude = location.coords.latitude;
-    longitude = location.coords.longitude;
-})();
+let latitude = null;
+let longitude = null;
 
 export default class HostSession extends Component {
-    componentDidMount() {
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    }
-
-    componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-    }
-
-    handleBackButton() {
-        return true;
-    }
-
     state = {
         isLoading: true,
         isExiting: false,
@@ -97,7 +57,29 @@ export default class HostSession extends Component {
         isMexican: false,
         isMiddleEast: false,
         isSeafood: false,
-        isVegan: false
+        isVegan: false,
+        isMounted:false
+    }
+    async componentDidMount() {
+        /*
+        * back handler event listener to prevent user from swiping between screens
+        * added new State isMounted to prevent memory leak warning
+        * check users location status. If denied user can not hose a lobby unless they turn on location
+        * if location is turned on and the component did mount it will set lat and long vars
+        * set isMounted state to false when component unmounts to prevent memory leak
+        */
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+        this.setState({isMounted:true})
+        await this.awaitingLocationData()
+    }
+
+    componentWillUnmount() {
+        this.setState({isMounted:false})
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        return true;
     }
 
     onFocus() {
@@ -121,30 +103,21 @@ export default class HostSession extends Component {
             this.state.code = this.createCode();
             counter = this.checkForDocument(this.state.code);
         }
+    }
 
-        let displayName = firebase.auth().currentUser.displayName
-
+    awaitingLocationData = async () => {
+        await this.checkLocationPermissions();
         //retrieve image
         firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL()
             .then((url) => {
-                //creates session using the newly generated code
-                firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false, latitude: latitude, longitude: longitude})
-                    .then(() => {
-                        //adds the current host user to the document
-                        firebase.firestore().collection('sessions').doc(this.state.code)
-                            .collection('users').doc(firebase.auth().currentUser.uid).set({
-                            displayName: displayName,
-                            photoURL: url
-                        }).then(() => {})
-                        .catch((error) => {
-                            Sentry.Native.captureException(error.message);
-                        })
-                    }).catch((error) => {
-                    Sentry.Native.captureException(error.message);
-                })
+                this.createSession(url);
             })
             .catch((error) => {
-                Sentry.Native.captureException(error.message);
+                this.createSession("assets_userplaceholder");
+
+                if (!error.message.includes("storage/object-not-found")) {
+                    Sentry.Native.captureException(error.message);
+                }
             })
 
         this.checkForUsers()
@@ -159,6 +132,26 @@ export default class HostSession extends Component {
         }
 
         return result;
+    }
+
+    createSession = (url) => {
+        let displayName = firebase.auth().currentUser.displayName
+
+        //creates session using the newly generated code
+        firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false, latitude: latitude, longitude: longitude})
+            .then(() => {
+                //adds the current host user to the document
+                firebase.firestore().collection('sessions').doc(this.state.code)
+                    .collection('users').doc(firebase.auth().currentUser.uid).set({
+                    displayName: displayName,
+                    photoURL: url
+                }).then(() => {})
+                    .catch((error) => {
+                        Sentry.Native.captureException(error.message);
+                    })
+            }).catch((error) => {
+            Sentry.Native.captureException(error.message);
+        })
     }
 
     checkForDocument = (code) => {
@@ -201,6 +194,35 @@ export default class HostSession extends Component {
         })
     }
 
+    checkLocationPermissions = async () => {
+        let {status} = await Location.requestForegroundPermissionsAsync();
+        if (status === 'denied') {
+            Alert.alert('Location Permissions', 'Please enter a Zip Code or enable Location Services in your Device Settings if you wish to use your current location.');
+        } else {
+            if (this.state.isMounted) {
+                let location;
+                let locationSuccess = false;
+                let count = 0;
+                while (!locationSuccess) {
+                    try {
+                        location = await Location.getCurrentPositionAsync({
+                            accuracy: Location.Accuracy.Lowest,
+                        });
+                        locationSuccess = true;
+                    } catch (ex) {
+                        count++;
+                        if (count === 500) {
+                            Alert.alert("Location Unreachable", "Your location cannot be found.", ["Cancel", "OK"])
+                            locationSuccess = true;
+                        }
+                    }
+                }
+                latitude = location.coords.latitude;
+                longitude = location.coords.longitude;
+            }
+        }
+    }
+
     endLobby = () => {
         Alert.alert("End Lobby",
             "Are you sure you want to end this lobby?",
@@ -213,6 +235,7 @@ export default class HostSession extends Component {
                     text:"Yes",
                     onPress:() => {
                         this.setState({isExiting: true})
+
                         firebase.firestore()
                             .collection('sessions').doc(this.state.code)
                             .collection('users').get().then(snapshot => {
@@ -228,10 +251,10 @@ export default class HostSession extends Component {
 
                         //delete the firebase document
                         firebase.firestore().collection('sessions').doc(this.state.code).delete()
-                            .then(() => {this.props.navigation.navigate('Profile')})
+                            .then(() => {setTimeout(() => {this.props.navigation.navigate('Profile')}, 1650)})
                             .catch((error) => {
                                 Sentry.Native.captureException(error.message);
-                                this.props.navigation.navigate('Profile')
+                                setTimeout(() => {this.props.navigation.navigate('Profile')}, 1650)
                             })
                     }
                 }
@@ -239,42 +262,73 @@ export default class HostSession extends Component {
         )
     }
 
-    changeScreens = () => {
-        if(this.state.zip !== null && this.state.zip !== "") {
+    changeScreens = async () => {
+        if (this.state.zip !== null && this.state.zip !== "") {
             let zipCodePattern = /^\d{5}$|^\d{5}-\d{4}$/;
 
-            if(zipCodePattern.test(this.state.zip)) {
+            if (zipCodePattern.test(this.state.zip)) {
                 //updates the start field in the current session to true to send everyone to the swipe feature
                 firebase.firestore().collection('sessions')
-                    .doc(this.state.code).update({zip: this.state.zip, start: true, distance: this.state.distance, categories: this.state.categories})
-                    .then(() => {})
+                    .doc(this.state.code).update({
+                    zip: this.state.zip,
+                    start: true,
+                    distance: this.state.distance,
+                    categories: this.state.categories
+                })
+                    .then(() => {
+                    })
                     .catch((error) => {
                         Sentry.Native.captureException(error.message);
-                })
+                    })
 
                 //navigate to the swipe page manually
-                this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: this.state.zip, distance: this.state.distance, isHost:true, categories: this.state.categories})
+                this.props.navigation.navigate('Swipe Feature', {
+                    code: this.state.code,
+                    zip: this.state.zip,
+                    distance: this.state.distance,
+                    isHost: true,
+                    categories: this.state.categories
+                })
             } else {
                 Alert.alert("Invalid ZipCode")
             }
         } else {
-            //updates the start field in the current session to true to send everyone to the swipe feature
-            firebase.firestore().collection('sessions')
-                .doc(this.state.code).update({start: true, distance: this.state.distance, categories: this.state.categories})
-                .then(() => {})
-                .catch((error) => {
-                    Sentry.Native.captureException(error.message);
+            await this.checkLocationPermissions();
+            if (latitude !== null && longitude !== null) {
+                //updates the start field in the current session to true to send everyone to the swipe feature
+                firebase.firestore().collection('sessions')
+                    .doc(this.state.code).update({
+                    start: true,
+                    latitude: latitude,
+                    longitude: longitude,
+                    distance: this.state.distance,
+                    categories: this.state.categories
                 })
+                    .then(() => {
+                    })
+                    .catch((error) => {
+                        Sentry.Native.captureException(error.message);
+                    })
 
-            //navigate to the swipe page manually
-            this.props.navigation.navigate('Swipe Feature', {code: this.state.code, zip: null, distance: this.state.distance, isHost:true, categories: this.state.categories, latitude: latitude, longitude: longitude})
+                //navigate to the swipe page manually
+                this.props.navigation.navigate('Swipe Feature', {
+                    code: this.state.code,
+                    zip: null,
+                    distance: this.state.distance,
+                    isHost: true,
+                    categories: this.state.categories,
+                    latitude: latitude,
+                    longitude: longitude
+                })
+            }
         }
     }
 
     onShare = async () => {
         try {
+            const link = `out2eat://path/screen/Connect/${this.state.code}`;
             const result = await Share.share({
-                message: `Your Lobby Code is: ${this.state.code}`
+                message: `You have been invited to Out2Eat! Open the App and enter code: ${this.state.code} or use this ${link} `
             });
             if (result.action === Share.sharedAction) {
                 if (result.activityType) {
@@ -295,14 +349,19 @@ export default class HostSession extends Component {
             <>
                 {this.state.isExiting ?
                     <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
-                        <Image source={burgerGIF} style={{
-                            width: "100%",
-                            height: undefined,
-                            aspectRatio: 1,
-                            borderTopLeftRadius:10,
-                            borderTopRightRadius:10,
-                            overlayColor: 'white',
-                        }}/>
+                        <AnimatedSVGPaths
+                            strokeColor={"black"}
+                            duration={1500}
+                            strokeWidth={3}
+                            strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                            height={400}
+                            width={400}
+                            scale={1}
+                            delay={0}
+                            rewind={false}
+                            ds={preloaderLines}
+                            loop={false}
+                        />
                     </View>
                     :
                     <View style={LobbyStyles.container}>
@@ -518,6 +577,8 @@ export default class HostSession extends Component {
                                 style={this.state.isFocused ? InputStyles.focusZipInputStyle : InputStyles.zipInputStyle}
                                 onFocus={()=>{this.setState({isFocused:true})}}
                                 onBlur={()=>{this.setState({isFocused:false})}}
+                                maxLength={5}
+                                keyboardType={"number-pad"}
                             />
                             <TouchableOpacity style={{alignSelf:'flex-start'}} onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}>
                                 <Ionicons name="filter-sharp" size={30} color="#2e344f" />
@@ -535,7 +596,7 @@ export default class HostSession extends Component {
                                     return(
                                         <View style={LobbyStyles.listContainer} key={user.id}>
                                             <Image
-                                                source={{uri:user.photoURL}}
+                                                source={user.photoURL === "assets_userplaceholder" ? {uri: Image.resolveAssetSource(userPhoto).uri} : {uri:user.photoURL}}
                                                 style={LobbyStyles.image}
                                                 loadingIndicatorSource={<ActivityIndicator size="large" color="#f97c4d"/>}
                                             />

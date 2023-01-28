@@ -87,7 +87,8 @@ export default class Login extends Component {
         return (
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
                 {/*<Image source={require('../assets/branding/out2eat_image.png')}  style={{marginBottom:'5%'}}/>*/}
-                <SVGComponent/>
+                <SVGComponent />
+
                 <TextInput
                     style={this.state.isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                     placeholder="Email"
@@ -104,6 +105,7 @@ export default class Login extends Component {
                 <TextInput
                     style={this.state.onFocus ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                     placeholder="Password"
+                    autoComplete='password'
                     value={this.state.password}
                     onChangeText={(val) => this.updateInputVal(val, 'password')}
                     maxLength={15}

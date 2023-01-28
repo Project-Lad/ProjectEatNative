@@ -1,6 +1,6 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import SwipeFeature from "./components/SwipeFeature";
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
@@ -11,16 +11,36 @@ import HostSession from "./components/HostSession";
 import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
 import Decision from "./components/Decision";
+import Intro from "./components/Intro"
 import firebase from "./firebase";
-import {BackHandler, Image, View} from "react-native";
+import {BackHandler, View, TouchableOpacity,Text,Platform} from "react-native";
 import * as Sentry from 'sentry-expo';
-import burgerGIF from "./assets/burger.gif";
-import {ProfileStyles} from "./components/InputStyles";
+import * as Linking from 'expo-linking';
+import {IconStyles, LobbyStyles, ProfileStyles} from "./components/InputStyles";
+import preloaderLines from "./components/AnimatedSVG";
+import {AnimatedSVGPaths} from "react-native-svg-animations";
+import {Ionicons} from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-function AuthStack() {
+async function fetchLaunchData() {
+    const appData = await AsyncStorage.getItem("appLaunched");
+    let firstLaunch;
+
+    if(appData == null) {
+        firstLaunch = true;
+        await AsyncStorage.setItem("appLaunched", "false");
+    } else {
+        firstLaunch = false;
+    }
+
+    return firstLaunch
+}
+
+function AuthStack(props) {
+    const navigation = useNavigation()
     return (
         <Stack.Navigator
-            initialRouteName="Profile"
+            initialRouteName={props.firstLaunch ? "Intro" : "Profile"}
             screenOptions={{
                 headerTitleAlign: 'center',
                 headerTitleStyle: {
@@ -29,6 +49,18 @@ function AuthStack() {
                 },
                 gestureEnabled:false
             }}>
+            {props.firstLaunch && (
+                <Stack.Screen
+                    options={{ headerShown: false }}
+                    name="Intro"
+                    component={Intro}
+                />
+            )}
+            <Stack.Screen
+                name="Profile"
+                component={Profile}
+                options={{ headerShown: false,}}
+            />
             <Stack.Screen
                 name="Swipe Feature"
                 component={SwipeFeature}
@@ -44,13 +76,9 @@ function AuthStack() {
                 component={ForgotPassword}
                 options={{ headerShown: false, headerLeft: null}}
             />
+
             <Stack.Screen
-                name="Profile"
-                component={Profile}
-                options={{ headerShown: false,}}
-            />
-            <Stack.Screen
-                name="Edit Account"
+                name="EditAccount"
                 component={EditAccount}
                 options={{ title: 'Edit Account',headerTintColor:'#2e344f'}}
             />
@@ -70,7 +98,13 @@ function AuthStack() {
                 options={{
                     headerShown: true,
                     headerTitle:'',
-                    headerTintColor:'#2e344f'
+                    headerTintColor:'#2e344f',
+                    headerLeft:()=>(
+                        <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={{flexDirection:'row', alignItems:'center',justifyContent:'flex-start'}}>
+                            <Ionicons style={{color:'#2e344f', fontSize:22}}  name="arrow-back"/>
+                            {Platform.OS === 'ios'?<Text style={{color:'#2e344f', fontSize:18}}>Profile</Text>:null}
+                        </TouchableOpacity>
+                        ),
                     }}
             />
         </Stack.Navigator>
@@ -112,11 +146,27 @@ Sentry.init({
 });
 
 const Stack = createStackNavigator();
-
+let linkPrefix = Linking.createURL('path/screen/')
+const linking = {
+    prefixes: [linkPrefix],
+    config:{
+        screens:{
+            Connect:{
+                path:'Connect/:code',
+                parse: {
+                    code: (code) => `${code}`,
+                },
+            },
+        }
+    }
+}
 export default function App() {
     const [isLoggedIn, setLogIn] = useState(false)
     const [isLoading, setIsLoading] = useState(true);
+    const [firstLaunch, setFirstLaunch] = React.useState(null);
     useEffect(()=>{
+        fetchLaunchData().then(r => {setFirstLaunch(r)});
+
         firebase.auth().onAuthStateChanged(user => {
             if(user) {
                 setLogIn(true)
@@ -124,32 +174,40 @@ export default function App() {
                 setLogIn(false)
             }
         })
+
         const backAction = () => {
             return false;
         };
+
         const backHandler = BackHandler.addEventListener(
             "hardwareBackPress",
             backAction
         );
 
-        setTimeout(() => {setIsLoading(false)}, 1000)
+        setTimeout(() => {setIsLoading(false)}, 1650)
     }, []);
+
     return (
-        <NavigationContainer>
+        <NavigationContainer linking={linking}>
             {isLoading ?
                 <View style={ProfileStyles.container}>
-                    <Image source={burgerGIF} style={{
-                        width: "100%",
-                        height: undefined,
-                        aspectRatio: 1,
-                        borderTopLeftRadius:10,
-                        borderTopRightRadius:10,
-                        overlayColor: 'white',
-                    }}/>
+                    <AnimatedSVGPaths
+                        strokeColor={"black"}
+                        duration={1500}
+                        strokeWidth={3}
+                        strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                        height={400}
+                        width={400}
+                        scale={1}
+                        delay={0}
+                        rewind={false}
+                        ds={preloaderLines}
+                        loop={false}
+                    />
                 </View>
                 :
                 isLoggedIn ? (
-                    <AuthStack/>
+                    <AuthStack firstLaunch={firstLaunch}/>
                 ) : (
                     <LoginSignup/>
                 )

@@ -3,7 +3,7 @@
     "name": "Out2Eat",
     "slug": "out2eat",
     "owner": "out2eat",
-    "version": "0.0.4",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "out2eat",
@@ -31,11 +31,20 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "Out2Eat"
+      "supportsTablet": false,
+      "bundleIdentifier": "Out2Eat",
+      "infoPlist": {
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses your phones location data to find restaurants within your immediate area. We recommend using Allow While Using App, this ensure that we do not track your location while the app is not in use. Denying this permission will only allow you to join other peoples lobbies not host your own!",
+        "NSLocationAlwaysUsageDescription": "This app uses your phones location data to find restaurants within your immediate area. We recommend using Allow While Using App, this ensure that we do not track your location while the app is not in use. Denying this permission will only allow you to join other peoples lobbies not host your own!",
+        "NSLocationWhenInUseUsageDescription": "This app uses your phones location data to find restaurants within your immediate area. We recommend using Allow While Using App, this ensure that we do not track your location while the app is not in use. Denying this permission will only allow you to join other peoples lobbies not host your own!",
+        "NSCameraUsageDescription": "If you wish to provide a profile picture we need access to your camera/photo library. Giving this access will ensure you can put your own custom profile picture. We do not view or do anything with your profile picture. This is only to for customizing your profile.",
+        "NSPhotoLibraryAddUsageDescription": "If you wish to provide a profile picture we need access to your camera/photo library. Giving this access will ensure you can put your own custom profile picture. We do not view or do anything with your profile picture. This is only to for customizing your profile.",
+        "NSPhotoLibraryUsageDescription": "If you wish to provide a profile picture we need access to your camera/photo library. Giving this access will ensure you can put your own custom profile picture. We do not view or do anything with your profile picture. This is only to for customizing your profile.",
+        "LSApplicationQueriesSchemes": ["out2eat"]
+      }
     },
     "android": {
-      "versionCode": 4,
+      "versionCode": 12,
       "adaptiveIcon": {
         "foregroundImage": "./assets/androidAFI.png",
         "backgroundImage": "./assets/androidABI.png"
@@ -60,6 +69,11 @@
     "description": "",
     "plugins": [
       "sentry-expo"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "39ace77c-aecc-4b8d-ab50-d7f67a70f2d9"
+      }
+    }
   }
 }

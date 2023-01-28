@@ -30,7 +30,9 @@ import {IconStyles, InputStyles, DecisionStyle, ProfileStyles} from "./InputStyl
 import {Ionicons} from "@expo/vector-icons";
 import * as Sentry from "sentry-expo";
 import * as WebBrowser from "expo-web-browser";
-import burgerGIF from "../assets/burger.gif";
+import preloaderLines from "./AnimatedSVG";
+import {AnimatedSVGPaths} from "react-native-svg-animations";
+import burgerJPG from '../assets/burger_image.jpg';
 LogBox.ignoreLogs(['Setting a timer']);
 const Decision = ({route}) => {
     let [restaurant, setRestaurant] = useState({
@@ -69,7 +71,7 @@ const Decision = ({route}) => {
             }) //use API fetch only once to reduce amount of API calls
         }
         clearSubs()
-        setTimeout(() => {setIsLoading(false)}, 1500)
+        setTimeout(() => {setIsLoading(false)}, 1650)
     }, []);
 
     setData()   //called everytime an action occurs on the screen
@@ -224,6 +226,10 @@ const Decision = ({route}) => {
             googleURL += "+";
             counter++;
         }
+
+        if(restaurant.photos.length === 0) {
+            restaurant.photos = [burgerJPG];
+        }
     }
 
     function clearSubs() {
@@ -270,9 +276,12 @@ const Decision = ({route}) => {
                 })
         } else {
             currentSession.collection('users').doc(firebase.auth().currentUser.uid).delete()
-                .then(() => {navigation.navigate('Profile')})
+                .then(() => {
+                    navigation.navigate('Profile')
+                })
                 .catch((error) => {
                     Sentry.Native.captureException(error.message);
+                    navigation.navigate('Profile')
                 })
         }
     }
@@ -286,24 +295,24 @@ const Decision = ({route}) => {
         }
         Linking.openURL(phoneNumber).then(() => {}).catch(() => {})
     }
-    const size = 50;
-    const cat = {
-        width: size,
-        height: size
-    };
 
     return(
         <>
             {isLoading ?
                 <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
-                    <Image source={burgerGIF} style={{
-                        width: "100%",
-                        height: undefined,
-                        aspectRatio: 1,
-                        borderTopLeftRadius:10,
-                        borderTopRightRadius:10,
-                        overlayColor: 'white',
-                    }}/>
+                    <AnimatedSVGPaths
+                        strokeColor={"black"}
+                        duration={1500}
+                        strokeWidth={3}
+                        strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                        height={400}
+                        width={400}
+                        scale={1}
+                        delay={0}
+                        rewind={false}
+                        ds={preloaderLines}
+                        loop={false}
+                    />
                 </View>
                 :
                 <View style={DecisionStyle.container}>
@@ -315,7 +324,7 @@ const Decision = ({route}) => {
                             {restaurant.photos.map(image => (
                                 <Image
                                     key={image}
-                                    source={{uri: image}}
+                                    source={image === burgerJPG ? burgerJPG : {uri: image}}
                                     style={DecisionStyle.cardImages}
                                 />
                             ))}

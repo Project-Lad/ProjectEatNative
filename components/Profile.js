@@ -7,7 +7,9 @@ import {InputStyles,IconStyles,ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import SVGComponent from "./SVGLogo";
 import * as Sentry from "sentry-expo";
-import burgerGIF from "../assets/burger.gif";
+import { AnimatedSVGPaths } from "react-native-svg-animations";
+import preloaderLines from "./AnimatedSVG";
+import userPhoto from "../assets/user-placeholder.png";
 LogBox.ignoreLogs(['Setting a timer']);
 
 export default function Dashboard(){
@@ -19,14 +21,19 @@ export default function Dashboard(){
     const isFocused = useIsFocused();
     try {
         useEffect(() => {
-           firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL().then((url)=>{
-               setNewProfilePicture(url)
-           })
             firebase.firestore().collection('users').doc(user).get().then((doc) => {
                 setNewProfileUsername(doc.data().username)
+
+                if(doc.data().photoURL !== "assets_userplaceholder") {
+                    firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL().then((url)=>{
+                        setNewProfilePicture(url)
+                    })
+                } else {
+                    setNewProfilePicture(Image.resolveAssetSource(userPhoto).uri)
+                }
             })
 
-            setTimeout(() => {setIsLoading(false)}, 1000)
+            setTimeout(() => {setIsLoading(false)}, 1650)
         }, [isFocused])
     } catch (error) {
         Sentry.Native.captureException(error.message);
@@ -36,21 +43,26 @@ export default function Dashboard(){
         <>
             {isLoading ?
                 <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
-                    <Image source={burgerGIF} style={{
-                        width: '100%',
-                        height: undefined,
-                        aspectRatio: 1,
-                        borderTopLeftRadius:10,
-                        borderTopRightRadius:10,
-                        overlayColor: 'white',
-                    }}/>
+                    <AnimatedSVGPaths
+                        strokeColor={"black"}
+                        duration={1500}
+                        strokeWidth={3}
+                        strokeDashArray={[42.76482137044271, 42.76482137044271]}
+                        height={400}
+                        width={400}
+                        scale={1}
+                        delay={0}
+                        rewind={false}
+                        ds={preloaderLines}
+                        loop={false}
+                    />
                 </View>
                 :
                 <View style={ProfileStyles.container}>
                     {/*Profile Card View*/}
                     <View style={ProfileStyles.card}>
                         <View style={{flexDirection: "row", alignItems: "center", justifyContent:'space-between', position:"absolute", width:'100%'}}>
-                            <TouchableOpacity onPress={() => navigation.navigate('Edit Account')}>
+                            <TouchableOpacity onPress={() => navigation.navigate('EditAccount')}>
                                 {newProfilePicture && <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />}
                                 <View style={ProfileStyles.profilePenContainer}>
                                     <Ionicons style={ProfileStyles.profilePen} name="settings-outline"/>
@@ -62,10 +74,9 @@ export default function Dashboard(){
                         </View>
                     </View>
 
-                    <View style={{justifyContent:'space-evenly', padding:'10%'}}>
+                    <View>
                         <SVGComponent/>
                     </View>
-
                     {/*Button View*/}
                     <View style={{flexDirection:"column", justifyContent:"space-between", width:"100%"}}>
                         <TouchableOpacity onPress={() => navigation.navigate('HostSession')} style={ProfileStyles.buttons}>
