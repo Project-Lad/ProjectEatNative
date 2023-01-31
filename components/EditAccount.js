@@ -118,6 +118,10 @@ export default function EditAccount(){
         let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
         setResult(result);
     };
+    const handleFAQ = async () => {
+        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/faq');
+        setResult(result);
+    };
     const user = firebase.auth().currentUser.uid
     async function signOut(){
         await firebase.auth().signOut()
@@ -214,6 +218,11 @@ export default function EditAccount(){
                     <TouchableOpacity onPress={handleToS} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
                         <Ionicons style={{fontSize:20, alignContent:"center"}} name="document-text-outline"/>
                         <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Terms of Service </Text>
+                        <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleFAQ} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
+                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="document-text-outline"/>
+                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>FAQ</Text>
                         <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
                     </TouchableOpacity>
                     <Text style={{fontSize:18, flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start" }}>{'\u00A9'} Copyright {new Date().getFullYear()}</Text>

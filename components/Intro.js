@@ -22,32 +22,32 @@ export default function Intro(){
                 {
                     backgroundColor: '#fe6e58',
                     image: <Image source={require('../assets/burger.gif')} />,
-                    title: 'The Title',
+                    title: 'Profile Page',
                     subtitle: 'This is the subtitle that supplements the title.',
                 },
                 {
                     backgroundColor: '#999',
                     image: <Image source={require('../assets/YelpImage.png')} />,
-                    title: 'Triangle',
-                    subtitle: "Beautiful, isn't it?",
+                    title: 'Host Lobby',
+                    subtitle: "This page is for host lobby",
                 },
                 {
                     backgroundColor: '#999',
                     image: <Image source={require('../assets/YelpImage.png')} />,
-                    title: 'Triangle',
-                    subtitle: "Beautiful, isn't it?",
+                    title: 'Matched!',
+                    subtitle: "This page is for when you match",
                 },
                 {
                     backgroundColor: '#999',
                     image: <Image source={require('../assets/YelpImage.png')} />,
-                    title: 'Triangle',
-                    subtitle: "Beautiful, isn't it?",
+                    title: 'General Info and FAQ',
+                    subtitle: "Where to find general information and FAQ page",
                 },
                 {
                     backgroundColor: '#999',
                     image: <Image source={require('../assets/YelpImage.png')} />,
-                    title: 'Triangle',
-                    subtitle: "Beautiful, isn't it?",
+                    title: 'Now go Swipe!',
+                    subtitle: "Explain that now is time to go swipe",
                 }
             ]}
         />
