@@ -10,7 +10,7 @@ const SVGComponent = (props) => (
         fill="#000"
         data-name="Layer 1"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="-40 -50 425 300"
+        viewBox="-15 -50 425 300"
         {...props}
     >
         <Defs></Defs>

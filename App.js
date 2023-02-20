@@ -25,7 +25,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 async function fetchLaunchData() {
     const appData = await AsyncStorage.getItem("appLaunched");
     let firstLaunch;
-
+    //const appData=null;
     if(appData == null) {
         firstLaunch = true;
         await AsyncStorage.setItem("appLaunched", "false");
