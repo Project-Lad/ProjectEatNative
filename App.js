@@ -11,6 +11,7 @@ import HostSession from "./components/HostSession";
 import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
 import Decision from "./components/Decision";
+import Intro from "./components/Intro"
 import firebase from "./firebase";
 import {BackHandler, View, TouchableOpacity,Text,Platform} from "react-native";
 import * as Sentry from 'sentry-expo';
@@ -19,12 +20,27 @@ import {IconStyles, LobbyStyles, ProfileStyles} from "./components/InputStyles";
 import preloaderLines from "./components/AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
 import {Ionicons} from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-function AuthStack() {
+async function fetchLaunchData() {
+    const appData = await AsyncStorage.getItem("appLaunched");
+    let firstLaunch;
+    //const appData=null;
+    if(appData == null) {
+        firstLaunch = true;
+        await AsyncStorage.setItem("appLaunched", "false");
+    } else {
+        firstLaunch = false;
+    }
+
+    return firstLaunch
+}
+
+function AuthStack(props) {
     const navigation = useNavigation()
     return (
         <Stack.Navigator
-            initialRouteName="Profile"
+            initialRouteName={props.firstLaunch ? "Intro" : "Profile"}
             screenOptions={{
                 headerTitleAlign: 'center',
                 headerTitleStyle: {
@@ -33,6 +49,13 @@ function AuthStack() {
                 },
                 gestureEnabled:false
             }}>
+            {props.firstLaunch && (
+                <Stack.Screen
+                    options={{ headerShown: false }}
+                    name="Intro"
+                    component={Intro}
+                />
+            )}
             <Stack.Screen
                 name="Profile"
                 component={Profile}
@@ -140,7 +163,10 @@ const linking = {
 export default function App() {
     const [isLoggedIn, setLogIn] = useState(false)
     const [isLoading, setIsLoading] = useState(true);
+    const [firstLaunch, setFirstLaunch] = React.useState(null);
     useEffect(()=>{
+        fetchLaunchData().then(r => {setFirstLaunch(r)});
+
         firebase.auth().onAuthStateChanged(user => {
             if(user) {
                 setLogIn(true)
@@ -148,9 +174,11 @@ export default function App() {
                 setLogIn(false)
             }
         })
+
         const backAction = () => {
             return false;
         };
+
         const backHandler = BackHandler.addEventListener(
             "hardwareBackPress",
             backAction
@@ -179,7 +207,7 @@ export default function App() {
                 </View>
                 :
                 isLoggedIn ? (
-                    <AuthStack/>
+                    <AuthStack firstLaunch={firstLaunch}/>
                 ) : (
                     <LoginSignup/>
                 )

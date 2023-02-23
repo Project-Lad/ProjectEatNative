@@ -74,7 +74,7 @@ export default function Dashboard(){
                         </View>
                     </View>
 
-                    <View style={{justifyContent:'space-evenly', padding:'10%'}}>
+                    <View>
                         <SVGComponent/>
                     </View>
                     {/*Button View*/}
