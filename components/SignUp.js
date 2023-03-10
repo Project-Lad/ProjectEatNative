@@ -9,8 +9,8 @@ import {
     Image, TouchableOpacity,
     KeyboardAvoidingView, LogBox
 } from 'react-native';
-import firebase from "../firebase";
-import "firebase/firestore";
+
+import {getAuth, createUserWithEmailAndPassword, updateProfile} from "firebase/auth";
 import { useNavigation} from '@react-navigation/native'
 import {CheckBox} from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
@@ -20,6 +20,8 @@ import userPhoto from '../assets/user-placeholder.png'
 import * as WebBrowser from 'expo-web-browser';
 import * as Sentry from "sentry-expo";
 LogBox.ignoreLogs(['Setting a timer']);
+import { getStorage, ref,uploadBytes } from "firebase/storage";
+import { collection, doc, setDoc,getFirestore } from "firebase/firestore";
 export default function Signup(){
     const navigation = useNavigation()
     const [userDisplayName, setUserDisplayName] = useState()
@@ -51,7 +53,7 @@ export default function Signup(){
                 quality: 0.5,
             });
 
-            if (!result.cancelled) {
+            if (!result.canceled) {
                 setImage({photoURL:result.uri});
             }
         }
@@ -59,9 +61,14 @@ export default function Signup(){
 
     const uploadImage = async (uri, imageName) => {
         const response = await fetch(uri);
+        const storage = getStorage();
+        const auth = getAuth();
         const blob = await response.blob();
 
-        let ref = firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/`+ imageName);
+        const userProfilePic = ref(storage, `${auth.currentUser.uid}/`+ imageName);
+        uploadBytes(userProfilePic, blob).then((snapshot) => {
+            console.log('Uploaded a blob or file!');
+        });
         return ref.put(blob)
     }
 
@@ -85,47 +92,53 @@ export default function Signup(){
             Alert.alert('Password Mismatch', 'Password entered does not match original password')
         }else if( /^[^!-\/:-@\[-`{-~]+$/.test(userPassword.password)){
             Alert.alert('Password Invalid', 'Password must contain a special characters: ( ^ [ ! \ / : @ \ } ` { - ~ ] + $ )')
-        }else{
+        }else {
             setLoading({
                 isLoading: true,
             })
-            await firebase.auth().createUserWithEmailAndPassword(userEmail.email, userPassword.password)
+            const auth = getAuth();
+            const firestore = getFirestore();
+            await createUserWithEmailAndPassword(auth, userEmail.email, userPassword.password)
                 .then((cred) => {
                     //then callback with user info
-                    cred.user.updateProfile({
+                    updateProfile(cred.user, {
                         displayName: userDisplayName,
-                        photoURL:image.photoURL
-                    }).then(()=>{
-                        //then store user info in firestore
-                        firebase.firestore().collection('users').doc(cred.user.uid).set({
-                            username: userDisplayName,
-                            email: userEmail.email,
-                            photoURL:image.photoURL
-                        }).then(() => {
+                        photoURL: image.photoURL
+                    }).then(() => {
+                        const userDocRef = doc(firestore, "users", cred.user.uid);
+                        setDoc(
+                            userDocRef,
+                            {
+                                username: userDisplayName,
+                                email: userEmail.email,
+                                photoURL: image.photoURL
+                            },
+                            {merge: true}
+                        ).then(() => {
                             //upload image to firebase storage
                             uploadImage(image.photoURL, "profilePicture")
-                                .then(() => {})
+                                .then(() => {
+                                })
                                 .catch((error) => {
                                     Sentry.Native.captureException(error.message);
                                 })
-                        }).then(()=>{
+                        }).then(() => {
                             navigation.navigate('Profile')
+                        }).catch(error => {
+                            if (error.message === 'The email address is already in use by another account.') {
+                                Alert.alert('Email Exists', 'This email already exists',
+                                    [{text: 'Try Again', onPress: () => navigation.navigate('Login')}]
+                                )
+                            } else {
+                                Sentry.Native.captureException(error.message);
+                                Alert.alert('Email Invalid', 'Your email is invalid please enter it again',
+                                    [{text: 'Try Again', onPress: () => navigation.goBack()}]
+                                )
+                            }
                         })
                     })
-                }).catch(error => {
-                    if(error.message === 'The email address is already in use by another account.'){
-                        Alert.alert('Email Exists', 'This email already exists',
-                            [{text: 'Try Again', onPress:() => navigation.navigate('Login')}]
-                        )
-                    }else{
-                        Sentry.Native.captureException(error.message);
-                        Alert.alert('Email Invalid', 'Your email is invalid please enter it again',
-                            [{text: 'Try Again', onPress:() => navigation.goBack()}]
-                        )
-                    }
                 })
         }
-
     }
     if(isLoading){
         return(
