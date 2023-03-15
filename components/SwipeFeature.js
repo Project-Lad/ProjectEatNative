@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useEffect, useState} from 'react';
 import {BackHandler, StyleSheet, View, LogBox, Alert} from 'react-native';
-import firebase from "../firebase";
+import {getFirestore, doc, collection, onSnapshot} from "firebase/firestore";
 import {useNavigation} from "@react-navigation/native";
 import * as Sentry from "sentry-expo";
 LogBox.ignoreLogs(['Setting a timer']);
@@ -24,31 +24,29 @@ export default function SwipeFeature({route}) {
     });
     let [modalVisible, setModalVisible] = useState(false);
     let [resCounter, setCounter] = useState(0);
-    let currentSession = firebase.firestore().collection('sessions').doc(route.params.code)
+    const firestore = getFirestore();
+    const currentSessionRef = doc(collection(firestore, 'sessions'), route.params.code);
 
     useEffect(() => {
-        let alertUnsubscriber = currentSession.onSnapshot(docSnapshot => {
-            //if document exists
-            if (docSnapshot.exists) {
-                if(route.params.isHost === false && docSnapshot.data().start === false) {
+        let alertUnsubscriber = onSnapshot(currentSessionRef, (docSnapshot) => {
+            if (docSnapshot.exists()) {
+                const sessionData = docSnapshot.data();
+                if (route.params.isHost === false && sessionData.start === false) {
                     alertUnsubscriber();
-                    console.log("isHost is false, start is false")
-                    navigation.navigate('Guest Session', {code: route.params.code})
+                    console.log("isHost is false, start is false");
+                    navigation.navigate('Guest Session', {code: route.params.code});
                 }
             } else {
                 alertUnsubscriber();
 
-                if(!route.params.isHost) {
-                    //console.log(isLobbyActive + " <- how is this happening")
-                    //if lobby no longer exists, display lobby closed alert and return to main page
-                    Alert.alert('Lobby Closed', 'The lobby you are in has ended, returning to home')
-
-                    navigation.navigate('Profile')
+                if (!route.params.isHost) {
+                    Alert.alert('Lobby Closed', 'The lobby you are in has ended, returning to home');
+                    navigation.navigate('Profile');
                 }
             }
         }, error => {
             Sentry.Native.captureException(error.message);
-        })
+        });
 
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
         return () => {

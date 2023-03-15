@@ -26,7 +26,19 @@ import iosStar45 from '../assets/ios/regular_4_half.png'
 import iosStar5 from '../assets/ios/regular_5.png'
 
 import SwipeCards from "react-native-swipe-cards-deck";
-import firebase from "../firebase";
+import { getAuth } from "firebase/auth";
+import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    collection,
+    query,
+    where,
+    onSnapshot,
+    runTransaction,
+    updateDoc
+} from "firebase/firestore";
 import "firebase/firestore"
 import {CardStyle, IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
@@ -100,10 +112,15 @@ class LoadingCard extends React.Component {
         data = [];
         if (this.props.isHost === true) {
             //updates the start field in the current session to true to send everyone to the swipe feature
-            firebase.firestore().collection('sessions')
-                .doc(this.props.code).update({zip: null, start: false, distance: null})
+            const firestore = getFirestore();
+            const sessionDocRef = doc(firestore, "sessions", this.props.code);
+            updateDoc(sessionDocRef, {
+                zip: null,
+                start: false,
+                distance: null,
+            })
                 .then(() => {})
-                .catch(() => {})
+                .catch(() => {});
 
             //if user is the host
             this.props.navigation.navigate('HostSession', {code: this.props.code, zip: null, distance: null})
@@ -177,6 +194,10 @@ const Cards = (props) => {
     let [offset, setOffset] = useState(props.offset);
     let [calledYelp, setCalledYelp] = useState(false);
     let [loadingMessage, setLoadingMessage] = useState("");
+    const auth = getAuth()
+    const userUid = auth.currentUser.uid;
+    const firestore = getFirestore();
+
     const handleCardSet = useCallback((value) => {
         props.setCard(value)
     }, [props.setCard])
@@ -194,7 +215,7 @@ const Cards = (props) => {
     let name = [];
     let counter = 0;
     let swipeCardRef = React.createRef();
-    let usersRef = firebase.firestore().collection('sessions').doc(props.code).collection('users');
+    const usersRef = collection(doc(firestore, 'sessions', props.code), 'users');
 
     useEffect(() => {
         if(resData.length === 0) {
@@ -210,7 +231,6 @@ const Cards = (props) => {
                     setCalledYelp(true)
                 })
             }
-        } else {
         }
     }, [resData]);
 
@@ -363,19 +383,56 @@ const Cards = (props) => {
     }
 
     function handleYup(card) {
-        let match = false
-        let counter = 1
-        let restaurantID = card.id
+        let match = false;
+        let counter = 1;
+        let restaurantID = card.id;
 
-        usersRef.doc(firebase.auth().currentUser.uid).set({
-            [props.resCounter]: restaurantID
-        }, {merge: true}).then(() => {
-            handleSetCounter(props.resCounter + 1);
-        }).catch((error) => {
-            Sentry.Native.captureException(error.message);
+        setDoc(doc(usersRef, userUid), { [props.resCounter]: restaurantID }, { merge: true })
+            .then(() => {
+                handleSetCounter(props.resCounter + 1);
+            })
+            .catch((error) => {
+                Sentry.Native.captureException(error.message);
+            });
+
+        let unsub = onSnapshot(usersRef, querySnapshot => {
+            querySnapshot.forEach(documentSnapshot => {
+                if (querySnapshot.size === 1) {
+                    //sets card state and shows modal when solo
+                    handleCardSet(card);
+                    handleModalSet(true);
+                    unsub();
+                } else {
+                    //if in a group, and match is not true
+                    if (match === false) {
+                        //compare current user to documentID to reduce redundancies
+                        if (documentSnapshot.id !== userUid) {
+                            //for each restaurant in firebase data
+                            for (const restaurant in documentSnapshot.data()) {
+                                //check if document data restaurant is equal to this specific restaurant for this card
+                                if (documentSnapshot.data()[restaurant] === restaurantID) {
+                                    //add counter to amount of people
+                                    counter += 1;
+
+                                    //if the amount of people in lobby are equal to the counter
+                                    if (querySnapshot.size === counter) {
+                                        //set match to true, set card state, show modal, and console matched
+                                        match = true;
+                                        handleCardSet(card);
+                                        handleModalSet(true);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            //reset counter so when snapshot detects changes, it doesn't over count
+            counter = 1;
         });
 
-        unsub = usersRef.onSnapshot(querySnapshot => {
+        /*unsub = usersRef.onSnapshot(querySnapshot => {
             querySnapshot.forEach(documentSnapshot => {
                 if (querySnapshot.size === 1) {
                     //sets card state and shows modal when solo
@@ -386,7 +443,7 @@ const Cards = (props) => {
                     //if in a group, and match is not true
                     if (match === false) {
                         //compare current user to documentID to reduce redundancies
-                        if (documentSnapshot.id !== firebase.auth().currentUser.uid) {
+                        if (documentSnapshot.id !== userUid) {
                             //for each restaurant in firebase data
                             for (const restaurant in documentSnapshot.data()) {
                                 //check if document data restaurant is equal to this specific restaurant for this card
@@ -410,9 +467,9 @@ const Cards = (props) => {
 
             //reset counter so when snapshot detects changes, it doesn't over count
             counter = 1;
-        })
+        })*/
 
-        unsubs.push(unsub)
+        unsubs.push(unsub);
         return true;
     }
 
@@ -422,6 +479,39 @@ const Cards = (props) => {
 
     function loveIt() {
         const increment = 1;
+        const sessionRef = doc(firestore, 'sessions', props.code);
+        const matchedRef = doc(sessionRef, 'matched', props.card.id);
+
+        // get the total number of users in the session
+        const usersRef = collection(sessionRef, 'users');
+        let sessionSize;
+        const unsubscribe = onSnapshot(usersRef, (snapshot) => {
+            sessionSize = snapshot.size;
+        });
+
+        // perform the increment and update in a single transaction
+        runTransaction(firestore, async (transaction) => {
+            const docSnapshot = await transaction.get(matchedRef);
+            const counter = (docSnapshot.exists()) ? docSnapshot.data().counter : 0;
+            transaction.set(matchedRef, { counter: counter + increment }, { merge: true });
+        }).then(() => {
+            // listen for changes to the document and navigate to the final decision screen if a majority of the group wants it
+            const unsubscribe = onSnapshot(matchedRef, (docSnapshot) => {
+                if ((docSnapshot.data().counter / sessionSize) > 0.50) {
+                    unsubscribe();
+                    navigation.navigate('Final Decision', {
+                        id: docSnapshot.id,
+                        code: props.code,
+                        unsubs: unsubs,
+                        isHost: props.isHost
+                    });
+                }
+            });
+        }).catch((error) => {
+            Sentry.Native.captureException(error.message);
+        });
+
+        /*const increment = 1;
         let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
             .collection('matched').doc(props.card.id)
 
@@ -469,14 +559,47 @@ const Cards = (props) => {
                         isHost: props.isHost
                     })
                 }
-            })
+            })*/
 
-            unsubs.push(unsub)
-        })
+        unsubs.push(unsub)
     }
 
     function hateIt() {
-        //basically the same as love it minus some features
+        const sessionRef = doc(firestore, 'sessions', props.code);
+        const matchedRef = doc(sessionRef, 'matched', props.card.id);
+        const usersRef = collection(sessionRef, 'users');
+
+        let sessionSize;
+        const unsubscribe = onSnapshot(usersRef, (snapshot) => {
+            sessionSize = snapshot.size;
+        });
+
+        let unsubs = [];
+
+        getDoc(matchedRef).then((docSnapshot) => {
+            if (!docSnapshot.exists()) {
+                setDoc(matchedRef, { counter: 0 }).then(() => {
+                }).catch(() => {
+                });
+            }
+
+            const unsubMatched = onSnapshot(matchedRef, (docSnapshot) => {
+                console.log("hitting before the if statement")
+                console.log(docSnapshot.data().counter);
+                console.log(sessionSize)
+                if ((docSnapshot.data().counter / sessionSize) > 0.50) {
+                    console.log("hitting the if statement")
+                    //move screens. read document id, send that to next screen and pull data using the yelp api to
+                    //populate the screen with information
+                    data = []
+                    navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs})
+                }
+            });
+
+            unsubs.push(unsubMatched);
+        });
+
+        /*//basically the same as love it minus some features
         let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
             .collection('matched').doc(props.card.id)
 
@@ -504,7 +627,7 @@ const Cards = (props) => {
             })
 
             unsubs.push(unsub)
-        })
+        })*/
     }
 
     return (
