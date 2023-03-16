@@ -198,9 +198,11 @@ const Decision = ({route}) => {
     }
 
     function clearSubs() {
-        /*for (let i = 0; i < route.params.unsubs.length; i++) {
-            route.params.unsubs[i]()
-        }*/
+        for (let i = 0; i < route.params.unsubs.length; i++) {
+            if(route.params.unsubs[i] !== undefined) {
+                route.params.unsubs[i]()
+            }
+        }
     }
 
     //for dots under images

@@ -186,7 +186,6 @@ class LoadingCard extends React.Component {
 }
 
 let data = [];
-let unsub;
 let unsubs = [];
 
 const Cards = (props) => {
@@ -420,6 +419,7 @@ const Cards = (props) => {
                                         match = true;
                                         handleCardSet(card);
                                         handleModalSet(true);
+                                        unsub();
                                     }
                                 }
                             }
@@ -485,9 +485,11 @@ const Cards = (props) => {
         // get the total number of users in the session
         const usersRef = collection(sessionRef, 'users');
         let sessionSize;
-        const unsubscribe = onSnapshot(usersRef, (snapshot) => {
+        const unsubFromSessionSize = onSnapshot(usersRef, (snapshot) => {
             sessionSize = snapshot.size;
         });
+
+        let unsubscribeFromDocument;
 
         // perform the increment and update in a single transaction
         runTransaction(firestore, async (transaction) => {
@@ -496,9 +498,10 @@ const Cards = (props) => {
             transaction.set(matchedRef, { counter: counter + increment }, { merge: true });
         }).then(() => {
             // listen for changes to the document and navigate to the final decision screen if a majority of the group wants it
-            const unsubscribe = onSnapshot(matchedRef, (docSnapshot) => {
+            unsubscribeFromDocument = onSnapshot(matchedRef, (docSnapshot) => {
                 if ((docSnapshot.data().counter / sessionSize) > 0.50) {
-                    unsubscribe();
+                    unsubscribeFromDocument();
+                    unsubFromSessionSize();
                     navigation.navigate('Final Decision', {
                         id: docSnapshot.id,
                         code: props.code,
@@ -561,7 +564,8 @@ const Cards = (props) => {
                 }
             })*/
 
-        unsubs.push(unsub)
+        unsubs.push(unsubFromSessionSize)
+        unsubs.push(unsubscribeFromDocument);
     }
 
     function hateIt() {
@@ -570,11 +574,11 @@ const Cards = (props) => {
         const usersRef = collection(sessionRef, 'users');
 
         let sessionSize;
-        const unsubscribe = onSnapshot(usersRef, (snapshot) => {
+        const unsubFromSessionSize = onSnapshot(usersRef, (snapshot) => {
             sessionSize = snapshot.size;
         });
 
-        let unsubs = [];
+        let unsubscribeFromDocument;
 
         getDoc(matchedRef).then((docSnapshot) => {
             if (!docSnapshot.exists()) {
@@ -583,20 +587,19 @@ const Cards = (props) => {
                 });
             }
 
-            const unsubMatched = onSnapshot(matchedRef, (docSnapshot) => {
+            unsubscribeFromDocument = onSnapshot(matchedRef, (docSnapshot) => {
                 console.log("hitting before the if statement")
                 console.log(docSnapshot.data().counter);
                 console.log(sessionSize)
                 if ((docSnapshot.data().counter / sessionSize) > 0.50) {
-                    console.log("hitting the if statement")
+                    unsubscribeFromDocument();
+                    unsubFromSessionSize();
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
                     data = []
                     navigation.navigate('Final Decision', {id: docSnapshot.id, code: props.code, unsubs: unsubs})
                 }
             });
-
-            unsubs.push(unsubMatched);
         });
 
         /*//basically the same as love it minus some features
@@ -628,6 +631,9 @@ const Cards = (props) => {
 
             unsubs.push(unsub)
         })*/
+
+        unsubs.push(unsubscribeFromDocument);
+        unsubs.push(unsubFromSessionSize);
     }
 
     return (

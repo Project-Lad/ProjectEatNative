@@ -157,22 +157,30 @@ export default class HostSession extends Component {
     createSession = (url) => {
         const firestore = getFirestore();
         const auth = getAuth();
+        const sessionsRef = collection(firestore, 'sessions');
+        const sessionRef = doc(sessionsRef, this.state.code);
+        const usersRef = collection(sessionRef, 'users');
+        const usersDocRef = doc(usersRef, auth.currentUser.uid);
 
-        let displayName = auth.currentUser.displayName
+        let displayName = auth.currentUser.displayName;
 
         //creates session using the newly generated code
-        setDoc(doc(collection(firestore, 'sessions'), this.state.code), {zip: null, start: false, latitude: latitude, longitude: longitude})
+        setDoc(sessionRef, {zip: null, start: false, latitude: latitude, longitude: longitude})
             .then(() => {
                 //adds the current host user to the document
-                setDoc(doc(collection(doc(collection(firestore, 'sessions'), this.state.code), 'users'), auth.currentUser.uid), {
+                setDoc(usersDocRef, {
                     displayName: displayName,
                     photoURL: url
-                }).then(() => {}).catch((error) => {
-                    Sentry.Native.captureException(error.message);
-                });
-            }).catch((error) => {
-            Sentry.Native.captureException(error.message);
-        });
+                })
+                    .then(() => {})
+                    .catch((error) => {
+                        Sentry.Native.captureException(error.message);
+                    });
+            })
+            .catch((error) => {
+                Sentry.Native.captureException(error.message);
+            }
+        );
 
         /*//creates session using the newly generated code
         firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false, latitude: latitude, longitude: longitude})
@@ -677,7 +685,13 @@ export default class HostSession extends Component {
                                             onPress: () => {},
                                             style: "cancel"
                                         },
-                                        { text: "Let's Eat!!", onPress: () => {this.changeScreens()} }
+                                        {
+                                            text: "Let's Eat!!",
+                                            onPress: () => {
+                                                console.log("hitting the start button");
+                                                this.changeScreens()
+                                            }
+                                        }
                                     ],
                                     {cancelable: true}
                                 )
