@@ -54,7 +54,7 @@ export default function Signup(){
             });
 
             if (!result.canceled) {
-                setImage({photoURL:result.uri});
+                setImage({photoURL:result.assets[0].uri});
             }
         }
     };

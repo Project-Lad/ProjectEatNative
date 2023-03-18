@@ -96,9 +96,9 @@ export default function EditAccount(){
 
             if (!result.canceled) {
                 //uploads the image to firebase storage
-                uploadImage(result.uri, "profilePicture")
+                uploadImage(result.assets[0].uri, "profilePicture")
                     .then(setTimeout(() => {
-                        setNewProfilePicture({photoURL:result.uri})
+                        setNewProfilePicture({photoURL:result.assets[0].uri})
                         setUpdateDisable(false)
                     },100))
                     .catch((error) => {
