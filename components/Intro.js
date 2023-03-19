@@ -21,36 +21,54 @@ export default function Intro(){
                 },
                 {
                     backgroundColor: 'rgba(46,52,79,0.85)',
-                    image: <Image source={require('../assets/burger.gif')} style={{width:'85%'}}/>,
+                    image: <Image source={require('../assets/Onboarding/profile-onboard.png')} style={{width:"75%",height:450, borderRadius:15}}/>,
                     title: 'Profile Screen',
+                    subtitle: <View>
+                        <Text style={{color:"#fff", fontSize:16}}>1. Testing</Text>
+                        <Text style={{color:"#fff", fontSize:16}}>2. Testing</Text>
+                        <Text style={{color:"#fff", fontSize:16}}>3. Testing</Text>
+                    </View>,
+                },
+                {
+                    backgroundColor: 'rgba(46,52,79,0.65)',
+                    title: 'Host Screen',
+                    image: <Image source={require('../assets/Onboarding/host-onboard.png')} style={{width:"75%",height:450, borderRadius:15}}/>,
+                    subtitle: <View>
+                        <Text style={{color:"#fff", fontSize:16}}>1. Testing</Text>
+                        <Text style={{color:"#fff", fontSize:16}}>2. Testing</Text>
+                        <Text style={{color:"#fff", fontSize:16}}>3. Testing</Text>
+                        <Text style={{color:"#fff", fontSize:16}}>4. Testing</Text>
+                    </View>,
+                },
+                {
+                    backgroundColor: 'rgba(249,124,77,0.65)',
+                    title: 'Swipe Screen',
+                    image: <Image source={require('../assets/Onboarding/swipeCard-onboard.png')} style={{width:"75%",height:450,borderRadius:15}}/>,
                     subtitle: <View>
                         <Text style={{color:"#fff", fontSize:16}}>1. Testing</Text>
                         <Text style={{color:"#fff", fontSize:16}}>2. Testing</Text>
                     </View>,
                 },
                 {
-                    backgroundColor: 'rgba(46,52,79,0.65)',
-                    image: <Image source={require('../assets/burger.gif')} style={{width:'85%'}}/>,
-                    title: 'Host Screen',
-                    subtitle: 'This is the subtitle that supplements the title.',
-                },
-                {
-                    backgroundColor: 'rgba(249,124,77,0.65)',
-                    image: <Image source={require('../assets/burger.gif')} style={{width:'85%'}}/>,
-                    title: 'Swipe Screen',
-                    subtitle: 'This is the subtitle that supplements the title.',
-                },
-                {
                     backgroundColor: 'rgba(249,124,77,.85)',
-                    image: <Image source={require('../assets/burger.gif')} style={{width:'85%'}}/>,
                     title: 'Match Modal',
-                    subtitle: 'This is the subtitle that supplements the title.',
+                    image: <Image source={require('../assets/Onboarding/matchModal-onboard.png')} style={{width:"85%",height:450, borderRadius:15}}/>,
+                    subtitle: <View>
+                        <Text style={{color:"#fff", fontSize:16}}>1. Testing</Text>
+                        <Text style={{color:"#fff", fontSize:16}}>2. Testing</Text>
+                        <Text style={{color:"#fff", fontSize:16}}>3. Testing</Text>
+                    </View>,
                 },
                 {
                     backgroundColor: 'rgba(249,124,77,1)',
-                    image: <Image source={require('../assets/burger.gif')} style={{width:'85%'}}/>,
                     title: 'Tutorial Finished',
-                    subtitle: 'This is the subtitle that supplements the title.',
+                    image: <Image source={require('../assets/Onboarding/decision-onboard.png')} style={{width:"85%",height:450, borderRadius:15}}/>,
+                    subtitle: <View>
+                        <Text style={{color:"#fff", fontSize:16}}>1. Testing</Text>
+                        <Text style={{color:"#fff", fontSize:16}}>2. Testing</Text>
+                        <Text style={{color:"#fff", fontSize:16}}>3. Testing</Text>
+                        <Text style={{color:"#fff", fontSize:16}}>4. Testing</Text>
+                    </View>,
                 }
             ]}
         />
