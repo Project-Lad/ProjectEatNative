@@ -1,5 +1,5 @@
 import React, {useRef} from "react";
-import {Image, View, Text}from "react-native";
+import {Image, View, Text, ScrollView}from "react-native";
 import Onboarding from "react-native-onboarding-swiper";
 import SVGComponent from "./SVGLogo";
 import {useNavigation} from "@react-navigation/native";
@@ -23,22 +23,28 @@ export default function Intro(){
                     backgroundColor: 'rgba(46,52,79,1)',
                     image: <Image source={require('../assets/Onboarding/profile-onboard.png')} style={{width:"75%",height:450, borderRadius:15}}/>,
                     title: 'Home Screen',
-                    subtitle: <View>
-                        <Text style={{color:"#fff", fontSize:16}}>1. This is where your username is displayed along with the profile picture which can be tapped to go to your settings.</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>2. This is where you will create a lobby for your friends to join to find restaurants!</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>3. This is where you tap to join your friend's lobbies!</Text>
-                    </View>,
+                    subtitle:
+                        <View style={{width:"95%"}}>
+                            <ScrollView style={{ height:150}}>
+                                <Text style={{color:"#fff", fontSize:16}}>1. Tap on your profile pic to go to your settings.</Text>
+                                <Text style={{color:"#fff", fontSize:16}}>2. Tap on Create Lobby for your friends to join to find restaurants!</Text>
+                                <Text style={{color:"#fff", fontSize:16}}>3. Tap on Join Lobby to join your friend's!</Text>
+                            </ScrollView>
+                        </View>,
                 },
                 {
                     backgroundColor: 'rgba(46,52,79,0.85)',
                     image: <Image source={require('../assets/Onboarding/editAccount-onboard.png')} style={{width:"75%",height:450, borderRadius:15}}/>,
                     title: 'Edit Account Screen',
-                    subtitle: <View>
-                        <Text style={{color:"#fff", fontSize:16}}>1. This is where you can change your profile picture. Tap on the camera to change your photo, and tap "Update" to change it!</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>2. You can change your username at any point. Just edit the name, and tap "Update" to change your username!</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>3. This is where important documents can be found. Here you can find our Privacy Policy and our Terms of Service. Any documents that need to be added in the future can be found here.</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>4. Here you can logout by tapping the button.</Text>
-                    </View>,
+                    subtitle:
+                        <View style={{width:"95%"}}>
+                            <ScrollView style={{ height:150}}>
+                                <Text style={{color:"#fff", fontSize:16}}>1. To update your profile picture Tap on the camera to change your photo, and tap "Update" to change it!</Text>
+                                <Text style={{color:"#fff", fontSize:16}}>2. You can change your username at any point. Just edit the name, and tap "Update" to change your username!</Text>
+                                <Text style={{color:"#fff", fontSize:16}}>3. This is where important documents can be found. Here you can find our Privacy Policy and our Terms of Service. Any documents that need to be added in the future can be found here.</Text>
+                                <Text style={{color:"#fff", fontSize:16}}>4. Here you can logout by tapping the button.</Text>
+                            </ScrollView>
+                        </View>,
                 },
                 {
                     backgroundColor: 'rgba(46,52,79,0.65)',
