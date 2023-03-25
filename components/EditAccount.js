@@ -22,6 +22,7 @@ import { Ionicons } from '@expo/vector-icons';
 LogBox.ignoreLogs(['Setting a timer']);
 import * as WebBrowser from 'expo-web-browser';
 import userPhoto from "../assets/user-placeholder.png";
+import * as MailComposer from "expo-mail-composer";
 export default function EditAccount(){
     const navigation = useNavigation()
     const auth = getAuth()
@@ -33,6 +34,7 @@ export default function EditAccount(){
     const [newProfilePicture, setNewProfilePicture] = useState({photoURL:null})
     const [result, setResult] = useState(null);
     const [updateDisable, setUpdateDisable] = useState(true)
+
 
     useEffect(() => {
         const profilePictureRef = ref(storage, `${userUid}/profilePicture`);
@@ -160,7 +162,16 @@ export default function EditAccount(){
             console.log(e)
         }
     }
+    //make me a function that uses Mailcomposer to send an email to the support email
+    async function sendEmail(){
+        //send email to support email
+        await MailComposer.composeAsync({
+          recipients: [`feedback@out2eat.app`],
+            subject: 'Out2Eat Support',
+            body: 'Hello Out2Eat Support Team'
 
+        })
+    }
     return(
         <View  style={{
             flex:1,
@@ -228,7 +239,12 @@ export default function EditAccount(){
                         <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Terms of Service </Text>
                         <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
                     </TouchableOpacity>
-                    <Text style={{fontSize:18, flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start" }}>{'\u00A9'} Copyright {new Date().getFullYear()}</Text>
+
+                    <TouchableOpacity onPress={sendEmail} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
+                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="bug-outline"/>
+                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Report Bugs </Text>
+                        <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
+                    </TouchableOpacity>
                 </View>
                 <View style={{
                     flexDirection:"row",
@@ -244,6 +260,7 @@ export default function EditAccount(){
                         <Text style={InputStyles.buttonText}>Delete Account</Text>
                     </TouchableOpacity>
                 </View>
+                <Text style={{fontSize:18, textAlign:'center',paddingTop:'1%'}}>{'\u00A9'} Copyright {new Date().getFullYear()}</Text>
             </View>
         </View>
     )
