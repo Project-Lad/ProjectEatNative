@@ -1,5 +1,5 @@
 import React, {useRef} from "react";
-import {Image, View, Text, ScrollView}from "react-native";
+import {Image, View, Text, ScrollView, Dimensions} from "react-native";
 import Onboarding from "react-native-onboarding-swiper";
 import SVGComponent from "./SVGLogo";
 import {useNavigation} from "@react-navigation/native";
@@ -12,6 +12,8 @@ export default function Intro(){
             ref={onboardingRef}
             onSkip={() => navigation.navigate('Profile')}
             onDone={() => navigation.navigate('Profile')}
+            imageContainerStyles={{paddingBottom: 15, marginTop:5}}
+            titleStyles={{color: 'white', fontSize: 24, fontWeight: 'bold', padding: 0, margin: 0}}
             pages={[
                 {
                     backgroundColor: '#2e344f',
@@ -21,71 +23,98 @@ export default function Intro(){
                 },
                 {
                     backgroundColor: 'rgba(46,52,79,1)',
-                    image: <Image source={require('../assets/Onboarding/profile-onboard.png')} style={{width:"75%",height:450, borderRadius:15}}/>,
-                    title: 'Home Screen',
+                    image:
+                        <View style={{width:'95%', alignItems:'center'}}>
+                            <Image source={require('../assets/Onboarding/profile-onboard.png')} style={{aspectRatio:3/4, resizeMode:'contain',height:400}}/>
+                        </View>,
+                    title: 'Profile Screen',
                     subtitle:
-                        <View style={{width:"95%"}}>
-                            <ScrollView style={{ height:150}}>
-                                <Text style={{color:"#fff", fontSize:16}}>1. Tap on your profile pic to go to your settings.</Text>
-                                <Text style={{color:"#fff", fontSize:16}}>2. Tap on Create Lobby for your friends to join to find restaurants!</Text>
-                                <Text style={{color:"#fff", fontSize:16}}>3. Tap on Join Lobby to join your friend's!</Text>
+                        <View style={{height:200}}>
+                            <ScrollView>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>1. Tap on your profile pic to go to your settings.</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>2. Tap on Create Lobby for your friends to join to find restaurants!</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>3. Tap on Join Lobby to join your friend's!</Text>
                             </ScrollView>
                         </View>,
                 },
                 {
                     backgroundColor: 'rgba(46,52,79,0.85)',
-                    image: <Image source={require('../assets/Onboarding/editAccount-onboard.png')} style={{width:"75%",height:450, borderRadius:15}}/>,
+                    image: <View style={{width:'95%', alignItems:'center'}}>
+                        <Image source={require('../assets/Onboarding/editAccount-onboard.png')} style={{aspectRatio:3/4, resizeMode:'contain',height:400}}/>
+                    </View>,
                     title: 'Edit Account Screen',
                     subtitle:
                         <View style={{width:"95%"}}>
-                            <ScrollView style={{ height:150}}>
-                                <Text style={{color:"#fff", fontSize:16}}>1. To update your profile picture Tap on the camera to change your photo, and tap "Update" to change it!</Text>
-                                <Text style={{color:"#fff", fontSize:16}}>2. You can change your username at any point. Just edit the name, and tap "Update" to change your username!</Text>
-                                <Text style={{color:"#fff", fontSize:16}}>3. This is where important documents can be found. Here you can find our Privacy Policy and our Terms of Service. Any documents that need to be added in the future can be found here.</Text>
-                                <Text style={{color:"#fff", fontSize:16}}>4. Here you can logout by tapping the button.</Text>
+                            <ScrollView style={{ height:200}}>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>1. To update your profile picture Tap on the camera icon, and tap "Update" to change it!</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>2. Tap on your username to modify, and tap "Update" to change it!</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>3. Here you will find our Terms of Service and Privacy Policy</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>4. Press Logout to be signed out of the app.</Text>
+                            </ScrollView>
+                        </View>,
+                },{
+                    backgroundColor: 'rgba(46,52,79,0.65)',
+                    title: 'Lobby Host Screen',
+                    image:
+                        <View style={{width:'95%', alignItems:'center'}}>
+                            <Image source={require('../assets/Onboarding/host-onboard.png')} style={{aspectRatio:3/4, resizeMode:'contain',height:400}}/>
+                        </View>,
+                    subtitle:
+                        <View style={{width:"95%"}}>
+                            <ScrollView style={{ height:200}}>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>1. Filter by cuisine and/or zipcode. Empty zipcode uses current location.</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>2. Friends join here. Click start when everyone's here.</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>3. Distance slider for restaurants. Up to 20 miles!</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>4. Share this code for friends to join you!</Text>
                             </ScrollView>
                         </View>,
                 },
                 {
-                    backgroundColor: 'rgba(46,52,79,0.65)',
-                    title: 'Lobby Host Screen',
-                    image: <Image source={require('../assets/Onboarding/host-onboard.png')} style={{width:"75%",height:450, borderRadius:15}}/>,
-                    subtitle: <View>
-                        <Text style={{color:"#fff", fontSize:16}}>1. This is where you will enter your zipcode, but you may leave it blank to use your current location! You will also see a filter button on the right-hand side!</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>2. This is where your friends will load when they join. When everyone appears here, click start at the bottom!</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>3. This is your distance slider to find restaurants within that specified distance. This reached up to 20 miles!</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>4. This is where your share code is located. This is the code your friends will enter when they want to join you!</Text>
-                    </View>,
-                },
-                {
                     backgroundColor: 'rgba(249,124,77,0.65)',
-                    title: 'Swipe Screen',
-                    image: <Image source={require('../assets/Onboarding/swipeCard-onboard.png')} style={{width:"75%",height:450,borderRadius:15}}/>,
-                    subtitle: <View>
-                        <Text style={{color:"#fff", fontSize:16}}>1. This is the restaurant. This displays information directly from Yelp! This will show you the distance, the address, the review count, and you can click on the Yelp! logo to go right to their Yelp! page.</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>2. This is where you make your selection. You may select thumbs up or thumbs down based on if you want to go here. You may also swipe left for dislike, or right if you like them.</Text>
-                    </View>,
-                },
-                {
+                    title:  'Swipe Screen',
+                    image:
+                        <View style={{width:'95%', alignItems:'center'}}>
+                            <Image source={require('../assets/Onboarding/swipeCard-onboard.png')} style={{aspectRatio:3/4, resizeMode:'contain',height:400}}/>
+                        </View>,
+                    subtitle:
+                        <View style={{ width:"95%"}}>
+                            <ScrollView style={{ height:200}}>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>1. Yelp information for this restaurant: distance, address, review count, and clickable logo for their Yelp page.</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>2. Here's where you choose: thumbs up/down to indicate interest, or swipe left/right for dislike/like</Text>
+                            </ScrollView>
+                        </View>,
+                },                {
                     backgroundColor: 'rgba(249,124,77,.85)',
                     title: 'Match Pop-Up',
-                    image: <Image source={require('../assets/Onboarding/matchModal-onboard.png')} style={{width:"85%",height:450, borderRadius:15}}/>,
-                    subtitle: <View>
-                        <Text style={{color:"#fff", fontSize:16}}>1. This shows you the restaurant that the group chose. This will only appear when everyone likes the restaurant. Here you make the final decision.</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>2. If you officially want to go to this restaurant, you tap on "Love It!" to finalize your vote.</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>3. If you do not want to go to this restaurant, you hit "Keep Swiping". However, the votes are tallied by majority rule! So when majority of people vote "Love It!", the decision will be made!</Text>
-                    </View>,
+                    image:
+                        <View style={{width:'95%', alignItems:'center'}}>
+                            <Image source={require('../assets/Onboarding/matchModal-onboard.png')} style={{aspectRatio:3/4, resizeMode:'contain',height:400}}/>
+                        </View>,
+                    subtitle:
+                        <View style={{ width:"95%"}}>
+                            <ScrollView style={{ height:200}}>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>1. Group's chosen restaurant that everyone swiped right on.</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>2. To confirm, tap "Love It!" if you want to choose this restaurant.</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>3. Select "Keep Swiping" to pass on the restaurant. Majority rule determines the final decision.</Text>
+                            </ScrollView>
+                        </View>,
                 },
                 {
                     backgroundColor: 'rgba(249,124,77,1)',
                     title: 'Final Decision',
-                    image: <Image source={require('../assets/Onboarding/decision-onboard.png')} style={{width:"85%",height:450, borderRadius:15}}/>,
-                    subtitle: <View>
-                        <Text style={{color:"#fff", fontSize:16}}>1. This shows you all of the information of the establishment. This will show address, rating, review count, Yelp! logo (which is still clickable to see all information), and multiple pictures that you can swipe through!</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>2. This button appears when you are able to call the restaurant using the phone number listed on Yelp!</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>3. You can click here to go right to Google Maps and find this restaurant to chart your destination.</Text>
-                        <Text style={{color:"#fff", fontSize:16}}>4. Tap here when you are finished to leave the lobby!</Text>
-                    </View>,
+                    image:
+                        <View style={{width:'95%', alignItems:'center'}}>
+                            <Image source={require('../assets/Onboarding/decision-onboard.png')} style={{aspectRatio:3/4, resizeMode:'contain',height:400}}/>
+                        </View>,
+                    subtitle:
+                        <View style={{ width:"95%"}}>
+                            <ScrollView style={{ height:200}}>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>1. Explore establishment details. Tap the Yelp! logo for additional information</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>2. Call the restaurant using the phone number listed on Yelp! by tapping the button provided.</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>3. Click here to quickly access Google Maps and navigate to the restaurant.</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>4. Tap here to leave the lobby!</Text>
+                            </ScrollView>
+                        </View>,
                 }
             ]}
         />
