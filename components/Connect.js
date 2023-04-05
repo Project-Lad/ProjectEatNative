@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import {Alert, TextInput, TouchableOpacity, Text, BackHandler, Platform, KeyboardAvoidingView,LogBox} from 'react-native';
-import "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import {IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";

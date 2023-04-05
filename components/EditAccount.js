@@ -11,8 +11,9 @@ import {
     BackHandler,
     LogBox
 } from 'react-native';
-import firebase from "../firebase";
-import "firebase/firestore";
+import {getStorage, ref, getDownloadURL, deleteObject, uploadBytes} from "firebase/storage";
+import { getAuth,updateProfile } from "firebase/auth";
+import {getFirestore, doc, setDoc, deleteDoc, getDoc} from "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
 import * as Sentry from "sentry-expo";
@@ -21,49 +22,65 @@ import { Ionicons } from '@expo/vector-icons';
 LogBox.ignoreLogs(['Setting a timer']);
 import * as WebBrowser from 'expo-web-browser';
 import userPhoto from "../assets/user-placeholder.png";
+import * as MailComposer from "expo-mail-composer";
 export default function EditAccount(){
     const navigation = useNavigation()
-    const currentUser = firebase.auth().currentUser
+    const auth = getAuth()
+    const currentUser = auth.currentUser;
+    const storage = getStorage();
+    const userUid = auth.currentUser.uid;
+    const firestore = getFirestore();
     const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName})
     const [newProfilePicture, setNewProfilePicture] = useState({photoURL:null})
     const [result, setResult] = useState(null);
     const [updateDisable, setUpdateDisable] = useState(true)
 
+
     useEffect(() => {
-        firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL().then((url)=>{
-            setNewProfilePicture({photoURL:url})
-        })
-        .catch(() => {
-            setNewProfilePicture({photoURL: Image.resolveAssetSource(userPhoto).uri});
-        })
-        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
-        return () => backHandler.remove()
-    }, [])
+        const profilePictureRef = ref(storage, `${userUid}/profilePicture`);
+        getDownloadURL(profilePictureRef)
+            .then((url) => {
+                setNewProfilePicture({ photoURL: url });
+            })
+            .catch(() => {
+                setNewProfilePicture({
+                    photoURL: Image.resolveAssetSource(userPhoto).uri,
+                });
+            });
+
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            () => true
+        );
+        return () => backHandler.remove();
+    }, []);
 
     function userName() {
-        //updates users displayName
-        firebase.auth().currentUser.updateProfile({
-            displayName:newProfileUsername.displayName
-        }).then(()=>{
-            //Then we update user profile picture
-            firebase.auth().currentUser.updateProfile({
-                photoURL:newProfilePicture.photoURL
-
-            }).then(()=>{
-                //then update the users firebase document and fields
-                firebase.firestore().collection('users').doc(currentUser.uid).set({
-                    username: newProfileUsername.displayName,
-                    photoURL:newProfilePicture.photoURL
-                },{merge:true})
-            }).then(()=>{
-                //Then we navigate back to Profile screen
-                navigation.navigate('Profile')
-            })
-        }).catch(function(error) {
-            //Catch any errors
-            alert(error)
-            Sentry.Native.captureException(error.message);
+        updateProfile(currentUser, {
+            displayName:newProfileUsername.displayName,
+            photoURL: newProfilePicture.photoURL
         })
+            .then(() => {
+                // updates user profile picture
+                // updates user document in Firestore
+                const userDocRef = doc(firestore, "users", currentUser.uid);
+                setDoc(
+                    userDocRef,
+                    {
+                        username: newProfileUsername.displayName,
+                        photoURL: newProfilePicture.photoURL,
+                    },
+                    {merge: true}
+                ).then(r =>{
+                    // navigate back to Profile screen
+                    navigation.navigate("Profile");
+                })
+            })
+            .catch((error) => {
+                // catch any errors
+                alert(error);
+                Sentry.Native.captureException(error.message);
+            });
     }
     const pickImage = async () => {
 
@@ -79,11 +96,11 @@ export default function EditAccount(){
                 quality: 0.5,
             });
 
-            if (!result.cancelled) {
+            if (!result.canceled) {
                 //uploads the image to firebase storage
-                uploadImage(result.uri, "profilePicture")
+                uploadImage(result.assets[0].uri, "profilePicture")
                     .then(setTimeout(() => {
-                        setNewProfilePicture({photoURL:result.uri})
+                        setNewProfilePicture({photoURL:result.assets[0].uri})
                         setUpdateDisable(false)
                     },100))
                     .catch((error) => {
@@ -98,8 +115,8 @@ export default function EditAccount(){
         const response = await fetch(uri);
         const blob = await response.blob();
 
-        let ref = firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/`+ imageName);
-        return ref.put(blob)
+        const imageRef = ref(storage, `${currentUser.uid}/${imageName}`);
+        return uploadBytes(imageRef, blob);
     }
     const [isFocused, setIsFocused] = useState(false)
     // handlers for onPress TextInput style change
@@ -118,9 +135,8 @@ export default function EditAccount(){
         let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
         setResult(result);
     };
-    const user = firebase.auth().currentUser.uid
     async function signOut(){
-        await firebase.auth().signOut()
+        await auth.signOut()
     }
     async function deleteAccount(){
         try{
@@ -135,11 +151,9 @@ export default function EditAccount(){
                     {
                         text: 'OK',
                         onPress: async () => {
-                            await firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).delete()
-                            await firebase.firestore().collection('users').doc(user).delete()
-                            await firebase.auth().currentUser.delete()
-                            //navigation.navigate('SignUp')
-                            navigation.navigate("Login");
+                            await deleteObject(ref(storage, `${currentUser.uid}/profilePicture`));
+                            await deleteDoc(doc(firestore, 'users', currentUser.uid));
+                            await auth.currentUser.delete();
                         },
                     },
                 ]
@@ -148,7 +162,16 @@ export default function EditAccount(){
             console.log(e)
         }
     }
+    //make me a function that uses Mailcomposer to email the support email
+/*    async function sendEmail(){
+        //send email to support email
+        await MailComposer.composeAsync({
+          recipients: [`feedback@out2eat.app`],
+            subject: 'Out2Eat Support',
+            body: 'Hello Out2Eat Support Team'
 
+        })
+    }*/
     return(
         <View  style={{
             flex:1,
@@ -216,7 +239,12 @@ export default function EditAccount(){
                         <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Terms of Service </Text>
                         <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
                     </TouchableOpacity>
-                    <Text style={{fontSize:18, flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start" }}>{'\u00A9'} Copyright {new Date().getFullYear()}</Text>
+
+{/*                    <TouchableOpacity onPress={sendEmail} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
+                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="chatbox-ellipses-outline"/>
+                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Provide Feedback </Text>
+                        <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
+                    </TouchableOpacity>*/}
                 </View>
                 <View style={{
                     flexDirection:"row",
@@ -232,6 +260,7 @@ export default function EditAccount(){
                         <Text style={InputStyles.buttonText}>Delete Account</Text>
                     </TouchableOpacity>
                 </View>
+                <Text style={{fontSize:18, textAlign:'center',paddingTop:'1%'}}>{'\u00A9'} Copyright {new Date().getFullYear()}</Text>
             </View>
         </View>
     )
