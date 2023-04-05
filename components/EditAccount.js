@@ -162,8 +162,8 @@ export default function EditAccount(){
             console.log(e)
         }
     }
-    //make me a function that uses Mailcomposer to send an email to the support email
-    async function sendEmail(){
+    //make me a function that uses Mailcomposer to email the support email
+/*    async function sendEmail(){
         //send email to support email
         await MailComposer.composeAsync({
           recipients: [`feedback@out2eat.app`],
@@ -171,7 +171,7 @@ export default function EditAccount(){
             body: 'Hello Out2Eat Support Team'
 
         })
-    }
+    }*/
     return(
         <View  style={{
             flex:1,
@@ -240,11 +240,11 @@ export default function EditAccount(){
                         <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={sendEmail} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
-                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="bug-outline"/>
-                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Report Bugs </Text>
+{/*                    <TouchableOpacity onPress={sendEmail} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
+                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="chatbox-ellipses-outline"/>
+                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Provide Feedback </Text>
                         <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
-                    </TouchableOpacity>
+                    </TouchableOpacity>*/}
                 </View>
                 <View style={{
                     flexDirection:"row",

@@ -3,7 +3,7 @@ import {Image, View, Text, ScrollView, Dimensions} from "react-native";
 import Onboarding from "react-native-onboarding-swiper";
 import SVGComponent from "./SVGLogo";
 import {useNavigation} from "@react-navigation/native";
-import {InputStyles} from "./InputStyles";
+
 export default function Intro(){
     const onboardingRef = useRef(null);
     const navigation = useNavigation()
@@ -33,7 +33,7 @@ export default function Intro(){
                             <ScrollView>
                                 <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>1. Tap on your profile pic to go to your settings.</Text>
                                 <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>2. Tap on Create Lobby for your friends to join to find restaurants!</Text>
-                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>3. Tap on Join Lobby to join your friend's!</Text>
+                                <Text style={{color:"#fff", fontSize:16, paddingBottom:5}}>3. Tap on Join Lobby to join your friends!</Text>
                             </ScrollView>
                         </View>,
                 },

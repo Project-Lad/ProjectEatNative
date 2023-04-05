@@ -17,16 +17,15 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {BackHandler, View, TouchableOpacity,Text,Platform} from "react-native";
 import * as Sentry from 'sentry-expo';
 import * as Linking from 'expo-linking';
-import {IconStyles, LobbyStyles, ProfileStyles} from "./components/InputStyles";
+import { ProfileStyles} from "./components/InputStyles";
 import preloaderLines from "./components/AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
 import {Ionicons} from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 async function fetchLaunchData() {
-    //const appData = await AsyncStorage.getItem("appLaunched");
+    const appData = await AsyncStorage.getItem("appLaunched");
     let firstLaunch;
-    const appData=null;
     if(appData == null) {
         firstLaunch = true;
         await AsyncStorage.setItem("appLaunched", "false");
