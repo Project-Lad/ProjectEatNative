@@ -23,7 +23,6 @@ import iosStar35 from '../assets/ios/regular_3_half.png'
 import iosStar4 from '../assets/ios/regular_4.png'
 import iosStar45 from '../assets/ios/regular_4_half.png'
 import iosStar5 from '../assets/ios/regular_5.png'
-import firebase from "../firebase";
 import {useNavigation} from "@react-navigation/native";
 import YelpImage from "../assets/yelp_burst.png";
 import {IconStyles, InputStyles, DecisionStyle, ProfileStyles} from "./InputStyles";
@@ -33,6 +32,8 @@ import * as WebBrowser from "expo-web-browser";
 import preloaderLines from "./AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
 import burgerJPG from '../assets/burger_image.jpg';
+import {getFirestore, deleteDoc, getDocs, collection, doc} from "firebase/firestore";
+import {getAuth} from "firebase/auth";
 LogBox.ignoreLogs(['Setting a timer']);
 const Decision = ({route}) => {
     let [restaurant, setRestaurant] = useState({
@@ -198,7 +199,9 @@ const Decision = ({route}) => {
 
     function clearSubs() {
         for (let i = 0; i < route.params.unsubs.length; i++) {
-            route.params.unsubs[i]()
+            if(route.params.unsubs[i] !== undefined) {
+                route.params.unsubs[i]()
+            }
         }
     }
 
@@ -210,43 +213,46 @@ const Decision = ({route}) => {
         setSelectedIndex(selectedIndex)
     }
 
-    function deleteDocument() {
-        let currentSession = firebase.firestore().collection('sessions').doc(route.params.code)
+    async function deleteDocument() {
+        const firestore = getFirestore();
+        const auth = getAuth();
+        const currentSession = doc(collection(firestore, 'sessions'), route.params.code);
 
-        if(route.params.isHost) {
-            currentSession.collection('matched').get().then(snapshot => {
-                snapshot.forEach(doc => {
-                    currentSession.collection('matched').doc(doc.id).delete().then(() => {
-                    }).catch((error) => {
-                        Sentry.Native.captureException(error.message);
-                    })
-                })
-            })
-
-            currentSession.collection('users').get().then(snapshot => {
-                snapshot.forEach(doc => {
-                    currentSession.collection('users').doc(doc.id).delete().then(() => {
-                    }).catch((error) => {
-                        Sentry.Native.captureException(error.message);
-                    })
-                })
-            })
-
-            //delete the firebase document
-            firebase.firestore().collection('sessions').doc(route.params.code).delete()
-                .then(() => {navigation.navigate('Profile')})
-                .catch((error) => {
+        if (route.params.isHost) {
+            // Delete all documents in the "matched" subcollection
+            const matchedDocs = await getDocs(collection(currentSession, 'matched'));
+            matchedDocs.forEach((doc) => {
+                deleteDoc(doc.ref).catch((error) => {
                     Sentry.Native.captureException(error.message);
-                })
-        } else {
-            currentSession.collection('users').doc(firebase.auth().currentUser.uid).delete()
+                });
+            });
+
+            // Delete all documents in the "users" subcollection
+            const usersDocs = await getDocs(collection(currentSession, 'users'));
+            usersDocs.forEach((doc) => {
+                deleteDoc(doc.ref).catch((error) => {
+                    Sentry.Native.captureException(error.message);
+                });
+            });
+
+            // Delete the session document
+            deleteDoc(currentSession)
                 .then(() => {
-                    navigation.navigate('Profile')
+                    navigation.navigate('Profile');
                 })
                 .catch((error) => {
                     Sentry.Native.captureException(error.message);
-                    navigation.navigate('Profile')
+                });
+        } else {
+            // Delete the current user's document in the "users" subcollection
+            deleteDoc(doc(collection(currentSession, 'users'), auth.currentUser.uid))
+                .then(() => {
+                    navigation.navigate('Profile');
                 })
+                .catch((error) => {
+                    Sentry.Native.captureException(error.message);
+                    navigation.navigate('Profile');
+                });
         }
     }
 

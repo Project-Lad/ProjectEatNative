@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import {Alert, LogBox, Platform, Text, TextInput, TouchableOpacity, KeyboardAvoidingView} from 'react-native'
-import firebase from "firebase";
+
 import {IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 import SVGComponent from "./SVGLogo";
 LogBox.ignoreLogs(['Setting a timer']);
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 class ForgotPassword extends Component {
     constructor() {
         super();
@@ -26,7 +27,8 @@ class ForgotPassword extends Component {
             this.setState({
                 isLoading: true,
             })
-            firebase.auth().sendPasswordResetEmail(this.state.email)
+            const auth = getAuth();
+            sendPasswordResetEmail(auth,this.state.email)
                 .then(() => {
                     Alert.alert("Forgot Password Email", "An email containing a reset link has been sent to the provided email address if the account exists.");
                     this.setState({

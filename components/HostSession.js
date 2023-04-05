@@ -17,8 +17,9 @@ import {
     LogBox, ActivityIndicator
 } from 'react-native';
 import Slider from '@react-native-community/slider';
-import firebase from "../firebase";
-import "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import {getFirestore, doc, setDoc, deleteDoc, getDoc, collection, query, where, onSnapshot, getDocs, updateDoc} from "firebase/firestore";
+import {getStorage, ref, getDownloadURL} from "firebase/storage";
 import {InputStyles, IconStyles, LobbyStyles, CardStyle, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from "expo-location";
@@ -33,6 +34,7 @@ let latitude = null;
 let longitude = null;
 
 export default class HostSession extends Component {
+
     state = {
         isLoading: true,
         isExiting: false,
@@ -107,8 +109,13 @@ export default class HostSession extends Component {
 
     awaitingLocationData = async () => {
         await this.checkLocationPermissions();
-        //retrieve image
-        firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL()
+
+        const storage = getStorage();
+        const auth = getAuth();
+
+        const profilePictureRef = ref(storage, `${auth.currentUser.uid}/profilePicture`);
+
+        getDownloadURL(profilePictureRef)
             .then((url) => {
                 this.createSession(url);
             })
@@ -120,12 +127,25 @@ export default class HostSession extends Component {
                 }
             })
 
+        /*//retrieve image
+        firebase.storage().ref().child(`${auth.currentUser.uid}/profilePicture`).getDownloadURL()
+            .then((url) => {
+                this.createSession(url);
+            })
+            .catch((error) => {
+                this.createSession("assets_userplaceholder");
+
+                if (!error.message.includes("storage/object-not-found")) {
+                    Sentry.Native.captureException(error.message);
+                }
+            })*/
+
         this.checkForUsers()
     }
 
     createCode = () => {
         let result = '';
-        const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const characters = '123456789ABCDEFGHIJKLMNPQRSTUVWXYZ';
         const charactersLength = characters.length;
         for (let i = 0; i < 5; i++ ) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -135,9 +155,34 @@ export default class HostSession extends Component {
     }
 
     createSession = (url) => {
-        let displayName = firebase.auth().currentUser.displayName
+        const firestore = getFirestore();
+        const auth = getAuth();
+        const sessionsRef = collection(firestore, 'sessions');
+        const sessionRef = doc(sessionsRef, this.state.code);
+        const usersRef = collection(sessionRef, 'users');
+        const usersDocRef = doc(usersRef, auth.currentUser.uid);
+
+        let displayName = auth.currentUser.displayName;
 
         //creates session using the newly generated code
+        setDoc(sessionRef, {zip: null, start: false, latitude: latitude, longitude: longitude})
+            .then(() => {
+                //adds the current host user to the document
+                setDoc(usersDocRef, {
+                    displayName: displayName,
+                    photoURL: url
+                })
+                    .then(() => {})
+                    .catch((error) => {
+                        Sentry.Native.captureException(error.message);
+                    });
+            })
+            .catch((error) => {
+                Sentry.Native.captureException(error.message);
+            }
+        );
+
+        /*//creates session using the newly generated code
         firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false, latitude: latitude, longitude: longitude})
             .then(() => {
                 //adds the current host user to the document
@@ -151,31 +196,34 @@ export default class HostSession extends Component {
                     })
             }).catch((error) => {
             Sentry.Native.captureException(error.message);
-        })
+        })*/
     }
 
     checkForDocument = (code) => {
-        const sessionsRef = firebase.firestore().collection('sessions').doc(code)
+        const firestore = getFirestore();
+        const sessionsRef = doc(firestore, 'sessions', code);
         let result;
 
-        sessionsRef.get()
-            .then((docSnapshot) => {
-                if (docSnapshot.exists) {
-                    result = 0
-                } else {
-                    result = 1
-                }
-            })
+        getDoc(sessionsRef).then((docSnapshot) => {
+            if (docSnapshot.exists()) {
+                result = 0;
+            } else {
+                result = 1;
+            }
+        }).catch((error) => {
+            Sentry.Native.captureException(error.message);
+        });
 
         return result;
     }
 
     checkForUsers = () => {
-        const usersRef = firebase.firestore().collection('sessions').doc(this.state.code).collection('users')
+        const firestore = getFirestore();
+        const usersRef = collection(doc(firestore, 'sessions', this.state.code), 'users');
         let usersLocal = [];
 
         //creates an observer to watch for new documents that may appear
-        usersRef.onSnapshot(querySnapshot => {
+        onSnapshot(usersRef, querySnapshot => {
             this.setState({isLoading: true})
             //for each document in the collection, push them onto the usersLocal array
             querySnapshot.forEach(documentSnapshot => {
@@ -191,7 +239,7 @@ export default class HostSession extends Component {
 
             //usersLocal is reset so duplicate users are not created in lobby
             usersLocal = []
-        })
+        });
     }
 
     checkLocationPermissions = async () => {
@@ -236,26 +284,24 @@ export default class HostSession extends Component {
                     onPress:() => {
                         this.setState({isExiting: true})
 
-                        firebase.firestore()
-                            .collection('sessions').doc(this.state.code)
-                            .collection('users').get().then(snapshot => {
-                                snapshot.forEach(doc => {
-                                    firebase.firestore()
-                                        .collection('sessions').doc(this.state.code)
-                                        .collection('users').doc(doc.id).delete().then(() => {})
-                                        .catch((error) => {
-                                            Sentry.Native.captureException(error.message);
-                                        })
-                                })
-                        })
+                        const firestore = getFirestore();
+                        const usersRef = collection(firestore, 'sessions', this.state.code, 'users');
 
-                        //delete the firebase document
-                        firebase.firestore().collection('sessions').doc(this.state.code).delete()
-                            .then(() => {setTimeout(() => {this.props.navigation.navigate('Profile')}, 1650)})
-                            .catch((error) => {
-                                Sentry.Native.captureException(error.message);
-                                setTimeout(() => {this.props.navigation.navigate('Profile')}, 1650)
-                            })
+                        getDocs(usersRef).then((querySnapshot) => {
+                            querySnapshot.forEach((doc) => {
+                                deleteDoc(doc(doc.parent, doc.id)).then(() => {})
+                                    .catch((error) => {
+                                        Sentry.Native.captureException(error.message);
+                                    });
+                            });
+                        });
+
+                        deleteDoc(doc(firestore, 'sessions', this.state.code)).then(() => {
+                            setTimeout(() => { this.props.navigation.navigate('Profile') }, 1650);
+                        }).catch((error) => {
+                            Sentry.Native.captureException(error.message);
+                            setTimeout(() => { this.props.navigation.navigate('Profile') }, 1650);
+                        });
                     }
                 }
             ]
@@ -263,23 +309,22 @@ export default class HostSession extends Component {
     }
 
     changeScreens = async () => {
+        const firestore = getFirestore();
+        const sessionDocRef = doc(firestore, 'sessions', this.state.code);
+
         if (this.state.zip !== null && this.state.zip !== "") {
             let zipCodePattern = /^\d{5}$|^\d{5}-\d{4}$/;
 
             if (zipCodePattern.test(this.state.zip)) {
                 //updates the start field in the current session to true to send everyone to the swipe feature
-                firebase.firestore().collection('sessions')
-                    .doc(this.state.code).update({
+                updateDoc(sessionDocRef, {
                     zip: this.state.zip,
                     start: true,
                     distance: this.state.distance,
                     categories: this.state.categories
-                })
-                    .then(() => {
-                    })
-                    .catch((error) => {
-                        Sentry.Native.captureException(error.message);
-                    })
+                }).catch((error) => {
+                    Sentry.Native.captureException(error.message);
+                });
 
                 //navigate to the swipe page manually
                 this.props.navigation.navigate('Swipe Feature', {
@@ -296,19 +341,15 @@ export default class HostSession extends Component {
             await this.checkLocationPermissions();
             if (latitude !== null && longitude !== null) {
                 //updates the start field in the current session to true to send everyone to the swipe feature
-                firebase.firestore().collection('sessions')
-                    .doc(this.state.code).update({
-                    start: true,
+                updateDoc(sessionDocRef, {
                     latitude: latitude,
                     longitude: longitude,
+                    start: true,
                     distance: this.state.distance,
                     categories: this.state.categories
-                })
-                    .then(() => {
-                    })
-                    .catch((error) => {
-                        Sentry.Native.captureException(error.message);
-                    })
+                }).catch((error) => {
+                    Sentry.Native.captureException(error.message);
+                });
 
                 //navigate to the swipe page manually
                 this.props.navigation.navigate('Swipe Feature', {
@@ -644,7 +685,13 @@ export default class HostSession extends Component {
                                             onPress: () => {},
                                             style: "cancel"
                                         },
-                                        { text: "Let's Eat!!", onPress: () => {this.changeScreens()} }
+                                        {
+                                            text: "Let's Eat!!",
+                                            onPress: () => {
+                                                console.log("hitting the start button");
+                                                this.changeScreens()
+                                            }
+                                        }
                                     ],
                                     {cancelable: true}
                                 )
