@@ -13,10 +13,11 @@ import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import Intro from "./components/Intro"
 import firebase from "./firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {BackHandler, View, TouchableOpacity,Text,Platform} from "react-native";
 import * as Sentry from 'sentry-expo';
 import * as Linking from 'expo-linking';
-import {IconStyles, LobbyStyles, ProfileStyles} from "./components/InputStyles";
+import { ProfileStyles} from "./components/InputStyles";
 import preloaderLines from "./components/AnimatedSVG";
 import {AnimatedSVGPaths} from "react-native-svg-animations";
 import {Ionicons} from "@expo/vector-icons";
@@ -25,7 +26,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 async function fetchLaunchData() {
     const appData = await AsyncStorage.getItem("appLaunched");
     let firstLaunch;
-
     if(appData == null) {
         firstLaunch = true;
         await AsyncStorage.setItem("appLaunched", "false");
@@ -164,10 +164,12 @@ export default function App() {
     const [isLoggedIn, setLogIn] = useState(false)
     const [isLoading, setIsLoading] = useState(true);
     const [firstLaunch, setFirstLaunch] = React.useState(null);
+    const auth = getAuth();
+
     useEffect(()=>{
         fetchLaunchData().then(r => {setFirstLaunch(r)});
 
-        firebase.auth().onAuthStateChanged(user => {
+        onAuthStateChanged(auth,user => {
             if(user) {
                 setLogIn(true)
             } else {

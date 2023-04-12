@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {Image, Text, TouchableOpacity, LogBox, View} from 'react-native';
-import firebase from "../firebase";
-import "firebase/firestore";
+//import app from "../firebase";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import { collection, doc, getDoc } from "firebase/firestore";
+//import "firebase/firestore";
 import {useIsFocused, useNavigation} from '@react-navigation/native'
 import {InputStyles,IconStyles,ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
@@ -10,10 +12,11 @@ import * as Sentry from "sentry-expo";
 import { AnimatedSVGPaths } from "react-native-svg-animations";
 import preloaderLines from "./AnimatedSVG";
 import userPhoto from "../assets/user-placeholder.png";
+import {getAuth} from "firebase/auth";
+import { getFirestore } from 'firebase/firestore'
 LogBox.ignoreLogs(['Setting a timer']);
 
 export default function Dashboard(){
-    const user = firebase.auth().currentUser.uid
     const [newProfileUsername, setNewProfileUsername] = useState()
     const [newProfilePicture, setNewProfilePicture] = useState()
     const [isLoading, setIsLoading] = useState(true);
@@ -21,15 +24,16 @@ export default function Dashboard(){
     const isFocused = useIsFocused();
     try {
         useEffect(() => {
-            firebase.firestore().collection('users').doc(user).get().then((doc) => {
+            const auth = getAuth().currentUser.uid;
+            const storage = getStorage();
+            getDoc(doc(getFirestore(), "users", auth)).then(doc  =>{
                 setNewProfileUsername(doc.data().username)
 
-                if(doc.data().photoURL !== "assets_userplaceholder") {
-                    firebase.storage().ref().child(`${firebase.auth().currentUser.uid}/profilePicture`).getDownloadURL().then((url)=>{
-                        setNewProfilePicture(url)
-                    })
-                } else {
-                    setNewProfilePicture(Image.resolveAssetSource(userPhoto).uri)
+                if(doc.data().photoURL !== "assets_userplaceholder"){
+                    const profilePictureRef = ref(storage, `${auth}/profilePicture`);
+                    getDownloadURL(profilePictureRef).then((url) => {
+                        setNewProfilePicture(url);
+                    });
                 }
             })
 

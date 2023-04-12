@@ -10,7 +10,9 @@ import {
     Platform,
     LogBox
 } from 'react-native';
-import firebase from "firebase";
+//import {firebase} from "firebase";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+
 import "firebase/firestore";
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
@@ -43,7 +45,8 @@ export default class Login extends Component {
             this.setState({
                 isLoading: true,
             })
-             firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+            const auth = getAuth();
+             signInWithEmailAndPassword(auth,this.state.email, this.state.password)
                 .then((res) => {
                     this.setState({
                         isLoading: false,
