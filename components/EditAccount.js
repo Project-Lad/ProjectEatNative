@@ -11,7 +11,7 @@ import {
     BackHandler,
     LogBox
 } from 'react-native';
-import {getStorage, ref, getDownloadURL, deleteObject, uploadBytes} from "firebase/storage";
+import {getStorage, ref, getDownloadURL, deleteObject, uploadBytes,uploadBytesResumable} from "firebase/storage";
 import { getAuth,updateProfile } from "firebase/auth";
 import {getFirestore, doc, setDoc, deleteDoc, getDoc} from "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
@@ -31,13 +31,13 @@ export default function EditAccount(){
     const userUid = auth.currentUser.uid;
     const firestore = getFirestore();
     const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName})
-    const [newProfilePicture, setNewProfilePicture] = useState({photoURL:null})
+    const [newProfilePicture, setNewProfilePicture] = useState({photoURL: currentUser.photoURL})
     const [result, setResult] = useState(null);
     const [updateDisable, setUpdateDisable] = useState(true)
 
 
     useEffect(() => {
-        const profilePictureRef = ref(storage, `${userUid}/profilePicture`);
+        const profilePictureRef = ref(storage,`${userUid}/profilePicture`);
         getDownloadURL(profilePictureRef)
             .then((url) => {
                 setNewProfilePicture({ photoURL: url });
@@ -83,40 +83,36 @@ export default function EditAccount(){
             });
     }
     const pickImage = async () => {
-
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
         if (status !== 'granted') {
             alert('Sorry! We need permission to change your profile picture!');
         } else {
-            let result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.All,
+            let image = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [1, 1],
                 quality: 0.5,
-            });
-
-            if (!result.canceled) {
+            })
+            if (!image.canceled) {
                 //uploads the image to firebase storage
-                uploadImage(result.assets[0].uri, "profilePicture")
-                    .then(setTimeout(() => {
-                        setNewProfilePicture({photoURL:result.assets[0].uri})
-                        setUpdateDisable(false)
-                    },100))
-                    .catch((error) => {
-                        Alert.alert("Error: ", error)
-                        Sentry.Native.captureException(error.message);
-                    })
+                setNewProfilePicture({photoURL:image.assets[0].uri})
+                setUpdateDisable(false)
+                await uploadImage(newProfilePicture.photoURL,"profilePicture").catch((error) => {
+                    Alert.alert("Error: ", error)
+                    Sentry.Native.captureException(error.message);
+                });
             }
         }
     };
 
-    const uploadImage = async (uri, imageName) => {
+    const uploadImage = async (uri,imageName) => {
+        //upload image to firebase storage
         const response = await fetch(uri);
-        const blob = await response.blob();
+        const blob = await response.blob()
+        const imageRef = ref(storage, `${userUid}/`);
 
-        const imageRef = ref(storage, `${currentUser.uid}/${imageName}`);
-        return uploadBytes(imageRef, blob);
+        await uploadBytes(imageRef, blob);
+        return await getDownloadURL(imageRef);
     }
     const [isFocused, setIsFocused] = useState(false)
     // handlers for onPress TextInput style change
