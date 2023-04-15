@@ -572,9 +572,6 @@ const Cards = (props) => {
             }
 
             unsubscribeFromDocument = onSnapshot(matchedRef, (docSnapshot) => {
-                console.log("hitting before the if statement")
-                console.log(docSnapshot.data().counter);
-                console.log(sessionSize)
                 if ((docSnapshot.data().counter / sessionSize) > 0.50) {
                     unsubscribeFromDocument();
                     unsubFromSessionSize();

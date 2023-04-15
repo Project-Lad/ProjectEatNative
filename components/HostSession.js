@@ -38,6 +38,7 @@ export default class HostSession extends Component {
         isLoading: true,
         isExiting: false,
         isFocused: false,
+        allowStart:true,
         onFocus: false,
         users: [],
         code:0,
@@ -163,23 +164,40 @@ export default class HostSession extends Component {
 
         let displayName = auth.currentUser.displayName;
 
-        //creates session using the newly generated code
-        setDoc(sessionRef, {zip: null, start: false, latitude: latitude, longitude: longitude})
-            .then(() => {
-                //adds the current host user to the document
-                setDoc(usersDocRef, {
-                    displayName: displayName,
-                    photoURL: url
+        for(let i = 0; i < 2; i++) {
+            //creates session using the newly generated code
+            setDoc(sessionRef, {zip: null, start: false, latitude: latitude, longitude: longitude})
+                .then(() => {
+                    //adds the current host user to the document
+                    setDoc(usersDocRef, {
+                        displayName: displayName,
+                        photoURL: url
+                    })
+                        .then(() => {
+                            this.setState({allowStart: false})
+                            i = 3
+                        })
+                        .catch((error) => {
+                            Sentry.Native.captureException(error.message);
+                        });
                 })
-                    .then(() => {})
-                    .catch((error) => {
-                        Sentry.Native.captureException(error.message);
-                    });
-            })
-            .catch((error) => {
-                Sentry.Native.captureException(error.message);
-            }
-        );
+                .catch((error) => {
+                    Sentry.Native.captureException("Error creating session retry attempt #" + i + " Error: " + error.message);
+                    Alert.alert(
+                        "Failed to Create Lobby",
+                        "Uh oh, something went wrong! Make sure your connection is stable and please try again!",
+                        [
+                            {
+                                text: "Back to Home",
+                                onPress: () => {
+                                    this.setState({isExiting: true})
+                                    setTimeout(() => { this.props.navigation.navigate('Profile') }, 1650);
+                                }
+                            }
+                        ]
+                    )
+                });
+        }
 
         /*//creates session using the newly generated code
         firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false, latitude: latitude, longitude: longitude})
@@ -662,7 +680,7 @@ export default class HostSession extends Component {
                                 <Ionicons style={IconStyles.iconLeft} name="close-circle-outline"/>
                                 <Text style={InputStyles.buttonText}> Close</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => {
+                            <TouchableOpacity disabled={this.state.allowStart} onPress={() => {
                                 Alert.alert(
                                     "Ready to Play?",
                                     "Is everyone in the lobby and ready to begin?",
