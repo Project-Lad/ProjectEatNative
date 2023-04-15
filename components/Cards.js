@@ -33,8 +33,6 @@ import {
     setDoc,
     getDoc,
     collection,
-    query,
-    where,
     onSnapshot,
     runTransaction,
     updateDoc
@@ -46,8 +44,7 @@ LogBox.ignoreLogs(['Setting a timer']);
 import YelpAPI from "./YelpAPI.js";
 import * as Sentry from "sentry-expo";
 import * as WebBrowser from "expo-web-browser";
-import preloaderLines from "./AnimatedSVG";
-import {AnimatedSVGPaths} from "react-native-svg-animations";
+import {StrokeAnimation} from "./AnimatedSVG";
 
 class Card extends React.Component {
     constructor(props) {
@@ -143,20 +140,7 @@ class LoadingCard extends React.Component {
                         width: "100%",
                         backgroundColor:"#fff"
                     }}>
-                        <AnimatedSVGPaths
-                            strokeColor={"black"}
-                            duration={1500}
-                            strokeWidth={3}
-                            strokeDashArray={[42.76482137044271, 42.76482137044271]}
-                            height={400}
-                            width={400}
-                            scale={1}
-                            delay={100}
-                            rewind={true}
-                            reverse={false}
-                            ds={preloaderLines}
-                            loop={true}
-                        />
+                        <StrokeAnimation rewind={true} />
                         <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
                             <Text style={{color:"#000", fontSize:18}}>
                                 {this.props.loadingMessage === "" ?
@@ -510,9 +494,12 @@ const Cards = (props) => {
                     });
                 }
             });
+        }).then(() => {
+            unsubs.push(unsubscribeFromDocument);
+            unsubs.push(unsubFromSessionSize);
         }).catch((error) => {
             Sentry.Native.captureException(error.message);
-        });
+        })
 
         /*const increment = 1;
         let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
@@ -563,9 +550,6 @@ const Cards = (props) => {
                     })
                 }
             })*/
-
-        unsubs.push(unsubFromSessionSize)
-        unsubs.push(unsubscribeFromDocument);
     }
 
     function hateIt() {
@@ -600,6 +584,11 @@ const Cards = (props) => {
                     navigation.navigate('Final Decision',{id: docSnapshot.id, code: props.code, unsubs: unsubs})
                 }
             });
+        }).then(() => {
+            unsubs.push(unsubscribeFromDocument);
+            unsubs.push(unsubFromSessionSize);
+        }).catch((error) => {
+            Sentry.Native.captureException(error.message);
         });
 
         /*//basically the same as love it minus some features
@@ -631,9 +620,6 @@ const Cards = (props) => {
 
             unsubs.push(unsub)
         })*/
-
-        unsubs.push(unsubscribeFromDocument);
-        unsubs.push(unsubFromSessionSize);
     }
 
     return (

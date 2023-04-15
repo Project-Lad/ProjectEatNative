@@ -8,13 +8,12 @@ import {
     LogBox, ScrollView, Share, BackHandler, ActivityIndicator
 } from 'react-native';
 import { getAuth } from "firebase/auth";
-import {getFirestore, doc, setDoc, deleteDoc, getDoc, collection, query, where, onSnapshot, getDocs, updateDoc} from "firebase/firestore";
+import {getFirestore, doc, setDoc, deleteDoc, getDoc, collection, onSnapshot} from "firebase/firestore";
 import {getStorage, ref, getDownloadURL} from "firebase/storage";
 import {IconStyles, InputStyles, LobbyStyles, ProfileStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 import * as Sentry from "sentry-expo";
-import preloaderLines from "./AnimatedSVG";
-import {AnimatedSVGPaths} from "react-native-svg-animations";
+import {StrokeAnimation} from "./AnimatedSVG";
 import userPhoto from "../assets/user-placeholder.png";
 
 LogBox.ignoreLogs(['Setting a timer']);
@@ -350,19 +349,7 @@ export default class GuestSession extends Component {
             <>
                 {this.state.isExiting ?
                     <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
-                        <AnimatedSVGPaths
-                            strokeColor={"black"}
-                            duration={1500}
-                            strokeWidth={3}
-                            strokeDashArray={[42.76482137044271, 42.76482137044271]}
-                            height={400}
-                            width={400}
-                            scale={1}
-                            delay={0}
-                            rewind={false}
-                            ds={preloaderLines}
-                            loop={false}
-                        />
+                        <StrokeAnimation viewBox="-15 -50 425 475"/>
                     </View>
                     :
                     <View style={LobbyStyles.container}>
