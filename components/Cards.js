@@ -67,7 +67,7 @@ class Card extends React.Component {
                                 <Image style={CardStyle.yelpStars} source={this.props.rating} />
                                 <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
                             </View>
-                            <TouchableOpacity style={{width:'15%'}} onPress={() => Linking.openURL(props.businessURL)}>
+                            <TouchableOpacity style={{width:'15%'}} onPress={() => Linking.openURL(this.props.businessURL)}>
                                 <Image style={CardStyle.yelpImage} source={YelpBurst}/>
                             </TouchableOpacity>
                         </View>
@@ -449,6 +449,7 @@ const Cards = (props) => {
                 if (docSnapshot.data().counter !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
                     unsubscribeFromDocument();
                     unsubFromSessionSize();
+                    data = [];
                     navigation.navigate('Final Decision', {
                         id: docSnapshot.id,
                         code: props.code,
@@ -540,7 +541,7 @@ const Cards = (props) => {
                     unsubFromSessionSize();
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
-                    data = []
+                    data = [];
                     navigation.navigate('Final Decision',{id: docSnapshot.id, code: props.code, unsubs: unsubs})
                 }
             });
