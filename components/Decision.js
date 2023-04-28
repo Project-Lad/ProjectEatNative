@@ -29,8 +29,7 @@ import {IconStyles, InputStyles, DecisionStyle, ProfileStyles} from "./InputStyl
 import {Ionicons} from "@expo/vector-icons";
 import * as Sentry from "sentry-expo";
 import * as WebBrowser from "expo-web-browser";
-import preloaderLines from "./AnimatedSVG";
-import {AnimatedSVGPaths} from "react-native-svg-animations";
+import {StrokeAnimation} from "./AnimatedSVG";
 import burgerJPG from '../assets/burger_image.jpg';
 import {getFirestore, deleteDoc, getDocs, collection, doc} from "firebase/firestore";
 import {getAuth} from "firebase/auth";
@@ -270,19 +269,7 @@ const Decision = ({route}) => {
         <>
             {isLoading ?
                 <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
-                    <AnimatedSVGPaths
-                        strokeColor={"black"}
-                        duration={1500}
-                        strokeWidth={3}
-                        strokeDashArray={[42.76482137044271, 42.76482137044271]}
-                        height={400}
-                        width={400}
-                        scale={1}
-                        delay={0}
-                        rewind={false}
-                        ds={preloaderLines}
-                        loop={false}
-                    />
+                    <StrokeAnimation viewBox="-15 -50 425 475"/>
                 </View>
                 :
                 <View style={DecisionStyle.container}>

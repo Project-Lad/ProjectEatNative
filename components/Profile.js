@@ -1,16 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {Image, Text, TouchableOpacity, LogBox, View} from 'react-native';
-//import app from "../firebase";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
-import { collection, doc, getDoc } from "firebase/firestore";
-//import "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import {useIsFocused, useNavigation} from '@react-navigation/native'
 import {InputStyles,IconStyles,ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import SVGComponent from "./SVGLogo";
 import * as Sentry from "sentry-expo";
-import { AnimatedSVGPaths } from "react-native-svg-animations";
-import preloaderLines from "./AnimatedSVG";
+import {StrokeAnimation} from "./AnimatedSVG";
 import userPhoto from "../assets/user-placeholder.png";
 import {getAuth} from "firebase/auth";
 import { getFirestore } from 'firebase/firestore'
@@ -47,19 +44,7 @@ export default function Dashboard(){
         <>
             {isLoading ?
                 <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
-                    <AnimatedSVGPaths
-                        strokeColor={"black"}
-                        duration={1500}
-                        strokeWidth={3}
-                        strokeDashArray={[42.76482137044271, 42.76482137044271]}
-                        height={400}
-                        width={400}
-                        scale={1}
-                        delay={0}
-                        rewind={false}
-                        ds={preloaderLines}
-                        loop={false}
-                    />
+                    <StrokeAnimation viewBox="0 0 400 400"/>
                 </View>
                 :
                 <View style={ProfileStyles.container}>
@@ -78,7 +63,7 @@ export default function Dashboard(){
                         </View>
                     </View>
 
-                    <View>
+                    <View style={{justifyContent:'space-evenly', padding:'10%'}}>
                         <SVGComponent/>
                     </View>
                     {/*Button View*/}

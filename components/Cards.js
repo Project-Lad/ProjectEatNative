@@ -33,8 +33,6 @@ import {
     setDoc,
     getDoc,
     collection,
-    query,
-    where,
     onSnapshot,
     runTransaction,
     updateDoc
@@ -46,8 +44,7 @@ LogBox.ignoreLogs(['Setting a timer']);
 import YelpAPI from "./YelpAPI.js";
 import * as Sentry from "sentry-expo";
 import * as WebBrowser from "expo-web-browser";
-import preloaderLines from "./AnimatedSVG";
-import {AnimatedSVGPaths} from "react-native-svg-animations";
+import {StrokeAnimation} from "./AnimatedSVG";
 
 class Card extends React.Component {
     constructor(props) {
@@ -70,7 +67,7 @@ class Card extends React.Component {
                                 <Image style={CardStyle.yelpStars} source={this.props.rating} />
                                 <Text style={CardStyle.yelpText}>{this.props.review_count} Reviews</Text>
                             </View>
-                            <TouchableOpacity style={{width:'15%'}} onPress={() => Linking.openURL(props.businessURL)}>
+                            <TouchableOpacity style={{width:'15%'}} onPress={() => Linking.openURL(this.props.businessURL)}>
                                 <Image style={CardStyle.yelpImage} source={YelpBurst}/>
                             </TouchableOpacity>
                         </View>
@@ -143,20 +140,7 @@ class LoadingCard extends React.Component {
                         width: "100%",
                         backgroundColor:"#fff"
                     }}>
-                        <AnimatedSVGPaths
-                            strokeColor={"black"}
-                            duration={1500}
-                            strokeWidth={3}
-                            strokeDashArray={[42.76482137044271, 42.76482137044271]}
-                            height={400}
-                            width={400}
-                            scale={1}
-                            delay={100}
-                            rewind={true}
-                            reverse={false}
-                            ds={preloaderLines}
-                            loop={true}
-                        />
+                        <StrokeAnimation rewind={true} />
                         <View style={{paddingTop:15, paddingLeft:15, paddingRight:15}}>
                             <Text style={{color:"#000", fontSize:18}}>
                                 {this.props.loadingMessage === "" ?
@@ -432,43 +416,6 @@ const Cards = (props) => {
             counter = 1;
         });
 
-        /*unsub = usersRef.onSnapshot(querySnapshot => {
-            querySnapshot.forEach(documentSnapshot => {
-                if (querySnapshot.size === 1) {
-                    //sets card state and shows modal when solo
-                    handleCardSet(card)
-                    handleModalSet(true)
-                    unsub();
-                } else {
-                    //if in a group, and match is not true
-                    if (match === false) {
-                        //compare current user to documentID to reduce redundancies
-                        if (documentSnapshot.id !== userUid) {
-                            //for each restaurant in firebase data
-                            for (const restaurant in documentSnapshot.data()) {
-                                //check if document data restaurant is equal to this specific restaurant for this card
-                                if (documentSnapshot.data()[restaurant] === restaurantID) {
-                                    //add counter to amount of people
-                                    counter += 1
-
-                                    //if the amount of people in lobby are equal to the counter
-                                    if (querySnapshot.size === counter) {
-                                        //set match to true, set card state, show modal, and console matched
-                                        match = true
-                                        handleCardSet(card)
-                                        handleModalSet(true)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            })
-
-            //reset counter so when snapshot detects changes, it doesn't over count
-            counter = 1;
-        })*/
-
         unsubs.push(unsub);
         return true;
     }
@@ -499,9 +446,10 @@ const Cards = (props) => {
         }).then(() => {
             // listen for changes to the document and navigate to the final decision screen if a majority of the group wants it
             unsubscribeFromDocument = onSnapshot(matchedRef, (docSnapshot) => {
-                if ((docSnapshot.data().counter / sessionSize) > 0.50) {
+                if (docSnapshot.data().counter !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
                     unsubscribeFromDocument();
                     unsubFromSessionSize();
+                    data = [];
                     navigation.navigate('Final Decision', {
                         id: docSnapshot.id,
                         code: props.code,
@@ -510,10 +458,13 @@ const Cards = (props) => {
                     });
                 }
             });
+        }).then(() => {
+            unsubs.push(unsubscribeFromDocument);
+            unsubs.push(unsubFromSessionSize);
         }).catch((error) => {
             Sentry.Native.captureException(error.message);
-        });
-
+        })
+        
         unsubs.push(unsubFromSessionSize)
         unsubs.push(unsubscribeFromDocument);
     }
@@ -538,15 +489,21 @@ const Cards = (props) => {
             }
 
             unsubscribeFromDocument = onSnapshot(matchedRef, (docSnapshot) => {
-                if ((docSnapshot.data().counter / sessionSize) > 0.50) {
+
+                if (docSnapshot.data().counter !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
                     unsubscribeFromDocument();
                     unsubFromSessionSize();
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
                     //populate the screen with information
-                    data = []
+                    data = [];
                     navigation.navigate('Final Decision',{id: docSnapshot.id, code: props.code, unsubs: unsubs})
                 }
             });
+        }).then(() => {
+            unsubs.push(unsubscribeFromDocument);
+            unsubs.push(unsubFromSessionSize);
+        }).catch((error) => {
+            Sentry.Native.captureException(error.message);
         });
 
         /*//basically the same as love it minus some features
@@ -578,9 +535,6 @@ const Cards = (props) => {
 
             unsubs.push(unsub)
         })*/
-
-        unsubs.push(unsubscribeFromDocument);
-        unsubs.push(unsubFromSessionSize);
     }
 
     return (

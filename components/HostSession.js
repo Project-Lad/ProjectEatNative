@@ -18,14 +18,13 @@ import {
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { getAuth } from "firebase/auth";
-import {getFirestore, doc, setDoc, deleteDoc, getDoc, collection, query, where, onSnapshot, getDocs, updateDoc} from "firebase/firestore";
+import {getFirestore, doc, setDoc, deleteDoc, getDoc, collection, onSnapshot, getDocs, updateDoc} from "firebase/firestore";
 import {getStorage, ref, getDownloadURL} from "firebase/storage";
 import {InputStyles, IconStyles, LobbyStyles, CardStyle, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from "expo-location";
 import * as Sentry from "sentry-expo";
-import preloaderLines from "./AnimatedSVG";
-import {AnimatedSVGPaths} from "react-native-svg-animations";
+import {StrokeAnimation} from "./AnimatedSVG";
 import userPhoto from "../assets/user-placeholder.png";
 LogBox.ignoreLogs(['Setting a timer']);
 
@@ -39,6 +38,7 @@ export default class HostSession extends Component {
         isLoading: true,
         isExiting: false,
         isFocused: false,
+        allowStart:true,
         onFocus: false,
         users: [],
         code:0,
@@ -164,23 +164,40 @@ export default class HostSession extends Component {
 
         let displayName = auth.currentUser.displayName;
 
-        //creates session using the newly generated code
-        setDoc(sessionRef, {zip: null, start: false, latitude: latitude, longitude: longitude})
-            .then(() => {
-                //adds the current host user to the document
-                setDoc(usersDocRef, {
-                    displayName: displayName,
-                    photoURL: url
+        for(let i = 0; i < 2; i++) {
+            //creates session using the newly generated code
+            setDoc(sessionRef, {zip: null, start: false, latitude: latitude, longitude: longitude})
+                .then(() => {
+                    //adds the current host user to the document
+                    setDoc(usersDocRef, {
+                        displayName: displayName,
+                        photoURL: url
+                    })
+                        .then(() => {
+                            this.setState({allowStart: false})
+                            i = 3
+                        })
+                        .catch((error) => {
+                            Sentry.Native.captureException(error.message);
+                        });
                 })
-                    .then(() => {})
-                    .catch((error) => {
-                        Sentry.Native.captureException(error.message);
-                    });
-            })
-            .catch((error) => {
-                Sentry.Native.captureException(error.message);
-            }
-        );
+                .catch((error) => {
+                    Sentry.Native.captureException("Error creating session retry attempt #" + i + " Error: " + error.message);
+                    Alert.alert(
+                        "Failed to Create Lobby",
+                        "Uh oh, something went wrong! Make sure your connection is stable and please try again!",
+                        [
+                            {
+                                text: "Back to Home",
+                                onPress: () => {
+                                    this.setState({isExiting: true})
+                                    setTimeout(() => { this.props.navigation.navigate('Profile') }, 1650);
+                                }
+                            }
+                        ]
+                    )
+                });
+        }
 
         /*//creates session using the newly generated code
         firebase.firestore().collection('sessions').doc(this.state.code).set({zip: null, start: false, latitude: latitude, longitude: longitude})
@@ -390,19 +407,7 @@ export default class HostSession extends Component {
             <>
                 {this.state.isExiting ?
                     <View style={[ProfileStyles.container, {backgroundColor: '#FFF'}]}>
-                        <AnimatedSVGPaths
-                            strokeColor={"black"}
-                            duration={1500}
-                            strokeWidth={3}
-                            strokeDashArray={[42.76482137044271, 42.76482137044271]}
-                            height={400}
-                            width={400}
-                            scale={1}
-                            delay={0}
-                            rewind={false}
-                            ds={preloaderLines}
-                            loop={false}
-                        />
+                        <StrokeAnimation viewBox="0 75 400 400"/>
                     </View>
                     :
                     <View style={LobbyStyles.container}>
@@ -675,7 +680,7 @@ export default class HostSession extends Component {
                                 <Ionicons style={IconStyles.iconLeft} name="close-circle-outline"/>
                                 <Text style={InputStyles.buttonText}> Close</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => {
+                            <TouchableOpacity disabled={this.state.allowStart} onPress={() => {
                                 Alert.alert(
                                     "Ready to Play?",
                                     "Is everyone in the lobby and ready to begin?",

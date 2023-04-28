@@ -18,8 +18,7 @@ import {BackHandler, View, TouchableOpacity,Text,Platform} from "react-native";
 import * as Sentry from 'sentry-expo';
 import * as Linking from 'expo-linking';
 import { ProfileStyles} from "./components/InputStyles";
-import preloaderLines from "./components/AnimatedSVG";
-import {AnimatedSVGPaths} from "react-native-svg-animations";
+import {StrokeAnimation} from "./components/AnimatedSVG";
 import {Ionicons} from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -193,19 +192,7 @@ export default function App() {
         <NavigationContainer linking={linking}>
             {isLoading ?
                 <View style={ProfileStyles.container}>
-                    <AnimatedSVGPaths
-                        strokeColor={"black"}
-                        duration={1500}
-                        strokeWidth={3}
-                        strokeDashArray={[42.76482137044271, 42.76482137044271]}
-                        height={400}
-                        width={400}
-                        scale={1}
-                        delay={0}
-                        rewind={false}
-                        ds={preloaderLines}
-                        loop={false}
-                    />
+                    <StrokeAnimation viewBox="0 0 400 400"/>
                 </View>
                 :
                 isLoggedIn ? (
