@@ -23,7 +23,6 @@ LogBox.ignoreLogs(['Setting a timer']);
 import * as WebBrowser from 'expo-web-browser';
 import userPhoto from "../assets/user-placeholder.png";
 import * as MailComposer from "expo-mail-composer";
-import uuid from "uuid";
 export default function EditAccount(){
     const navigation = useNavigation()
     const auth = getAuth()
@@ -89,8 +88,6 @@ export default function EditAccount(){
             allowsEditing: true,
             aspect: [4, 3],
         });
-
-        console.log({ pickerResult });
 
         await _handleImagePicked(pickerResult);
     };
