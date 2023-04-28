@@ -23,7 +23,7 @@
     "expo-location": "~15.1.1",
     "expo-splash-screen": "~0.18.1",
     "expo-status-bar": "~1.4.4",
-    "expo-updates": "~0.16.3",
+    "expo-updates": "~0.16.4",
     "expo-web-browser": "~12.1.1",
     "firebase": "9.17.2",
     "firebase-admin": "^11.5.0",
