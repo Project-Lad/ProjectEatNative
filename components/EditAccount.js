@@ -11,9 +11,9 @@ import {
     BackHandler,
     LogBox
 } from 'react-native';
-import {getStorage, ref, getDownloadURL, deleteObject, uploadBytes} from "firebase/storage";
+import {getStorage, ref, getDownloadURL, deleteObject, uploadBytes,uploadBytesResumable} from "firebase/storage";
 import { getAuth,updateProfile } from "firebase/auth";
-import {getFirestore, doc, setDoc, deleteDoc, getDoc} from "firebase/firestore";
+import {getFirestore, doc, setDoc, deleteDoc, uploadString} from "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
 import * as Sentry from "sentry-expo";
@@ -31,13 +31,13 @@ export default function EditAccount(){
     const userUid = auth.currentUser.uid;
     const firestore = getFirestore();
     const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName})
-    const [newProfilePicture, setNewProfilePicture] = useState({photoURL:null})
+    const [newProfilePicture, setNewProfilePicture] = useState({photoURL: currentUser.photoURL})
     const [result, setResult] = useState(null);
     const [updateDisable, setUpdateDisable] = useState(true)
 
 
     useEffect(() => {
-        const profilePictureRef = ref(storage, `${userUid}/profilePicture`);
+        const profilePictureRef = ref(storage,`${userUid}/profilePicture`);
         getDownloadURL(profilePictureRef)
             .then((url) => {
                 setNewProfilePicture({ photoURL: url });
@@ -82,42 +82,58 @@ export default function EditAccount(){
                 Sentry.Native.captureException(error.message);
             });
     }
-    const pickImage = async () => {
 
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const _pickImage = async () => {
+        let pickerResult = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing: true,
+            aspect: [4, 3],
+        });
 
-        if (status !== 'granted') {
-            alert('Sorry! We need permission to change your profile picture!');
-        } else {
-            let result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.All,
-                allowsEditing: true,
-                aspect: [1, 1],
-                quality: 0.5,
-            });
+        await _handleImagePicked(pickerResult);
+    };
 
-            if (!result.canceled) {
-                //uploads the image to firebase storage
-                uploadImage(result.assets[0].uri, "profilePicture")
-                    .then(setTimeout(() => {
-                        setNewProfilePicture({photoURL:result.assets[0].uri})
-                        setUpdateDisable(false)
-                    },100))
-                    .catch((error) => {
-                        Alert.alert("Error: ", error)
-                        Sentry.Native.captureException(error.message);
-                    })
+    const _handleImagePicked = async (pickerResult) => {
+        try {
+            if (!pickerResult.canceled) {
+                const uploadUrl = await uploadImageAsync(pickerResult.assets[0].uri);
+                setNewProfilePicture({photoURL: uploadUrl})
+                setUpdateDisable(false)
             }
+        } catch (e) {
+            console.log(e);
+            alert("Upload failed, sorry :(");
         }
     };
 
-    const uploadImage = async (uri, imageName) => {
-        const response = await fetch(uri);
-        const blob = await response.blob();
+    async function uploadImageAsync(uri) {
+        // Why are we using XMLHttpRequest? See:
+        // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+        const blob = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+                resolve(xhr.response);
+            };
+            xhr.onerror = function (e) {
+                console.log(e);
+                reject(new TypeError("Network request failed"));
+            };
+            xhr.responseType = "blob";
+            xhr.open("GET", uri, true);
+            xhr.send(null);
+        });
 
-        const imageRef = ref(storage, `${currentUser.uid}/${imageName}`);
-        return uploadBytes(imageRef, blob);
+        const fileRef = ref(storage, `${currentUser.uid}/profilePicture`);
+        const result = await uploadBytes(fileRef, blob).catch((error) => {
+            Alert.alert("Error: ", error)
+            Sentry.Native.captureException(error.message);
+        });
+
+        // We're done with the blob, close and release it
+        blob.close();
+
+        return await getDownloadURL(fileRef);
     }
+
     const [isFocused, setIsFocused] = useState(false)
     // handlers for onPress TextInput style change
     const handleInputFocus = () => {
@@ -187,7 +203,7 @@ export default function EditAccount(){
                 backgroundColor: '#fff'
             }}>
                 <View style={{ padding:15,alignItems: 'center', justifyContent: 'center' }}>
-                    <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
+                    <TouchableOpacity style={IconStyles.iconContainer} onPress={_pickImage}>
                         <Image source={{ uri: newProfilePicture.photoURL }} style={{width:150, height:150, borderRadius:250}} />
                         <View style={ProfileStyles.editCameraContainer}>
                             <Ionicons style={IconStyles.addProfilePic} name="camera-outline"/>
@@ -241,10 +257,10 @@ export default function EditAccount(){
                     </TouchableOpacity>
 
 {/*                    <TouchableOpacity onPress={sendEmail} style = {{flexDirection:"row",paddingTop:'4%', justifyContent:"flex-start"}}>
-                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="chatbox-ellipses-outline"/>
-                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Provide Feedback </Text>
+                        <Ionicons style={{fontSize:20, alignContent:"center"}} name="bug-outline"/>
+                        <Text style={{fontSize:18, paddingLeft:"2%", paddingRight:"2%"}}>Report Bugs </Text>
                         <Ionicons style={{fontSize:16, alignSelf:"center"}} name="chevron-forward-outline"/>
-                    </TouchableOpacity>*/}
+                    </TouchableOpacity>}*/}
                 </View>
                 <View style={{
                     flexDirection:"row",

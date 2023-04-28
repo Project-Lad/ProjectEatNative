@@ -464,56 +464,9 @@ const Cards = (props) => {
         }).catch((error) => {
             Sentry.Native.captureException(error.message);
         })
-
-        /*const increment = 1;
-        let matchedRef = firebase.firestore().collection('sessions').doc(props.code)
-            .collection('matched').doc(props.card.id)
-
-        let sessionSize;
-        usersRef.onSnapshot(querySnapshot => {
-            sessionSize = querySnapshot.size
-        })
-
-        //retrieve document
-        matchedRef.get().then((doc) => {
-            //if the document data isn't null
-            if (doc.data() === undefined) {
-                //set the document counter to 1 for this user
-                matchedRef.set({
-                    counter: 1
-                }).then(() => {
-                    //console log that the restaurant is successful
-                }).catch((error) => {
-                    //if there is an issue, console log error
-                    Sentry.Native.captureException(error.message);
-                });
-            }
-
-            //if the data isn't null
-            if (doc.data() !== undefined) {
-                //update current document
-                matchedRef.update({
-                    counter: doc.data().counter + increment
-                }).then(() => {
-                }).catch((error) => {
-                    Sentry.Native.captureException(error.message);
-                });
-            }
-
-            unsub = matchedRef.onSnapshot(docSnapshot => {
-                //if majority of the group wants this
-                if ((docSnapshot.data().counter / sessionSize) > 0.50) {
-                    //move screens. read document id, send that to next screen and pull data using the yelp api to
-                    //populate the screen with information
-                    data = []
-                    navigation.navigate('Final Decision', {
-                        id: docSnapshot.id,
-                        code: props.code,
-                        unsubs: unsubs,
-                        isHost: props.isHost
-                    })
-                }
-            })*/
+        
+        unsubs.push(unsubFromSessionSize)
+        unsubs.push(unsubscribeFromDocument);
     }
 
     function hateIt() {
@@ -536,6 +489,7 @@ const Cards = (props) => {
             }
 
             unsubscribeFromDocument = onSnapshot(matchedRef, (docSnapshot) => {
+
                 if (docSnapshot.data().counter !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
                     unsubscribeFromDocument();
                     unsubFromSessionSize();
