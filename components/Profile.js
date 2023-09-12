@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Image, Text, TouchableOpacity, LogBox, View} from 'react-native';
+import {Image, Text, TouchableOpacity, LogBox, View, ActivityIndicator} from 'react-native';
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { doc, getDoc } from "firebase/firestore";
 import {useIsFocused, useNavigation} from '@react-navigation/native'
@@ -15,8 +15,9 @@ LogBox.ignoreLogs(['Setting a timer']);
 
 export default function Dashboard(){
     const [newProfileUsername, setNewProfileUsername] = useState()
-    const [newProfilePicture, setNewProfilePicture] = useState()
+    const [newProfilePicture, setNewProfilePicture] = useState(null)
     const [isLoading, setIsLoading] = useState(true);
+    const [isPicLoading, setPicLoading] = useState(true);
     const navigation = useNavigation()
     const isFocused = useIsFocused();
     try {
@@ -30,6 +31,10 @@ export default function Dashboard(){
                     const profilePictureRef = ref(storage, `${auth}/profilePicture`);
                     getDownloadURL(profilePictureRef).then((url) => {
                         setNewProfilePicture(url);
+                        setPicLoading(false);
+                    }).catch((error) => {
+                        Sentry.Native.captureException(error.message);
+                        setNewProfilePicture(doc.data().photoURL);
                     });
                 }
             })
@@ -52,7 +57,11 @@ export default function Dashboard(){
                     <View style={ProfileStyles.card}>
                         <View style={{flexDirection: "row", alignItems: "center", justifyContent:'space-between', position:"absolute", width:'100%'}}>
                             <TouchableOpacity onPress={() => navigation.navigate('EditAccount')}>
-                                {newProfilePicture && <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />}
+                                {isPicLoading ?(
+                                    <ActivityIndicator size="large" color="#333"/>
+                                ):(
+                                    <Image source={{ uri: newProfilePicture }}  style={IconStyles.profilePicture} />
+                                )}
                                 <View style={ProfileStyles.profilePenContainer}>
                                     <Ionicons style={ProfileStyles.profilePen} name="settings-outline"/>
                                 </View>
