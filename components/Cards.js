@@ -446,7 +446,7 @@ const Cards = (props) => {
         }).then(() => {
             // listen for changes to the document and navigate to the final decision screen if a majority of the group wants it
             unsubscribeFromDocument = onSnapshot(matchedRef, (docSnapshot) => {
-                if (docSnapshot.data().counter !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
+                if (docSnapshot.data() !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
                     unsubscribeFromDocument();
                     unsubFromSessionSize();
                     data = [];
@@ -490,7 +490,7 @@ const Cards = (props) => {
 
             unsubscribeFromDocument = onSnapshot(matchedRef, (docSnapshot) => {
 
-                if (docSnapshot.data().counter !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
+                if (docSnapshot.data() !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
                     unsubscribeFromDocument();
                     unsubFromSessionSize();
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
