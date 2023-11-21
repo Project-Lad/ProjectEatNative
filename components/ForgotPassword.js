@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import {Alert, LogBox, Platform, Text, TextInput, TouchableOpacity, KeyboardAvoidingView} from 'react-native'
-
+import {Alert, LogBox, Text, TextInput, TouchableOpacity, KeyboardAvoidingView} from 'react-native'
+import * as Device from 'expo-device';
 import {IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 import SVGComponent from "./SVGLogo";
@@ -47,7 +47,7 @@ class ForgotPassword extends Component {
     }
     render() {
         return (
-            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
+            <KeyboardAvoidingView behavior={Device.brand === "Apple" ? "padding" : "height"} style={InputStyles.container}>
                 <SVGComponent/>
                 <TextInput
                     style={this.state.isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}

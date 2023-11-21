@@ -7,9 +7,9 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     KeyboardAvoidingView,
-    Platform,
     LogBox
 } from 'react-native';
+import * as Device from 'expo-device';
 //import {firebase} from "firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
@@ -49,7 +49,7 @@ export default class Login extends Component {
             const auth = getAuth();
             //firebase signInWithEmailAndPassword function
              signInWithEmailAndPassword(auth,this.state.email, this.state.password)
-                .then((res) => {
+                .then(() => {
                     this.setState({
                         isLoading: false,
                         email: '',
@@ -90,7 +90,7 @@ export default class Login extends Component {
             )
         }
         return (
-            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
+            <KeyboardAvoidingView behavior={Device.brand === "Apple" ? "padding" : "height"} style={InputStyles.container}>
                 {/*<Image source={require('../assets/branding/out2eat_image.png')}  style={{marginBottom:'5%'}}/>*/}
                 <SVGComponent style={{marginLeft:"auto", marginRight:"auto"}}/>
 

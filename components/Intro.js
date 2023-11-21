@@ -1,5 +1,5 @@
 import React, {useRef} from "react";
-import {Image, View, Text, ScrollView, Dimensions} from "react-native";
+import {Image, View, Text, ScrollView} from "react-native";
 import Onboarding from "react-native-onboarding-swiper";
 import SVGComponent from "./SVGLogo";
 import {useNavigation} from "@react-navigation/native";

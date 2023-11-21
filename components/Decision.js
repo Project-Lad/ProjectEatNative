@@ -1,7 +1,8 @@
 //checks for location
 import {YELP_API_KEY} from '@env'
 import React, {useState, useEffect} from 'react';
-import {View, Text, Image, Platform, Linking, ScrollView, TouchableOpacity, LogBox} from "react-native";
+import {View, Text, Image, Linking, ScrollView, TouchableOpacity, LogBox} from "react-native";
+import * as Device from 'expo-device';
 import androidStar0 from '../assets/android/stars_regular_0.png'
 import androidStar1 from '../assets/android/stars_regular_1.png'
 import androidStar15 from '../assets/android/stars_regular_1_half.png'
@@ -93,7 +94,7 @@ const Decision = ({route}) => {
         phone = restaurant.phone
 
         //set image based upon platform
-        if(Platform.OS === 'android') {
+        if(Device.brand === "Google") {
             switch(rating) {
                 case 0:
                     rating = androidStar0
@@ -257,7 +258,7 @@ const Decision = ({route}) => {
 
     function callRestaurant(number) {
         let phoneNumber;
-        if (Platform.OS === 'android') {
+        if (Device.brand === 'Google') {
             phoneNumber = `tel:${number}`;
         } else {
             phoneNumber = `telprompt:${number}`;

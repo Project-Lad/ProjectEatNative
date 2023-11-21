@@ -12,7 +12,6 @@ import {
     Modal,
     Switch,
     KeyboardAvoidingView,
-    Platform,
     BackHandler,
     LogBox, ActivityIndicator
 } from 'react-native';
@@ -427,7 +426,7 @@ export default class HostSession extends Component {
                             onRequestClose={() => {
                                 this.setState({modalVisible: !this.state.modalVisible});
                             }}>
-                            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={LobbyStyles.modalView}>
+                            <KeyboardAvoidingView behavior={Device.brand === "Apple" ? "padding" : "height"} style={LobbyStyles.modalView}>
                                 <Text style={CardStyle.modalText}>Choose your Filter!</Text>
 
                                 <View style={{flexDirection: 'row'}}>
