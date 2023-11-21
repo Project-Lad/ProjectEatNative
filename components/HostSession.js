@@ -144,13 +144,14 @@ export default class HostSession extends Component {
     }
 
     createCode = () => {
+        //creates a random 5 character code
         let result = '';
         const characters = '123456789ABCDEFGHIJKLMNPQRSTUVWXYZ';
         const charactersLength = characters.length;
+        //loops 5 times to create a 5 character code
         for (let i = 0; i < 5; i++ ) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
-
         return result;
     }
 
@@ -234,9 +235,12 @@ export default class HostSession extends Component {
         return result;
     }
 
+
     checkForUsers = () => {
         const firestore = getFirestore();
+        //creates a reference to the users collection in the current session
         const usersRef = collection(doc(firestore, 'sessions', this.state.code), 'users');
+        //creates an empty array to store the users in
         let usersLocal = [];
 
         //creates an observer to watch for new documents that may appear
@@ -245,8 +249,11 @@ export default class HostSession extends Component {
             //for each document in the collection, push them onto the usersLocal array
             querySnapshot.forEach(documentSnapshot => {
                 usersLocal.push({
+                    //documentSnapshot.data().displayName is the display name of the user
                     displayName: documentSnapshot.data().displayName,
+                    //documentSnapshot.id is the id of the user
                     id: documentSnapshot.id,
+                    //documentSnapshot.data().photoURL is the url of the users profile picture
                     photoURL: documentSnapshot.data().photoURL
                 })
             })
@@ -326,9 +333,11 @@ export default class HostSession extends Component {
     }
 
     changeScreens = async () => {
+        //getFirestore() is used to get the firestore instance from the firebase app
         const firestore = getFirestore();
+        //doc() is used to get a reference to a specific document in the firestore database
         const sessionDocRef = doc(firestore, 'sessions', this.state.code);
-
+        //Checks if zip code is valid and if so, updates the session document with the zip code and passes the user to the swipe feature.
         if (this.state.zip !== null && this.state.zip !== "") {
             let zipCodePattern = /^\d{5}$|^\d{5}-\d{4}$/;
 
@@ -343,7 +352,7 @@ export default class HostSession extends Component {
                     Sentry.Native.captureException(error.message);
                 });
 
-                //navigate to the swipe page manually
+                //navigate to the swipe page and pass props
                 this.props.navigation.navigate('Swipe Feature', {
                     code: this.state.code,
                     zip: this.state.zip,

@@ -77,11 +77,16 @@ export default function EditAccount() {
                         compress: 1,
                         format: SaveFormat.PNG
                     })
+                    // fetches image from local storage
                     const img = await fetch(newImage.uri);
+                    // converts image to blob
                     const blob = await img.blob();
+                    // creates reference to Firebase Storage
                     const fileRef = ref(storage, `${currentUser.uid}/profilePicture`);
+                    // uploads image to Firebase Storage
                     const uploadTask = uploadBytesResumable(fileRef, blob);
                     uploadTask.on('state_changed', snapshot => {
+                        // sets progress bar
                             const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
                             setIsLoading(true)
                             setPercent(progress);
@@ -119,6 +124,7 @@ export default function EditAccount() {
             </View>
         )
     }
+    //async function that gets image from device
     const _pickImage = async () => {
         try {
             const {status} = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -132,7 +138,7 @@ export default function EditAccount() {
                 await _handleImagePicked(pickerResult);
             }
         } catch (e) {
-            //console.log(e);
+            console.log(e);
             Sentry.Native.captureException(e.message);
         }
     };
