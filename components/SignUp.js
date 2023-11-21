@@ -35,8 +35,6 @@ export default function Signup(){
         retypedPassword:false
     })
     const [toggleCheckbox, setToggleCheckbox] = useState(false);
-    const [result, setResult] = useState(null);
-
     const DEFAULT_IMAGE = Image.resolveAssetSource(userPhoto).uri;
     const [image, setImage] = useState({photoURL:DEFAULT_IMAGE});
 
@@ -45,15 +43,15 @@ export default function Signup(){
         if (status !== 'granted') {
             alert('Sorry! We need permission to change your profile picture!');
         } else {
-            let result = await ImagePicker.launchImageLibraryAsync({
+            let pickedImage = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.All,
                 allowsEditing: true,
                 aspect: [1, 1],
                 quality: 0.5,
             });
 
-            if (!result.canceled) {
-                setImage({photoURL:result.assets[0].uri});
+            if (!pickedImage.canceled) {
+                setImage({photoURL:pickedImage.assets[0].uri});
             }
         }
     };
@@ -72,12 +70,11 @@ export default function Signup(){
     }
 
     const handlePrivacyPolicy = async () => {
-        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/privacy-policy');
-        setResult(result);
+        await WebBrowser.openBrowserAsync('https://out2eat.app/privacy-policy');
     };
     const handleToS = async () => {
-        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
-        setResult(result);
+        await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
+
     };
 
     async function registerUser(){
