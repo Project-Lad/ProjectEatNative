@@ -32,7 +32,6 @@ export default function EditAccount() {
     const firestore = getFirestore();
     const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName})
     const [newProfilePicture, setNewProfilePicture] = useState({photoURL: currentUser.photoURL})
-    const [result, setResult] = useState(null);
     const [updateDisable, setUpdateDisable] = useState(true)
     const [isLoading, setIsLoading] = useState(false);
     const [percent, setPercent] = useState(0);
