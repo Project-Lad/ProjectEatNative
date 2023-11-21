@@ -162,12 +162,10 @@ export default function EditAccount() {
     }
 
     const handlePrivacyPolicy = async () => {
-        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/privacy-policy');
-        setResult(result);
+        await WebBrowser.openBrowserAsync('https://out2eat.app/privacy-policy');
     };
     const handleToS = async () => {
-        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
-        setResult(result);
+        await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
     };
 
     async function signOut() {
