@@ -14,14 +14,14 @@ import Decision from "./components/Decision";
 import Intro from "./components/Intro"
 import firebase from "./firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import {BackHandler, View, TouchableOpacity,Text,Platform} from "react-native";
+import {BackHandler, View, TouchableOpacity,Text} from "react-native";
 import * as Sentry from 'sentry-expo';
 import * as Linking from 'expo-linking';
 import { ProfileStyles} from "./components/InputStyles";
 import {StrokeAnimation} from "./components/AnimatedSVG";
 import {Ionicons} from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import * as Device from 'expo-device';
 async function fetchLaunchData() {
     const appData = await AsyncStorage.getItem("appLaunched");
     let firstLaunch;
@@ -102,7 +102,7 @@ function AuthStack(props) {
                     headerLeft:()=>(
                         <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={{flexDirection:'row', alignItems:'center',justifyContent:'flex-start'}}>
                             <Ionicons style={{color:'#2e344f', fontSize:22}}  name="arrow-back"/>
-                            {Platform.OS === 'ios'?<Text style={{color:'#2e344f', fontSize:18}}>Profile</Text>:null}
+                            {Device.brand === 'Apple'?<Text style={{color:'#2e344f', fontSize:18}}>Profile</Text>:null}
                         </TouchableOpacity>
                         ),
                     }}
