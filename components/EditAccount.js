@@ -11,10 +11,9 @@ import {
     LogBox, ActivityIndicator
 } from 'react-native';
 import * as Device from 'expo-device';
-import {getStorage, ref, getDownloadURL, deleteObject, uploadBytes, uploadBytesResumable} from "firebase/storage";
+import {getStorage, ref, getDownloadURL, deleteObject, uploadBytesResumable} from "firebase/storage";
 import {getAuth, updateProfile} from "firebase/auth";
 import {getFirestore, doc, setDoc, deleteDoc} from "firebase/firestore";
-import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
 import * as Sentry from "sentry-expo";
 import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
@@ -26,7 +25,6 @@ import userPhoto from "../assets/user-placeholder.png";
 import {manipulateAsync, SaveFormat} from 'expo-image-manipulator';
 
 export default function EditAccount() {
-    const navigation = useNavigation()
     const auth = getAuth()
     const currentUser = auth.currentUser;
     const storage = getStorage();
@@ -155,29 +153,6 @@ export default function EditAccount() {
         }
     };
 
-   /* async function uploadImageAsync(uri) {
-        const newImage = await manipulateAsync(uri, [], {
-            compress: 1,
-            format: SaveFormat.PNG
-        })
-        const img = await fetch(newImage.uri);
-        const blob = await img.blob();
-        const fileRef = ref(storage, `${currentUser.uid}/profilePicture`);
-        const uploadTask = uploadBytesResumable(fileRef, blob);
-        uploadTask.on('state_changed', snapshot => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            setIsLoading(true)
-            setPercent(progress);
-        },
-            (error) => Sentry.Native.captureException(error.message),
-            () => {
-                setIsLoading(false)
-                setUpdateDisable(false)
-            }
-        );
-        return await getDownloadURL(fileRef);
-    }*/
-
     // handlers for onPress TextInput style change
     const handleInputFocus = () => {
         setIsFocused(true)
@@ -277,8 +252,7 @@ export default function EditAccount() {
                         }
                     }}
                 />
-                <TouchableOpacity style={updateDisable ? InputStyles.disabledUpdateButtons : InputStyles.updateButtons}
-                                  disabled={updateDisable} onPress={userName}>
+                <TouchableOpacity style={updateDisable ? InputStyles.disabledUpdateButtons : InputStyles.updateButtons} disabled={updateDisable} onPress={userName}>
                     <Text style={updateDisable ? InputStyles.disabledButtonText : InputStyles.buttonText}>Update</Text>
                     <Ionicons style={updateDisable ? IconStyles.disabledEditArrowRight : IconStyles.editArrowRight}
                               name="chevron-forward-outline"/>
