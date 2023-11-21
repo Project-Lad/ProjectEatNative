@@ -1,5 +1,5 @@
-import {Dimensions,Platform, StyleSheet} from "react-native";
-
+import {Dimensions, StyleSheet} from "react-native";
+import * as Device from 'expo-device';
 let ScreenHeight = Dimensions.get("window").height;
 let ScreenWidth = Dimensions.get("window").width;
 
@@ -35,7 +35,7 @@ const InputStyles = StyleSheet.create({
     focusZipInputStyle: {
         width: '85%',
         marginBottom: 15,
-        padding: Platform.OS === 'ios'?'5%':'2%',
+        padding: Device.brand === 'Apple' ?'5%':'2%',
         backgroundColor:'#fff',
         borderColor: "#f97c4d",
         borderWidth:2,
@@ -45,7 +45,7 @@ const InputStyles = StyleSheet.create({
     zipInputStyle: {
         width: '85%',
         marginBottom: 15,
-        padding:  Platform.OS === 'ios'?'5%':'2%',
+        padding:  Device.brand === 'Apple'?'5%':'2%',
         backgroundColor:'#eee',
         fontSize:14,
         borderRadius:10,
@@ -296,7 +296,7 @@ const LobbyStyles = StyleSheet.create({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding:Platform.OS === 'ios'?'5%' : 10,
+        padding:Device.brand === 'Apple'?'5%' : 10,
         height:'50%',
     },
     listContainer:{
@@ -414,7 +414,7 @@ const LobbyStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: Platform.OS === 'ios'?'5%':'2%'
+        padding: Device.brand === 'Apple'?'5%':'2%'
     },
     modalView: {
         backgroundColor: 'rgba(46, 53, 78,.95)',
@@ -429,14 +429,14 @@ const LobbyStyles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 20,
-        height: Platform.OS === 'ios'?'65%':'65%',
+        height: Device.brand === 'Apple'?'65%':'65%',
         marginTop:'15%',
         justifyContent:'space-between'
     },
     zipInputStyle: {
         width: '85%',
         marginBottom: 15,
-        padding:  Platform.OS === 'ios'?'5%':10,
+        padding:  Device.brand === 'Apple'?'5%':10,
         alignSelf: "center",
         borderColor: "#f1f1f1",
         backgroundColor: 'white',
@@ -562,7 +562,7 @@ const CardStyle = StyleSheet.create({
         borderRadius: 20,
         padding: 10,
         margin:10,
-        marginTop:Platform.OS === 'ios' ? 50 : 20,
+        marginTop:Device.brand === 'Apple' ? 50 : 20,
         shadowColor: "#eee",
         shadowOffset: {
             width: 0,
@@ -662,7 +662,6 @@ const DecisionStyle = StyleSheet.create({
         justifyContent:"space-evenly"
     },
     yelpStarReview:{
-        //width:Platform.OS === 'ios' ? 136: 205,
         width:136,
         height:24,
     },

@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity,LogBox} from "react-native";
+import {Text, View, Image, Linking, Modal, Pressable, TouchableOpacity,LogBox} from "react-native";
+import * as Device from 'expo-device';
 import {useNavigation} from '@react-navigation/native'
 import burgerJPG from '../assets/burger_image.jpg';
 import YelpBurst from '../assets/yelp_burst.png'
@@ -261,7 +262,7 @@ const Cards = (props) => {
                 const distance = current.distance;
                 const review_count = current.review_count;
 
-                if (Platform.OS === 'android') {
+                if (Device.brand === 'Google') {
                     switch (rating) {
                         case 0:
                             rating = androidStar0
@@ -422,7 +423,7 @@ const Cards = (props) => {
         return true;
     }
 
-    function handleNope(card) {
+    function handleNope() {
         return true;
     }
 

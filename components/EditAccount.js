@@ -7,10 +7,10 @@ import {
     Image,
     Alert,
     KeyboardAvoidingView,
-    Platform,
     BackHandler,
     LogBox, ActivityIndicator
 } from 'react-native';
+import * as Device from 'expo-device';
 import {getStorage, ref, getDownloadURL, deleteObject, uploadBytes, uploadBytesResumable} from "firebase/storage";
 import {getAuth, updateProfile} from "firebase/auth";
 import {getFirestore, doc, setDoc, deleteDoc} from "firebase/firestore";
@@ -23,8 +23,7 @@ import {Ionicons} from '@expo/vector-icons';
 LogBox.ignoreLogs(['Setting a timer']);
 import * as WebBrowser from 'expo-web-browser';
 import userPhoto from "../assets/user-placeholder.png";
-import {manipulateAsync, FlipType, SaveFormat} from 'expo-image-manipulator';
-import * as MailComposer from "expo-mail-composer";
+import {manipulateAsync, SaveFormat} from 'expo-image-manipulator';
 
 export default function EditAccount() {
     const navigation = useNavigation()
@@ -242,7 +241,7 @@ export default function EditAccount() {
             justifyContent: "center",
             backgroundColor: '#fff'
         }}>
-            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{
+            <KeyboardAvoidingView behavior={Device.brand === "Apple" ? "padding" : "height"} style={{
                 flex: .5,
                 flexDirection: "column",
                 justifyContent: "center",

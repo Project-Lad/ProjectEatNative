@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {Alert, TextInput, TouchableOpacity, Text, BackHandler, Platform, KeyboardAvoidingView,LogBox} from 'react-native';
+import {Alert, TextInput, TouchableOpacity, Text, BackHandler, KeyboardAvoidingView,LogBox} from 'react-native';
+import * as Device from 'expo-device';
 import {useNavigation} from '@react-navigation/native'
 import {IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
@@ -23,7 +24,7 @@ export default function Connect({ route }) {
 
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
+        <KeyboardAvoidingView behavior={Device.brand === "Apple" ? "padding" : "height"} style={InputStyles.container}>
             <TextInput
                 style={isFocused ? InputStyles.focusInputStyle : InputStyles.inputStyle}
                 placeholder="Enter Lobby Code"
