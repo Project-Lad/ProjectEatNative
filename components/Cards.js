@@ -186,7 +186,7 @@ const Cards = (props) => {
     const handleCardSet = useCallback((value) => {
         props.setCard(value)
     }, [props.setCard])
-
+    // this function is used to set the modal visible using the props passed down from the parent
     const handleModalSet = useCallback((value) => {
         props.setModalVisible(value)
     }, [props.setModalVisible])
@@ -466,7 +466,7 @@ const Cards = (props) => {
         }).catch((error) => {
             Sentry.Native.captureException(error.message);
         })
-        
+
         unsubs.push(unsubFromSessionSize)
         unsubs.push(unsubscribeFromDocument);
     }

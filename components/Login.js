@@ -45,7 +45,9 @@ export default class Login extends Component {
             this.setState({
                 isLoading: true,
             })
+            //firebase auth login function
             const auth = getAuth();
+            //firebase signInWithEmailAndPassword function
              signInWithEmailAndPassword(auth,this.state.email, this.state.password)
                 .then((res) => {
                     this.setState({
