@@ -25,7 +25,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 async function fetchLaunchData() {
     const appData = await AsyncStorage.getItem("appLaunched");
     let firstLaunch;
-    if(appData == null) {
+    if(appData === null) {
         firstLaunch = true;
         await AsyncStorage.setItem("appLaunched", "false");
     } else {
@@ -47,7 +47,8 @@ function AuthStack(props) {
                     fontSize:24
                 },
                 gestureEnabled:false
-            }}>
+            }
+        }>
             {props.firstLaunch && (
                 <Stack.Screen
                     options={{ headerShown: false }}
@@ -162,11 +163,11 @@ const linking = {
 export default function App() {
     const [isLoggedIn, setLogIn] = useState(false)
     const [isLoading, setIsLoading] = useState(true);
-    const [firstLaunch, setFirstLaunch] = React.useState(null);
+    const [firstLaunch, setFirstLaunch] = React.useState(false);
     const auth = getAuth();
 
     useEffect(()=>{
-        fetchLaunchData().then(r => {setFirstLaunch(r)});
+        fetchLaunchData().then(r => setFirstLaunch(r));
 
         onAuthStateChanged(auth,user => {
             if(user) {

@@ -26,6 +26,7 @@ import iosStar45 from '../assets/ios/regular_4_half.png'
 import iosStar5 from '../assets/ios/regular_5.png'
 
 import SwipeCards from "react-native-swipe-cards-deck";
+import Swiper from 'react-native-deck-swiper';
 import { getAuth } from "firebase/auth";
 import {
     getFirestore,
@@ -177,6 +178,7 @@ const Cards = (props) => {
     let [offset, setOffset] = useState(props.offset);
     let [calledYelp, setCalledYelp] = useState(false);
     let [loadingMessage, setLoadingMessage] = useState("");
+    let [currentCard, setCurrentCard] = useState();
     const auth = getAuth()
     const userUid = auth.currentUser.uid;
     const firestore = getFirestore();
@@ -484,12 +486,13 @@ const Cards = (props) => {
         getDoc(matchedRef).then((docSnapshot) => {
             if (!docSnapshot.exists()) {
                 setDoc(matchedRef, { counter: 0 }).then(() => {
-                }).catch(() => {
+                    console.log("set document");
+                }).catch((error) => {
+                    Sentry.Native.captureException(error.message);
                 });
             }
 
             unsubscribeFromDocument = onSnapshot(matchedRef, (docSnapshot) => {
-
                 if (docSnapshot.data() !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
                     unsubscribeFromDocument();
                     unsubFromSessionSize();
@@ -576,7 +579,40 @@ const Cards = (props) => {
                              loadingMessage={loadingMessage}/>
                 :
                 <View style={CardStyle.container}>
-                    <SwipeCards
+                    <Swiper
+                        ref={(swiper) => swipeCardRef = swiper}
+                        onSwipedRight={() => handleYup(currentCard)}
+                        onSwipedLeft={() => handleNope(currentCard)}
+                        onSwipedAll={() => {
+                            let size = data.length
+                            data = []
+                            setTimeout(() => setOffset(offset + size), 0);
+                            setTimeout(() => setCalledYelp(false), 0);
+                            setTimeout(() => setResData([]), 0);
+                        }}
+                        cards={data}
+                        renderCard={(cardData, cardIndex) => {
+                            setCurrentCard(cardData);
+
+                            return (
+                                <View style={{flex: 1, flexDirection: "column", justifyContent: "space-evenly"}}>
+                                    <View style={{flex: 0.85}}>
+                                        <Card {...cardData} />
+                                    </View>
+                                </View>
+                            )}
+                        }
+                    >
+                        <View style={CardStyle.yupNopeView}>
+                            <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => swipeCardRef.swipeRight()}>
+                                <Ionicons style={{fontSize: 48}} name={"thumbs-up-outline"}/>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => swipeCardRef.swipeLeft()}>
+                                <Ionicons style={{fontSize: 48}} name={"thumbs-down-outline"}/>
+                            </TouchableOpacity>
+                        </View>
+                    </Swiper>
+                    {/*<SwipeCards
                         ref={swipeCardRef}
                         cards={data}
                         renderCard={(cardData) => (
@@ -613,7 +649,7 @@ const Cards = (props) => {
                             nope: {show: false, onAction: handleNope},
                             yup: {show: false, onAction: handleYup}
                         }}
-                    />
+                    />*/}
                 </View>
             }
         </View>
