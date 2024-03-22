@@ -206,7 +206,7 @@ const Cards = (props) => {
         if(resData.length === 0) {
             if(!calledYelp) {
                 getYelpData().then(r => {
-                    if(r.length !== 0) {
+                    if(r.length !== 0 && r.length !== undefined) {
                         setData(r)
                         setResData(r)
                     } else {
@@ -578,9 +578,14 @@ const Cards = (props) => {
                 <LoadingCard code={props.code} offset={offset} navigation={navigation} isHost={props.isHost}
                              loadingMessage={loadingMessage}/>
                 :
-                <View style={CardStyle.container}>
+                <View style={CardStyle.swiperContainer}>
                     <Swiper
                         ref={(swiper) => swipeCardRef = swiper}
+                        backgroundColor={"#eee"}
+                        cardHorizontalMargin={0}
+                        cardVerticalMargin={20}
+                        disableBottomSwipe={true}
+                        disableTopSwipe={true}
                         onSwipedRight={() => handleYup(currentCard)}
                         onSwipedLeft={() => handleNope(currentCard)}
                         onSwipedAll={() => {
@@ -596,22 +601,19 @@ const Cards = (props) => {
 
                             return (
                                 <View style={{flex: 1, flexDirection: "column", justifyContent: "space-evenly"}}>
-                                    <View style={{flex: 0.85}}>
-                                        <Card {...cardData} />
-                                    </View>
+                                    <Card {...cardData} />
                                 </View>
                             )}
                         }
-                    >
-                        <View style={CardStyle.yupNopeView}>
-                            <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => swipeCardRef.swipeRight()}>
-                                <Ionicons style={{fontSize: 48}} name={"thumbs-up-outline"}/>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => swipeCardRef.swipeLeft()}>
-                                <Ionicons style={{fontSize: 48}} name={"thumbs-down-outline"}/>
-                            </TouchableOpacity>
-                        </View>
-                    </Swiper>
+                    />
+                    <View style={CardStyle.yupNopeView}>
+                        <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => swipeCardRef.swipeRight()}>
+                            <Ionicons style={{fontSize: 48}} name={"thumbs-up-outline"}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => swipeCardRef.swipeLeft()}>
+                            <Ionicons style={{fontSize: 48}} name={"thumbs-down-outline"}/>
+                        </TouchableOpacity>
+                    </View>
                     {/*<SwipeCards
                         ref={swipeCardRef}
                         cards={data}
