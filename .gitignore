@@ -12,3 +12,7 @@ web-build/
 # macOS
 .DS_Store
 .package-lock.json
+/.idea/copilot/chatSessions/00000000000.xd
+/package-lock.json
+/.idea/copilot/chatSessions/blobs/version
+/.idea/copilot/chatSessions/xd.lck
