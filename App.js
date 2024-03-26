@@ -12,6 +12,7 @@ import GuestSession from "./components/GuestSession";
 import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import Intro from "./components/Intro"
+import firebase from "./firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {BackHandler, View, TouchableOpacity,Text} from "react-native";
 import * as Sentry from 'sentry-expo';
