@@ -166,7 +166,7 @@ export default class HostSession extends Component {
 
         for(let i = 0; i < 2; i++) {
             //creates session using the newly generated code
-            setDoc(sessionRef, {zip: null, start: false, latitude: latitude, longitude: longitude})
+            setDoc(sessionRef, {zip: null, start: false, latitude: latitude, longitude: longitude, dateTime: new Date().toDateString()})
                 .then(() => {
                     //adds the current host user to the document
                     setDoc(usersDocRef, {

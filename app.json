@@ -25,7 +25,8 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/39ace77c-aecc-4b8d-ab50-d7f67a70f2d9"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -40,7 +41,9 @@
         "NSCameraUsageDescription": "If you wish to provide a profile picture we need access to your camera/photo library. Giving this access will ensure you can put your own custom profile picture. We do not view or do anything with your profile picture. This is only to for customizing your profile.",
         "NSPhotoLibraryAddUsageDescription": "If you wish to provide a profile picture we need access to your camera/photo library. Giving this access will ensure you can put your own custom profile picture. We do not view or do anything with your profile picture. This is only to for customizing your profile.",
         "NSPhotoLibraryUsageDescription": "If you wish to provide a profile picture we need access to your camera/photo library. Giving this access will ensure you can put your own custom profile picture. We do not view or do anything with your profile picture. This is only to for customizing your profile.",
-        "LSApplicationQueriesSchemes": ["out2eat"]
+        "LSApplicationQueriesSchemes": [
+          "out2eat"
+        ]
       }
     },
     "android": {
@@ -64,6 +67,9 @@
             }
           ]
         }
+      ],
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "description": "",
@@ -80,6 +86,9 @@
       "eas": {
         "projectId": "39ace77c-aecc-4b8d-ab50-d7f67a70f2d9"
       }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }
