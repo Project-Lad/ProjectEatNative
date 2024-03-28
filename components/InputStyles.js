@@ -596,12 +596,14 @@ const CardStyle = StyleSheet.create({
         right:0
     },
     yupNopeView:{
-        flexDirection:'row-reverse',
-        justifyContent:"space-between",
+        flexDirection: 'row-reverse',
+        display:'flex',
+        justifyContent:'space-around',
         alignItems:"flex-end",
         flex: 1,
         //borderWidth: 3, borderColor: 'red',
-        marginBottom:'10%'
+        marginBottom:'10%',
+        width:'100%',
     },
     yupNopeButtons:{
         borderRadius:100,

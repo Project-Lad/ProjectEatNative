@@ -26,7 +26,7 @@ import iosStar4 from '../assets/ios/regular_4.png'
 import iosStar45 from '../assets/ios/regular_4_half.png'
 import iosStar5 from '../assets/ios/regular_5.png'
 
-import SwipeCards from "react-native-swipe-cards-deck";
+//import SwipeCards from "react-native-swipe-cards-deck";
 import Swiper from 'react-native-deck-swiper';
 import { getAuth } from "firebase/auth";
 import {
