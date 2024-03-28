@@ -132,7 +132,6 @@ export default function EditAccount() {
                 await _handleImagePicked(pickerResult);
             }
         } catch (e) {
-            //console.log(e);
             Sentry.Native.captureException(e.message);
         }
     };
@@ -215,7 +214,7 @@ export default function EditAccount() {
                 ]
             );
         } catch (e) {
-            console.log(e)
+            Sentry.Native.captureException(e.message);
         }
     }
 

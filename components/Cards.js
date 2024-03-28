@@ -486,7 +486,6 @@ const Cards = (props) => {
         getDoc(matchedRef).then((docSnapshot) => {
             if (!docSnapshot.exists()) {
                 setDoc(matchedRef, { counter: 0 }).then(() => {
-                    console.log("set document");
                 }).catch((error) => {
                     Sentry.Native.captureException(error.message);
                 });

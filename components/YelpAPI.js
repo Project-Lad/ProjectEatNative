@@ -32,7 +32,6 @@ const Data = async (zip, categories, offset, distance, latitude, longitude) => {
                 restaurantData = result.businesses
             })
             .catch((error) => {
-                console.log(error.message)
                 Sentry.Native.captureException(error.message);
             });
 

@@ -33,7 +33,6 @@ export default function SwipeFeature({route}) {
                 const sessionData = docSnapshot.data();
                 if (route.params.isHost === false && sessionData.start === false) {
                     alertUnsubscriber();
-                    console.log("isHost is false, start is false");
                     navigation.navigate('Guest Session', {code: route.params.code});
                 }
             } else {

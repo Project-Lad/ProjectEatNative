@@ -693,7 +693,6 @@ export default class HostSession extends Component {
                                         {
                                             text: "Let's Eat!!",
                                             onPress: () => {
-                                                console.log("hitting the start button");
                                                 this.changeScreens()
                                             }
                                         }

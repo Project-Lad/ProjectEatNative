@@ -67,7 +67,7 @@ export default function Signup(){
 
         const userProfilePic = ref(storage, `${auth.currentUser.uid}/`+ imageName);
         uploadBytes(userProfilePic, blob).then((snapshot) => {
-            console.log('Uploaded a blob or file!');
+
         });
         return ref.put(blob)
     }
