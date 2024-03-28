@@ -597,10 +597,9 @@ const CardStyle = StyleSheet.create({
     },
     yupNopeView:{
         flexDirection: 'row-reverse',
-        display:'flex',
         justifyContent:'space-around',
         alignItems:"flex-end",
-        flex: 1,
+        top:'90%',
         //borderWidth: 3, borderColor: 'red',
         marginBottom:'10%',
         width:'100%',
