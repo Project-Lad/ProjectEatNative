@@ -21,8 +21,7 @@
     "buildProfileName": {
       "android": {
         "image": "latest"
-      },
-      "channel": "buildProfileName"
+      }
     }
   },
   "submit": {
