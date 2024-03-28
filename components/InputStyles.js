@@ -479,8 +479,8 @@ const LobbyStyles = StyleSheet.create({
 const CardStyle = StyleSheet.create({
     container:{
         backgroundColor:'#eee',
-        //height:ScreenHeight,
-        flex:1,
+        width:"100%",
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         padding:10,
@@ -492,6 +492,13 @@ const CardStyle = StyleSheet.create({
         justifyContent: 'center',
         width:ScreenWidth * .95,
         marginTop:"35%"
+    },
+    swiperContainer:{
+        backgroundColor:'#eee',
+        height:ScreenHeight * .95,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width:"100%"
     },
     card: {
         height:undefined,
@@ -590,10 +597,11 @@ const CardStyle = StyleSheet.create({
     },
     yupNopeView:{
         flexDirection:'row-reverse',
-        justifyContent:"space-evenly",
-        alignItems:"center",
+        justifyContent:"space-between",
+        alignItems:"flex-end",
+        flex: 1,
         //borderWidth: 3, borderColor: 'red',
-        marginTop:'35%'
+        marginBottom:'10%'
     },
     yupNopeButtons:{
         borderRadius:100,

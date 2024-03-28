@@ -26,6 +26,7 @@ import iosStar45 from '../assets/ios/regular_4_half.png'
 import iosStar5 from '../assets/ios/regular_5.png'
 
 import SwipeCards from "react-native-swipe-cards-deck";
+import Swiper from 'react-native-deck-swiper';
 import { getAuth } from "firebase/auth";
 import {
     getFirestore,
@@ -177,6 +178,7 @@ const Cards = (props) => {
     let [offset, setOffset] = useState(props.offset);
     let [calledYelp, setCalledYelp] = useState(false);
     let [loadingMessage, setLoadingMessage] = useState("");
+    let [currentCard, setCurrentCard] = useState();
     const auth = getAuth()
     const userUid = auth.currentUser.uid;
     const firestore = getFirestore();
@@ -204,7 +206,7 @@ const Cards = (props) => {
         if(resData.length === 0) {
             if(!calledYelp) {
                 getYelpData().then(r => {
-                    if(r.length !== 0) {
+                    if(r.length !== 0 && r.length !== undefined) {
                         setData(r)
                         setResData(r)
                     } else {
@@ -446,7 +448,7 @@ const Cards = (props) => {
         }).then(() => {
             // listen for changes to the document and navigate to the final decision screen if a majority of the group wants it
             unsubscribeFromDocument = onSnapshot(matchedRef, (docSnapshot) => {
-                if (docSnapshot.data().counter !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
+                if (docSnapshot.data() !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
                     unsubscribeFromDocument();
                     unsubFromSessionSize();
                     data = [];
@@ -484,13 +486,14 @@ const Cards = (props) => {
         getDoc(matchedRef).then((docSnapshot) => {
             if (!docSnapshot.exists()) {
                 setDoc(matchedRef, { counter: 0 }).then(() => {
-                }).catch(() => {
+                    console.log("set document");
+                }).catch((error) => {
+                    Sentry.Native.captureException(error.message);
                 });
             }
 
             unsubscribeFromDocument = onSnapshot(matchedRef, (docSnapshot) => {
-
-                if (docSnapshot.data().counter !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
+                if (docSnapshot.data() !== undefined && (docSnapshot.data().counter / sessionSize) > 0.50) {
                     unsubscribeFromDocument();
                     unsubFromSessionSize();
                     //move screens. read document id, send that to next screen and pull data using the yelp api to
@@ -575,8 +578,43 @@ const Cards = (props) => {
                 <LoadingCard code={props.code} offset={offset} navigation={navigation} isHost={props.isHost}
                              loadingMessage={loadingMessage}/>
                 :
-                <View style={CardStyle.container}>
-                    <SwipeCards
+                <View style={CardStyle.swiperContainer}>
+                    <Swiper
+                        ref={(swiper) => swipeCardRef = swiper}
+                        backgroundColor={"#eee"}
+                        cardHorizontalMargin={0}
+                        cardVerticalMargin={20}
+                        disableBottomSwipe={true}
+                        disableTopSwipe={true}
+                        onSwipedRight={() => handleYup(currentCard)}
+                        onSwipedLeft={() => handleNope(currentCard)}
+                        onSwipedAll={() => {
+                            let size = data.length
+                            data = []
+                            setTimeout(() => setOffset(offset + size), 0);
+                            setTimeout(() => setCalledYelp(false), 0);
+                            setTimeout(() => setResData([]), 0);
+                        }}
+                        cards={data}
+                        renderCard={(cardData, cardIndex) => {
+                            setCurrentCard(cardData);
+
+                            return (
+                                <View style={{flex: 1, flexDirection: "column", justifyContent: "space-evenly"}}>
+                                    <Card {...cardData} />
+                                </View>
+                            )}
+                        }
+                    />
+                    <View style={CardStyle.yupNopeView}>
+                        <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => swipeCardRef.swipeRight()}>
+                            <Ionicons style={{fontSize: 48}} name={"thumbs-up-outline"}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={CardStyle.yupNopeButtons} onPress={() => swipeCardRef.swipeLeft()}>
+                            <Ionicons style={{fontSize: 48}} name={"thumbs-down-outline"}/>
+                        </TouchableOpacity>
+                    </View>
+                    {/*<SwipeCards
                         ref={swipeCardRef}
                         cards={data}
                         renderCard={(cardData) => (
@@ -613,7 +651,7 @@ const Cards = (props) => {
                             nope: {show: false, onAction: handleNope},
                             yup: {show: false, onAction: handleYup}
                         }}
-                    />
+                    />*/}
                 </View>
             }
         </View>

@@ -41,6 +41,7 @@ class ForgotPassword extends Component {
                 .catch(error => {
                     Alert.alert("Forgot Password Email", "An email containing a reset link has been sent to the provided email address if the account exists.");
                     this.setState({ errorMessage: error.message })
+                    console.log(error.message);
                     this.props.navigation.navigate('Login')
                 })
         }
