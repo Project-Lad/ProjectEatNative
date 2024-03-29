@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {SENTRY_DSN} from '@env';
 import SwipeFeature from "./components/SwipeFeature";
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -21,6 +22,9 @@ import { ProfileStyles} from "./components/InputStyles";
 import {StrokeAnimation} from "./components/AnimatedSVG";
 import {Ionicons} from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 
 async function fetchLaunchData() {
     const appData = await AsyncStorage.getItem("appLaunched");
@@ -139,14 +143,16 @@ function LoginSignup(){
     </Stack.Navigator>
     )
 }
+
 Sentry.init({
-    dsn: "https://767ea43956cc4dbdbbb48abbeb8dffa7@o1403110.ingest.sentry.io/6735768",
+    dsn: SENTRY_DSN,
     enableInExpoDevelopment: true,
     debug:true,
 });
 
 const Stack = createStackNavigator();
 let linkPrefix = Linking.createURL('path/screen/')
+
 const linking = {
     prefixes: [linkPrefix],
     config:{
@@ -160,13 +166,14 @@ const linking = {
         }
     }
 }
+
 export default function App() {
     const [isLoggedIn, setLogIn] = useState(false)
     const [isLoading, setIsLoading] = useState(true);
     const [firstLaunch, setFirstLaunch] = React.useState(false);
     const auth = getAuth();
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchLaunchData().then(r => setFirstLaunch(r));
 
         onAuthStateChanged(auth,user => {
