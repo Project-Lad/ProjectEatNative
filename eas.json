@@ -22,7 +22,7 @@
       "android": {
         "image": "latest"
       },
-      "channel": "buildProfileName"
+      "channel": "production"
     }
   },
   "submit": {
