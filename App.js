@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {SENTRY_DSN} from '@env';
 import SwipeFeature from "./components/SwipeFeature";
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
@@ -14,6 +14,7 @@ import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import Intro from "./components/Intro"
 import firebase from "./firebase";
+import {getFirestore, doc, setDoc} from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {BackHandler, View, TouchableOpacity,Text,Platform} from "react-native";
 import * as Sentry from 'sentry-expo';
@@ -25,6 +26,65 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true
+    })
+})
+
+async function registerForPushNotificationsAsync(authUserId) {
+    const firestore = getFirestore();
+    const userDocRef = doc(firestore, "users", authUserId);
+    let token;
+
+    if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+        });
+    }
+
+    if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+
+        if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+
+            finalStatus = status;
+        }
+
+        if (finalStatus !== 'granted') {
+            alert('Failed to get push token for push notification!');
+            return;
+        }
+
+        token = await Notifications.getExpoPushTokenAsync({
+            projectId: Constants.expoConfig.extra.eas.projectId,
+        });
+
+        if(token !== undefined) {
+            await setDoc(
+                userDocRef,
+                {
+                    expoPushToken: token
+                },
+                {merge: true})
+        }
+
+        console.log(authUserId);
+        console.log(token);
+    } else {
+        alert('Must use physical device for Push Notifications');
+    }
+
+    return token.data;
+}
 
 async function fetchLaunchData() {
     const appData = await AsyncStorage.getItem("appLaunched");
@@ -168,6 +228,10 @@ const linking = {
 }
 
 export default function App() {
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
+    const notificationListener = useRef();
+    const responseListener = useRef();
     const [isLoggedIn, setLogIn] = useState(false)
     const [isLoading, setIsLoading] = useState(true);
     const [firstLaunch, setFirstLaunch] = React.useState(false);
@@ -194,6 +258,21 @@ export default function App() {
         );
 
         setTimeout(() => {setIsLoading(false)}, 1650)
+
+        registerForPushNotificationsAsync(auth.currentUser.uid).then(token => setExpoPushToken(token));
+
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            setNotification(notification);
+        });
+
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response);
+        });
+
+        return () => {
+            Notifications.removeNotificationSubscription(notificationListener.current);
+            Notifications.removeNotificationSubscription(responseListener.current);
+        };
     }, []);
 
     return (
