@@ -256,15 +256,10 @@ export default function App() {
             "hardwareBackPress",
             backAction
         );
-
         setTimeout(() => {setIsLoading(false)}, 1650)
-
-        registerForPushNotificationsAsync(auth.currentUser.uid).then(token => setExpoPushToken(token));
-
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
             setNotification(notification);
         });
-
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
             console.log(response);
         });
@@ -274,6 +269,12 @@ export default function App() {
             Notifications.removeNotificationSubscription(responseListener.current);
         };
     }, []);
+
+    useEffect(() => {
+        if(isLoggedIn){
+            registerForPushNotificationsAsync(auth.currentUser.uid).then(token => setExpoPushToken(token));
+        }
+    }, [isLoggedIn])
 
     return (
         <NavigationContainer linking={linking}>
