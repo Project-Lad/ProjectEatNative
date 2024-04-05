@@ -76,9 +76,6 @@ async function registerForPushNotificationsAsync(authUserId) {
                 },
                 {merge: true})
         }
-
-        console.log(authUserId);
-        console.log(token);
     } else {
         alert('Must use physical device for Push Notifications');
     }
@@ -228,8 +225,7 @@ const linking = {
 }
 
 export default function App() {
-    const [expoPushToken, setExpoPushToken] = useState('');
-    const [notification, setNotification] = useState(false);
+    const [notification, setNotification] = useState(null);
     const notificationListener = useRef();
     const responseListener = useRef();
     const [isLoggedIn, setLogIn] = useState(false)
@@ -259,7 +255,7 @@ export default function App() {
 
         setTimeout(() => {setIsLoading(false)}, 1650)
 
-        registerForPushNotificationsAsync(auth.currentUser.uid).then(token => setExpoPushToken(token));
+        registerForPushNotificationsAsync(auth.currentUser.uid).then(r => {});
 
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
             setNotification(notification);
