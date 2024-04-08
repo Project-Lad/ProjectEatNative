@@ -16,7 +16,7 @@ import Intro from "./components/Intro"
 import firebase from "./firebase";
 import {getFirestore, doc, setDoc} from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import {BackHandler, View, TouchableOpacity,Text,Platform} from "react-native";
+import {BackHandler, View, TouchableOpacity, Text, Platform, Alert} from "react-native";
 import * as Sentry from 'sentry-expo';
 import * as Linking from 'expo-linking';
 import { ProfileStyles} from "./components/InputStyles";
@@ -60,7 +60,20 @@ async function registerForPushNotificationsAsync(authUserId) {
         }
 
         if (finalStatus !== 'granted') {
-            alert('Failed to get push token for push notification!');
+            Alert.alert(
+                "Push Notifications",
+                "Whoops, it looks like don't allow us to send you notifications! \n\n" +
+                "In order to receive notifications from Out2Eat, please go to your application settings and allow push notifications.",
+                [
+                    {
+                        text: "Okay!",
+                        onPress: () => {
+
+                        }
+                    }
+                ]
+            )
+
             return;
         }
 
@@ -77,7 +90,7 @@ async function registerForPushNotificationsAsync(authUserId) {
                 {merge: true})
         }
     } else {
-        alert('Must use physical device for Push Notifications');
+        alert('Cannot activate push notifications when on an emulator. Please use a physical device.');
     }
 
     return token.data;
@@ -268,7 +281,7 @@ export default function App() {
 
     useEffect(() => {
         if(isLoggedIn){
-            registerForPushNotificationsAsync(auth.currentUser.uid).then(token => setExpoPushToken(token));
+            registerForPushNotificationsAsync(auth.currentUser.uid).then(token => (token));
         }
     }, [isLoggedIn])
 
