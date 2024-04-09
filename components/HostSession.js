@@ -23,7 +23,7 @@ import {getStorage, ref, getDownloadURL} from "firebase/storage";
 import {InputStyles, IconStyles, LobbyStyles, CardStyle, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from "expo-location";
-import * as Sentry from "sentry-expo";
+import * as Sentry from "@sentry/react-native";
 import {StrokeAnimation} from "./AnimatedSVG";
 import userPhoto from "../assets/user-placeholder.png";
 LogBox.ignoreLogs(['Setting a timer']);
@@ -123,7 +123,7 @@ export default class HostSession extends Component {
                 this.createSession("assets_userplaceholder");
 
                 if (!error.message.includes("storage/object-not-found")) {
-                    Sentry.Native.captureException(error.message);
+                    Sentry.captureException(error.message);
                 }
             })
 
@@ -136,7 +136,7 @@ export default class HostSession extends Component {
                 this.createSession("assets_userplaceholder");
 
                 if (!error.message.includes("storage/object-not-found")) {
-                    Sentry.Native.captureException(error.message);
+                    Sentry.captureException(error.message);
                 }
             })*/
 
@@ -178,11 +178,11 @@ export default class HostSession extends Component {
                             i = 3
                         })
                         .catch((error) => {
-                            Sentry.Native.captureException(error.message);
+                            Sentry.captureException(error.message);
                         });
                 })
                 .catch((error) => {
-                    Sentry.Native.captureException("Error creating session retry attempt #" + i + " Error: " + error.message);
+                    Sentry.captureException("Error creating session retry attempt #" + i + " Error: " + error.message);
                     Alert.alert(
                         "Failed to Create Lobby",
                         "Uh oh, something went wrong! Make sure your connection is stable and please try again!",
@@ -209,10 +209,10 @@ export default class HostSession extends Component {
                     photoURL: url
                 }).then(() => {})
                     .catch((error) => {
-                        Sentry.Native.captureException(error.message);
+                        Sentry.captureException(error.message);
                     })
             }).catch((error) => {
-            Sentry.Native.captureException(error.message);
+            Sentry.captureException(error.message);
         })*/
     }
 
@@ -228,7 +228,7 @@ export default class HostSession extends Component {
                 result = 1;
             }
         }).catch((error) => {
-            Sentry.Native.captureException(error.message);
+            Sentry.captureException(error.message);
         });
 
         return result;
@@ -308,7 +308,7 @@ export default class HostSession extends Component {
                             querySnapshot.forEach((doc) => {
                                 deleteDoc(doc(doc.parent, doc.id)).then(() => {})
                                     .catch((error) => {
-                                        Sentry.Native.captureException(error.message);
+                                        Sentry.captureException(error.message);
                                     });
                             });
                         });
@@ -316,7 +316,7 @@ export default class HostSession extends Component {
                         deleteDoc(doc(firestore, 'sessions', this.state.code)).then(() => {
                             setTimeout(() => { this.props.navigation.navigate('Profile') }, 1650);
                         }).catch((error) => {
-                            Sentry.Native.captureException(error.message);
+                            Sentry.captureException(error.message);
                             setTimeout(() => { this.props.navigation.navigate('Profile') }, 1650);
                         });
                     }
@@ -340,7 +340,7 @@ export default class HostSession extends Component {
                     distance: this.state.distance,
                     categories: this.state.categories
                 }).catch((error) => {
-                    Sentry.Native.captureException(error.message);
+                    Sentry.captureException(error.message);
                 });
 
                 //navigate to the swipe page manually
@@ -365,7 +365,7 @@ export default class HostSession extends Component {
                     distance: this.state.distance,
                     categories: this.state.categories
                 }).catch((error) => {
-                    Sentry.Native.captureException(error.message);
+                    Sentry.captureException(error.message);
                 });
 
                 //navigate to the swipe page manually
