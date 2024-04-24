@@ -17,7 +17,7 @@ import "firebase/firestore";
 import {InputStyles,IconStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import SVGComponent from './SVGLogo'
-import * as Sentry from "sentry-expo";
+import * as Sentry from "@sentry/react-native";
 LogBox.ignoreLogs(['Setting a timer']);
 export default class Login extends Component {
 
@@ -63,7 +63,7 @@ export default class Login extends Component {
                     if(this.state.email || this.state.password !== firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)){
                         alert('Invalid email or password')
                     }
-                    Sentry.Native.captureException(error.message);
+                    Sentry.captureException(error.message);
                 })
         }
     }

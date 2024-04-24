@@ -17,7 +17,7 @@ import firebase from "./firebase";
 import {getFirestore, doc, setDoc} from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {BackHandler, View, TouchableOpacity, Text, Platform, Alert} from "react-native";
-import * as Sentry from 'sentry-expo';
+import * as Sentry from '@sentry/react-native';
 import * as Linking from 'expo-linking';
 import { ProfileStyles} from "./components/InputStyles";
 import {StrokeAnimation} from "./components/AnimatedSVG";
@@ -237,7 +237,7 @@ const linking = {
     }
 }
 
-export default function App() {
+function App() {
     const [notification, setNotification] = useState(null);
     const notificationListener = useRef();
     const responseListener = useRef();
@@ -301,3 +301,5 @@ export default function App() {
         </NavigationContainer>
     );
 }
+
+export default Sentry.wrap(App);

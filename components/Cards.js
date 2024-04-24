@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity,LogBox} from "react-native";
 import {useNavigation} from '@react-navigation/native'
 import burgerJPG from '../assets/burger_image.jpg';
@@ -43,7 +43,7 @@ import {CardStyle, IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 LogBox.ignoreLogs(['Setting a timer']);
 import YelpAPI from "./YelpAPI.js";
-import * as Sentry from "sentry-expo";
+import * as Sentry from "@sentry/react-native";
 import * as WebBrowser from "expo-web-browser";
 import {StrokeAnimation} from "./AnimatedSVG";
 
@@ -178,7 +178,7 @@ const Cards = (props) => {
     let [offset, setOffset] = useState(props.offset);
     let [calledYelp, setCalledYelp] = useState(false);
     let [loadingMessage, setLoadingMessage] = useState("");
-    let [currentCard, setCurrentCard] = useState();
+    const cardData = useRef(null);
     const auth = getAuth()
     const userUid = auth.currentUser.uid;
     const firestore = getFirestore();
@@ -347,7 +347,7 @@ const Cards = (props) => {
 
             shuffleRestaurants();
         } catch (error) {
-            Sentry.Native.captureException(error.message);
+            Sentry.captureException(error.message);
         }
     }
 
@@ -377,7 +377,7 @@ const Cards = (props) => {
                 handleSetCounter(props.resCounter + 1);
             })
             .catch((error) => {
-                Sentry.Native.captureException(error.message);
+                Sentry.captureException(error.message);
             });
 
         let unsub = onSnapshot(usersRef, querySnapshot => {
@@ -464,7 +464,7 @@ const Cards = (props) => {
             unsubs.push(unsubscribeFromDocument);
             unsubs.push(unsubFromSessionSize);
         }).catch((error) => {
-            Sentry.Native.captureException(error.message);
+            Sentry.captureException(error.message);
         })
         
         unsubs.push(unsubFromSessionSize)
@@ -487,7 +487,7 @@ const Cards = (props) => {
             if (!docSnapshot.exists()) {
                 setDoc(matchedRef, { counter: 0 }).then(() => {
                 }).catch((error) => {
-                    Sentry.Native.captureException(error.message);
+                    Sentry.captureException(error.message);
                 });
             }
 
@@ -505,7 +505,7 @@ const Cards = (props) => {
             unsubs.push(unsubscribeFromDocument);
             unsubs.push(unsubFromSessionSize);
         }).catch((error) => {
-            Sentry.Native.captureException(error.message);
+            Sentry.captureException(error.message);
         });
 
         /*//basically the same as love it minus some features
@@ -585,8 +585,8 @@ const Cards = (props) => {
                         cardVerticalMargin={20}
                         disableBottomSwipe={true}
                         disableTopSwipe={true}
-                        onSwipedRight={() => handleYup(currentCard)}
-                        onSwipedLeft={() => handleNope(currentCard)}
+                        onSwipedRight={() => handleYup(cardData.current)}
+                        onSwipedLeft={() => handleNope(cardData.current)}
                         onSwipedAll={() => {
                             let size = data.length
                             data = []
@@ -595,12 +595,12 @@ const Cards = (props) => {
                             setTimeout(() => setResData([]), 0);
                         }}
                         cards={data}
-                        renderCard={(cardData, cardIndex) => {
-                            setCurrentCard(cardData);
+                        renderCard={(swipeCardInfo, cardIndex) => {
+                            cardData.current = swipeCardInfo;
 
                             return (
                                 <View style={{flex: 1, flexDirection: "column", justifyContent: "space-evenly"}}>
-                                    <Card {...cardData} />
+                                    <Card {...swipeCardInfo} />
                                 </View>
                             )}
                         }

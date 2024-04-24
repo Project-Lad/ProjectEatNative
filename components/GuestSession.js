@@ -12,7 +12,7 @@ import {getFirestore, doc, setDoc, deleteDoc, getDoc, collection, onSnapshot} fr
 import {getStorage, ref, getDownloadURL} from "firebase/storage";
 import {IconStyles, InputStyles, LobbyStyles, ProfileStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
-import * as Sentry from "sentry-expo";
+import * as Sentry from "@sentry/react-native";
 import {StrokeAnimation} from "./AnimatedSVG";
 import userPhoto from "../assets/user-placeholder.png";
 
@@ -71,7 +71,7 @@ export default class GuestSession extends Component {
             })
             .catch((error) => {
                 this.joinSession("assets_userplaceholder");
-                Sentry.Native.captureException(error.message);
+                Sentry.captureException(error.message);
             });
      }
 
@@ -103,7 +103,7 @@ export default class GuestSession extends Component {
                 }
             })
             .catch((error) => {
-                Sentry.Native.captureException(error.message);
+                Sentry.captureException(error.message);
                 alert(
                     "There was an issue connecting to the Session, please re-enter code"
                 );
@@ -132,7 +132,7 @@ export default class GuestSession extends Component {
                 this.props.navigation.navigate('Connect')
             }
         }).catch((error) => {
-            Sentry.Native.captureException(error.message);
+            Sentry.captureException(error.message);
             alert("There was an issue connecting to the Session, please re-enter code")
             this.props.navigation.navigate('Connect')
         })*/
@@ -233,7 +233,7 @@ export default class GuestSession extends Component {
                 this.props.navigation.navigate('Profile')
             }
         }, (error) => {
-            Sentry.Native.captureException(error.message);
+            Sentry.captureException(error.message);
         });
 
         return unsubscribe;
@@ -285,7 +285,7 @@ export default class GuestSession extends Component {
                 this.props.navigation.navigate('Profile')
             }
         }, (error) => {
-            Sentry.Native.captureException(error.message);
+            Sentry.captureException(error.message);
         })
 
         return unsubscribe;*/
@@ -314,7 +314,7 @@ export default class GuestSession extends Component {
                                 setTimeout(() => {this.props.navigation.navigate('Connect')})
                             })
                             .catch((error) => {
-                                Sentry.Native.captureException(error.message);
+                                Sentry.captureException(error.message);
                                 setTimeout(() => {this.props.navigation.navigate('Connect')})
                             });
                     }
@@ -340,7 +340,7 @@ export default class GuestSession extends Component {
             }
         } catch (error) {
             alert(error.message);
-            Sentry.Native.captureException(error.message);
+            Sentry.captureException(error.message);
         }
     };
 

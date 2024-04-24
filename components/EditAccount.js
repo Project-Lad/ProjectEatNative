@@ -16,7 +16,7 @@ import {getAuth, updateProfile} from "firebase/auth";
 import {getFirestore, doc, setDoc, deleteDoc} from "firebase/firestore";
 import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
-import * as Sentry from "sentry-expo";
+import * as Sentry from "@sentry/react-native";
 import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import {Ionicons} from '@expo/vector-icons';
 
@@ -86,7 +86,7 @@ export default function EditAccount() {
                             setIsLoading(true)
                             setPercent(progress);
                         },
-                        (error) => Sentry.Native.captureException(error.message),
+                        (error) => Sentry.captureException(error.message),
                         () => {
                             setIsLoading(false)
                             setUpdateDisable(true)
@@ -107,7 +107,7 @@ export default function EditAccount() {
                     {merge: true}
                 ).then(() => {setUpdateDisable(true)})
             }).catch((error) => {
-                Sentry.Native.captureException(error.message);
+                Sentry.captureException(error.message);
             });
     }
     const UploadLoader = () => {
@@ -132,7 +132,7 @@ export default function EditAccount() {
                 await _handleImagePicked(pickerResult);
             }
         } catch (e) {
-            Sentry.Native.captureException(e.message);
+            Sentry.captureException(e.message);
         }
     };
 
@@ -145,7 +145,7 @@ export default function EditAccount() {
                 setProfilePicUpdated(true);
             }
         } catch (e) {
-            Sentry.Native.captureException(e.message);
+            Sentry.captureException(e.message);
         }
     };
 
@@ -163,7 +163,7 @@ export default function EditAccount() {
             setIsLoading(true)
             setPercent(progress);
         },
-            (error) => Sentry.Native.captureException(error.message),
+            (error) => Sentry.captureException(error.message),
             () => {
                 setIsLoading(false)
                 setUpdateDisable(false)
@@ -214,7 +214,7 @@ export default function EditAccount() {
                 ]
             );
         } catch (e) {
-            Sentry.Native.captureException(e.message);
+            Sentry.captureException(e.message);
         }
     }
 
