@@ -3,7 +3,7 @@
     "name": "Out2Eat",
     "slug": "out2eat",
     "owner": "out2eat",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "out2eat",
@@ -35,7 +35,7 @@
       }
     },
     "android": {
-      "versionCode": 16,
+      "versionCode": 17,
       "adaptiveIcon": {
         "foregroundImage": "./assets/androidAFI.png",
         "backgroundImage": "./assets/androidABI.png"
