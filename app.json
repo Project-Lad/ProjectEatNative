@@ -6,6 +6,9 @@
     "version": "1.2.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "notification": {
+      "icon": "./assets/android/androidIcon.png"
+    },
     "scheme": "out2eat",
     "splash": {
       "image": "./assets/branding/out2eat-splash.png",
@@ -57,7 +60,7 @@
         }
       ],
       "permissions": [
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECEIVE_BOOT_COMPLETED"
       ],
       "googleServicesFile": "./google-services.json"
     },
@@ -77,7 +80,15 @@
         {
           "photosPermission": "The app access your photos to create a profile picture that you select."
         }
-      ]
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/android/androidIcon.png"
+        }
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging"
     ],
     "extra": {
       "eas": {

@@ -23,6 +23,11 @@
         "image": "latest"
       },
       "channel": "production"
+    },
+    "buildApk": {
+      "android": {
+        "buildType": "apk"
+      }
     }
   },
   "submit": {
