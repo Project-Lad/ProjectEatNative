@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "849340667852",
+    "project_id": "eat-out-c3046",
+    "storage_bucket": "eat-out-c3046.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849340667852:android:67eb338c1f067f5f7def69",
+        "android_client_info": {
+          "package_name": "com.Out2Eat.ProjectEatNative"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "849340667852-f62dgg737b2kaj2ebrjmulhcmrhsj5uu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGgQ2Xm_q9qIzjGunmyWglm_AzFfer7w4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "849340667852-f62dgg737b2kaj2ebrjmulhcmrhsj5uu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "849340667852-p085tjenuc0vo8o7nnd5uj7jvhlas1e7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.eatout.dev"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

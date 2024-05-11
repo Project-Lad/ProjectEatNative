@@ -27,7 +27,7 @@ import {useNavigation} from "@react-navigation/native";
 import YelpImage from "../assets/yelp_burst.png";
 import {IconStyles, InputStyles, DecisionStyle, ProfileStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
-import * as Sentry from "sentry-expo";
+import * as Sentry from "@sentry/react-native";
 import * as WebBrowser from "expo-web-browser";
 import {StrokeAnimation} from "./AnimatedSVG";
 import burgerJPG from '../assets/burger_image.jpg';
@@ -83,7 +83,7 @@ const Decision = ({route}) => {
                 setRestaurant(result);
             })
             .catch((error) => {
-                Sentry.Native.captureException(error.message);
+                Sentry.captureException(error.message);
             });
     }
 
@@ -222,7 +222,7 @@ const Decision = ({route}) => {
             const matchedDocs = await getDocs(collection(currentSession, 'matched'));
             matchedDocs.forEach((doc) => {
                 deleteDoc(doc.ref).catch((error) => {
-                    Sentry.Native.captureException(error.message);
+                    Sentry.captureException(error.message);
                 });
             });
 
@@ -230,7 +230,7 @@ const Decision = ({route}) => {
             const usersDocs = await getDocs(collection(currentSession, 'users'));
             usersDocs.forEach((doc) => {
                 deleteDoc(doc.ref).catch((error) => {
-                    Sentry.Native.captureException(error.message);
+                    Sentry.captureException(error.message);
                 });
             });
 
@@ -240,7 +240,7 @@ const Decision = ({route}) => {
                     navigation.navigate('Profile');
                 })
                 .catch((error) => {
-                    Sentry.Native.captureException(error.message);
+                    Sentry.captureException(error.message);
                 });
         } else {
             // Delete the current user's document in the "users" subcollection
@@ -249,7 +249,7 @@ const Decision = ({route}) => {
                     navigation.navigate('Profile');
                 })
                 .catch((error) => {
-                    Sentry.Native.captureException(error.message);
+                    Sentry.captureException(error.message);
                     navigation.navigate('Profile');
                 });
         }

@@ -18,7 +18,7 @@ import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import userPhoto from '../assets/user-placeholder.png'
 import * as WebBrowser from 'expo-web-browser';
-import * as Sentry from "sentry-expo";
+import * as Sentry from "@sentry/react-native";
 LogBox.ignoreLogs(['Setting a timer']);
 import { getStorage, ref,uploadBytes } from "firebase/storage";
 import { collection, doc, setDoc,getFirestore } from "firebase/firestore";
@@ -67,7 +67,7 @@ export default function Signup(){
 
         const userProfilePic = ref(storage, `${auth.currentUser.uid}/`+ imageName);
         uploadBytes(userProfilePic, blob).then((snapshot) => {
-            console.log('Uploaded a blob or file!');
+
         });
         return ref.put(blob)
     }
@@ -120,7 +120,7 @@ export default function Signup(){
                                 .then(() => {
                                 })
                                 .catch((error) => {
-                                    Sentry.Native.captureException(error.message);
+                                    Sentry.captureException(error.message);
                                 })
                         }).then(() => {
                             navigation.navigate('Profile')
@@ -130,7 +130,7 @@ export default function Signup(){
                                     [{text: 'Try Again', onPress: () => navigation.navigate('Login')}]
                                 )
                             } else {
-                                Sentry.Native.captureException(error.message);
+                                Sentry.captureException(error.message);
                                 Alert.alert('Email Invalid', 'Your email is invalid please enter it again',
                                     [{text: 'Try Again', onPress: () => navigation.goBack()}]
                                 )

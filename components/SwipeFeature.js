@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {BackHandler, StyleSheet, View, LogBox, Alert} from 'react-native';
 import {getFirestore, doc, collection, onSnapshot} from "firebase/firestore";
 import {useNavigation} from "@react-navigation/native";
-import * as Sentry from "sentry-expo";
+import * as Sentry from "@sentry/react-native";
 LogBox.ignoreLogs(['Setting a timer']);
 import Cards from "./Cards";
 
@@ -33,7 +33,6 @@ export default function SwipeFeature({route}) {
                 const sessionData = docSnapshot.data();
                 if (route.params.isHost === false && sessionData.start === false) {
                     alertUnsubscriber();
-                    console.log("isHost is false, start is false");
                     navigation.navigate('Guest Session', {code: route.params.code});
                 }
             } else {
@@ -45,7 +44,7 @@ export default function SwipeFeature({route}) {
                 }
             }
         }, error => {
-            Sentry.Native.captureException(error.message);
+            Sentry.captureException(error.message);
         });
 
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)

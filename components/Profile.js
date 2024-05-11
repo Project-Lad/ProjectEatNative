@@ -6,7 +6,7 @@ import {useIsFocused, useNavigation} from '@react-navigation/native'
 import {InputStyles,IconStyles,ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import SVGComponent from "./SVGLogo";
-import * as Sentry from "sentry-expo";
+import * as Sentry from "@sentry/react-native";
 import {StrokeAnimation} from "./AnimatedSVG";
 import userPhoto from "../assets/user-placeholder.png";
 import {getAuth} from "firebase/auth";
@@ -24,6 +24,7 @@ export default function Dashboard(){
         useEffect(() => {
             const auth = getAuth().currentUser.uid;
             const storage = getStorage();
+
             getDoc(doc(getFirestore(), "users", auth)).then(doc  =>{
                 setNewProfileUsername(doc.data().username)
 
@@ -33,16 +34,19 @@ export default function Dashboard(){
                         setNewProfilePicture(url);
                         setPicLoading(false);
                     }).catch((error) => {
-                        Sentry.Native.captureException(error.message);
+                        Sentry.captureException(error.message);
                         setNewProfilePicture(doc.data().photoURL);
                     });
+                } else {
+                    setNewProfilePicture(userPhoto);
+                    setPicLoading(false);
                 }
             })
 
             setTimeout(() => {setIsLoading(false)}, 1650)
         }, [isFocused])
     } catch (error) {
-        Sentry.Native.captureException(error.message);
+        Sentry.captureException(error.message);
     }
 
     return(

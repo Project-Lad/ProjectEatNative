@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
+import {SENTRY_DSN} from '@env';
 import SwipeFeature from "./components/SwipeFeature";
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,19 +14,91 @@ import Connect from "./components/Connect";
 import Decision from "./components/Decision";
 import Intro from "./components/Intro"
 import firebase from "./firebase";
+import {getFirestore, doc, setDoc} from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import {BackHandler, View, TouchableOpacity,Text,Platform} from "react-native";
-import * as Sentry from 'sentry-expo';
+import {BackHandler, View, TouchableOpacity, Text, Platform, Alert} from "react-native";
+import * as Sentry from '@sentry/react-native';
 import * as Linking from 'expo-linking';
 import { ProfileStyles} from "./components/InputStyles";
 import {StrokeAnimation} from "./components/AnimatedSVG";
 import {Ionicons} from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true
+    })
+})
+
+async function registerForPushNotificationsAsync(authUserId) {
+    const firestore = getFirestore();
+    const userDocRef = doc(firestore, "users", authUserId);
+    let token;
+
+    if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+        });
+    }
+
+    if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+
+        if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+
+            finalStatus = status;
+        }
+
+        if (finalStatus !== 'granted') {
+            Alert.alert(
+                "Push Notifications",
+                "Whoops, it looks like don't allow us to send you notifications! \n\n" +
+                "In order to receive notifications from Out2Eat, please go to your application settings and allow push notifications.",
+                [
+                    {
+                        text: "Okay!",
+                        onPress: () => {
+
+                        }
+                    }
+                ]
+            )
+
+            return;
+        }
+
+        token = await Notifications.getExpoPushTokenAsync({
+            projectId: Constants.expoConfig.extra.eas.projectId,
+        });
+
+        if(token !== undefined) {
+            await setDoc(
+                userDocRef,
+                {
+                    expoPushToken: token
+                },
+                {merge: true})
+        }
+    } else {
+        alert('Cannot activate push notifications when on an emulator. Please use a physical device.');
+    }
+
+    return token.data;
+}
 
 async function fetchLaunchData() {
     const appData = await AsyncStorage.getItem("appLaunched");
     let firstLaunch;
-    if(appData == null) {
+    if(appData === null) {
         firstLaunch = true;
         await AsyncStorage.setItem("appLaunched", "false");
     } else {
@@ -47,7 +120,8 @@ function AuthStack(props) {
                     fontSize:24
                 },
                 gestureEnabled:false
-            }}>
+            }
+        }>
             {props.firstLaunch && (
                 <Stack.Screen
                     options={{ headerShown: false }}
@@ -138,14 +212,16 @@ function LoginSignup(){
     </Stack.Navigator>
     )
 }
+
 Sentry.init({
-    dsn: "https://767ea43956cc4dbdbbb48abbeb8dffa7@o1403110.ingest.sentry.io/6735768",
+    dsn: SENTRY_DSN,
     enableInExpoDevelopment: true,
     debug:true,
 });
 
 const Stack = createStackNavigator();
 let linkPrefix = Linking.createURL('path/screen/')
+
 const linking = {
     prefixes: [linkPrefix],
     config:{
@@ -159,14 +235,18 @@ const linking = {
         }
     }
 }
-export default function App() {
+
+function App() {
+    const [notification, setNotification] = useState(null);
+    const notificationListener = useRef();
+    const responseListener = useRef();
     const [isLoggedIn, setLogIn] = useState(false)
     const [isLoading, setIsLoading] = useState(true);
-    const [firstLaunch, setFirstLaunch] = React.useState(null);
+    const [firstLaunch, setFirstLaunch] = React.useState(false);
     const auth = getAuth();
 
-    useEffect(()=>{
-        fetchLaunchData().then(r => {setFirstLaunch(r)});
+    useEffect(() => {
+        fetchLaunchData().then(r => setFirstLaunch(r));
 
         onAuthStateChanged(auth,user => {
             if(user) {
@@ -184,9 +264,25 @@ export default function App() {
             "hardwareBackPress",
             backAction
         );
-
         setTimeout(() => {setIsLoading(false)}, 1650)
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            setNotification(notification);
+        });
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response);
+        });
+
+        return () => {
+            Notifications.removeNotificationSubscription(notificationListener.current);
+            Notifications.removeNotificationSubscription(responseListener.current);
+        };
     }, []);
+
+    useEffect(() => {
+        if(isLoggedIn){
+            registerForPushNotificationsAsync(auth.currentUser.uid).then(token => (token));
+        }
+    }, [isLoggedIn])
 
     return (
         <NavigationContainer linking={linking}>
@@ -204,3 +300,5 @@ export default function App() {
         </NavigationContainer>
     );
 }
+
+export default Sentry.wrap(App);
