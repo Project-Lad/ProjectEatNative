@@ -1,5 +1,6 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Text, View, Image, Linking, Modal, Pressable, Platform, TouchableOpacity,LogBox} from "react-native";
+import React, {useCallback, useEffect, useState} from 'react';
+import {Text, View, Image, Linking, Modal, Pressable, TouchableOpacity,LogBox} from "react-native";
+import * as Device from 'expo-device';
 import {useNavigation} from '@react-navigation/native'
 import burgerJPG from '../assets/burger_image.jpg';
 import YelpBurst from '../assets/yelp_burst.png'
@@ -43,7 +44,7 @@ import {CardStyle, IconStyles, InputStyles} from "./InputStyles";
 import {Ionicons} from "@expo/vector-icons";
 LogBox.ignoreLogs(['Setting a timer']);
 import YelpAPI from "./YelpAPI.js";
-import * as Sentry from "@sentry/react-native";
+import * as Sentry from "sentry-expo";
 import * as WebBrowser from "expo-web-browser";
 import {StrokeAnimation} from "./AnimatedSVG";
 
@@ -178,7 +179,7 @@ const Cards = (props) => {
     let [offset, setOffset] = useState(props.offset);
     let [calledYelp, setCalledYelp] = useState(false);
     let [loadingMessage, setLoadingMessage] = useState("");
-    const cardData = useRef(null);
+    let [currentCard, setCurrentCard] = useState();
     const auth = getAuth()
     const userUid = auth.currentUser.uid;
     const firestore = getFirestore();
@@ -186,7 +187,7 @@ const Cards = (props) => {
     const handleCardSet = useCallback((value) => {
         props.setCard(value)
     }, [props.setCard])
-
+    // this function is used to set the modal visible using the props passed down from the parent
     const handleModalSet = useCallback((value) => {
         props.setModalVisible(value)
     }, [props.setModalVisible])
@@ -261,7 +262,7 @@ const Cards = (props) => {
                 const distance = current.distance;
                 const review_count = current.review_count;
 
-                if (Platform.OS === 'android') {
+                if (Device.brand === 'Google') {
                     switch (rating) {
                         case 0:
                             rating = androidStar0
@@ -347,7 +348,7 @@ const Cards = (props) => {
 
             shuffleRestaurants();
         } catch (error) {
-            Sentry.captureException(error.message);
+            Sentry.Native.captureException(error.message);
         }
     }
 
@@ -377,7 +378,7 @@ const Cards = (props) => {
                 handleSetCounter(props.resCounter + 1);
             })
             .catch((error) => {
-                Sentry.captureException(error.message);
+                Sentry.Native.captureException(error.message);
             });
 
         let unsub = onSnapshot(usersRef, querySnapshot => {
@@ -422,7 +423,7 @@ const Cards = (props) => {
         return true;
     }
 
-    function handleNope(card) {
+    function handleNope() {
         return true;
     }
 
@@ -464,9 +465,9 @@ const Cards = (props) => {
             unsubs.push(unsubscribeFromDocument);
             unsubs.push(unsubFromSessionSize);
         }).catch((error) => {
-            Sentry.captureException(error.message);
+            Sentry.Native.captureException(error.message);
         })
-        
+
         unsubs.push(unsubFromSessionSize)
         unsubs.push(unsubscribeFromDocument);
     }
@@ -486,8 +487,9 @@ const Cards = (props) => {
         getDoc(matchedRef).then((docSnapshot) => {
             if (!docSnapshot.exists()) {
                 setDoc(matchedRef, { counter: 0 }).then(() => {
+                    console.log("set document");
                 }).catch((error) => {
-                    Sentry.captureException(error.message);
+                    Sentry.Native.captureException(error.message);
                 });
             }
 
@@ -505,7 +507,7 @@ const Cards = (props) => {
             unsubs.push(unsubscribeFromDocument);
             unsubs.push(unsubFromSessionSize);
         }).catch((error) => {
-            Sentry.captureException(error.message);
+            Sentry.Native.captureException(error.message);
         });
 
         /*//basically the same as love it minus some features
@@ -585,8 +587,8 @@ const Cards = (props) => {
                         cardVerticalMargin={20}
                         disableBottomSwipe={true}
                         disableTopSwipe={true}
-                        onSwipedRight={() => handleYup(cardData.current)}
-                        onSwipedLeft={() => handleNope(cardData.current)}
+                        onSwipedRight={() => handleYup(currentCard)}
+                        onSwipedLeft={() => handleNope(currentCard)}
                         onSwipedAll={() => {
                             let size = data.length
                             data = []
@@ -595,12 +597,12 @@ const Cards = (props) => {
                             setTimeout(() => setResData([]), 0);
                         }}
                         cards={data}
-                        renderCard={(swipeCardInfo, cardIndex) => {
-                            cardData.current = swipeCardInfo;
+                        renderCard={(cardData, cardIndex) => {
+                            setCurrentCard(cardData);
 
                             return (
                                 <View style={{flex: 1, flexDirection: "column", justifyContent: "space-evenly"}}>
-                                    <Card {...swipeCardInfo} />
+                                    <Card {...cardData} />
                                 </View>
                             )}
                         }

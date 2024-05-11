@@ -7,27 +7,24 @@ import {
     Image,
     Alert,
     KeyboardAvoidingView,
-    Platform,
     BackHandler,
     LogBox, ActivityIndicator
 } from 'react-native';
-import {getStorage, ref, getDownloadURL, deleteObject, uploadBytes, uploadBytesResumable} from "firebase/storage";
+import * as Device from 'expo-device';
+import {getStorage, ref, getDownloadURL, deleteObject, uploadBytesResumable} from "firebase/storage";
 import {getAuth, updateProfile} from "firebase/auth";
 import {getFirestore, doc, setDoc, deleteDoc} from "firebase/firestore";
-import {useNavigation} from '@react-navigation/native'
 import * as ImagePicker from "expo-image-picker";
-import * as Sentry from "@sentry/react-native";
+import * as Sentry from "sentry-expo";
 import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import {Ionicons} from '@expo/vector-icons';
 
 LogBox.ignoreLogs(['Setting a timer']);
 import * as WebBrowser from 'expo-web-browser';
 import userPhoto from "../assets/user-placeholder.png";
-import {manipulateAsync, FlipType, SaveFormat} from 'expo-image-manipulator';
-import * as MailComposer from "expo-mail-composer";
+import {manipulateAsync, SaveFormat} from 'expo-image-manipulator';
 
 export default function EditAccount() {
-    const navigation = useNavigation()
     const auth = getAuth()
     const currentUser = auth.currentUser;
     const storage = getStorage();
@@ -35,7 +32,6 @@ export default function EditAccount() {
     const firestore = getFirestore();
     const [newProfileUsername, setNewProfileUsername] = useState({displayName: currentUser.displayName})
     const [newProfilePicture, setNewProfilePicture] = useState({photoURL: currentUser.photoURL})
-    const [result, setResult] = useState(null);
     const [updateDisable, setUpdateDisable] = useState(true)
     const [isLoading, setIsLoading] = useState(false);
     const [percent, setPercent] = useState(0);
@@ -77,16 +73,21 @@ export default function EditAccount() {
                         compress: 1,
                         format: SaveFormat.PNG
                     })
+                    // fetches image from local storage
                     const img = await fetch(newImage.uri);
+                    // converts image to blob
                     const blob = await img.blob();
+                    // creates reference to Firebase Storage
                     const fileRef = ref(storage, `${currentUser.uid}/profilePicture`);
+                    // uploads image to Firebase Storage
                     const uploadTask = uploadBytesResumable(fileRef, blob);
                     uploadTask.on('state_changed', snapshot => {
+                        // sets progress bar
                             const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
                             setIsLoading(true)
                             setPercent(progress);
                         },
-                        (error) => Sentry.captureException(error.message),
+                        (error) => Sentry.Native.captureException(error.message),
                         () => {
                             setIsLoading(false)
                             setUpdateDisable(true)
@@ -107,7 +108,7 @@ export default function EditAccount() {
                     {merge: true}
                 ).then(() => {setUpdateDisable(true)})
             }).catch((error) => {
-                Sentry.captureException(error.message);
+                Sentry.Native.captureException(error.message);
             });
     }
     const UploadLoader = () => {
@@ -119,6 +120,7 @@ export default function EditAccount() {
             </View>
         )
     }
+    //async function that gets image from device
     const _pickImage = async () => {
         try {
             const {status} = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -132,7 +134,8 @@ export default function EditAccount() {
                 await _handleImagePicked(pickerResult);
             }
         } catch (e) {
-            Sentry.captureException(e.message);
+            console.log(e);
+            Sentry.Native.captureException(e.message);
         }
     };
 
@@ -145,32 +148,9 @@ export default function EditAccount() {
                 setProfilePicUpdated(true);
             }
         } catch (e) {
-            Sentry.captureException(e.message);
+            Sentry.Native.captureException(e.message);
         }
     };
-
-   /* async function uploadImageAsync(uri) {
-        const newImage = await manipulateAsync(uri, [], {
-            compress: 1,
-            format: SaveFormat.PNG
-        })
-        const img = await fetch(newImage.uri);
-        const blob = await img.blob();
-        const fileRef = ref(storage, `${currentUser.uid}/profilePicture`);
-        const uploadTask = uploadBytesResumable(fileRef, blob);
-        uploadTask.on('state_changed', snapshot => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            setIsLoading(true)
-            setPercent(progress);
-        },
-            (error) => Sentry.captureException(error.message),
-            () => {
-                setIsLoading(false)
-                setUpdateDisable(false)
-            }
-        );
-        return await getDownloadURL(fileRef);
-    }*/
 
     // handlers for onPress TextInput style change
     const handleInputFocus = () => {
@@ -181,12 +161,10 @@ export default function EditAccount() {
     }
 
     const handlePrivacyPolicy = async () => {
-        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/privacy-policy');
-        setResult(result);
+        await WebBrowser.openBrowserAsync('https://out2eat.app/privacy-policy');
     };
     const handleToS = async () => {
-        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
-        setResult(result);
+        await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
     };
 
     async function signOut() {
@@ -214,7 +192,7 @@ export default function EditAccount() {
                 ]
             );
         } catch (e) {
-            Sentry.captureException(e.message);
+            console.log(e)
         }
     }
 
@@ -235,7 +213,7 @@ export default function EditAccount() {
             justifyContent: "center",
             backgroundColor: '#fff'
         }}>
-            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{
+            <KeyboardAvoidingView behavior={Device.brand === "Apple" ? "padding" : "height"} style={{
                 flex: .5,
                 flexDirection: "column",
                 justifyContent: "center",
@@ -271,8 +249,7 @@ export default function EditAccount() {
                         }
                     }}
                 />
-                <TouchableOpacity style={updateDisable ? InputStyles.disabledUpdateButtons : InputStyles.updateButtons}
-                                  disabled={updateDisable} onPress={userName}>
+                <TouchableOpacity style={updateDisable ? InputStyles.disabledUpdateButtons : InputStyles.updateButtons} disabled={updateDisable} onPress={userName}>
                     <Text style={updateDisable ? InputStyles.disabledButtonText : InputStyles.buttonText}>Update</Text>
                     <Ionicons style={updateDisable ? IconStyles.disabledEditArrowRight : IconStyles.editArrowRight}
                               name="chevron-forward-outline"/>

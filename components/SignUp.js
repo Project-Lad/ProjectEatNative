@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     Text,
     View,
     TextInput,
     Alert,
     ActivityIndicator,
-    Platform,
     Image, TouchableOpacity,
     KeyboardAvoidingView, LogBox
 } from 'react-native';
-
+import * as Device from 'expo-device';
 import {getAuth, createUserWithEmailAndPassword, updateProfile} from "firebase/auth";
 import { useNavigation} from '@react-navigation/native'
 import {CheckBox} from 'react-native-elements';
@@ -18,10 +17,10 @@ import {InputStyles, IconStyles, ProfileStyles} from "./InputStyles";
 import { Ionicons } from '@expo/vector-icons';
 import userPhoto from '../assets/user-placeholder.png'
 import * as WebBrowser from 'expo-web-browser';
-import * as Sentry from "@sentry/react-native";
+import * as Sentry from "sentry-expo";
 LogBox.ignoreLogs(['Setting a timer']);
 import { getStorage, ref,uploadBytes } from "firebase/storage";
-import { collection, doc, setDoc,getFirestore } from "firebase/firestore";
+import { doc, setDoc,getFirestore } from "firebase/firestore";
 export default function Signup(){
     const navigation = useNavigation()
     const [userDisplayName, setUserDisplayName] = useState()
@@ -36,8 +35,6 @@ export default function Signup(){
         retypedPassword:false
     })
     const [toggleCheckbox, setToggleCheckbox] = useState(false);
-    const [result, setResult] = useState(null);
-
     const DEFAULT_IMAGE = Image.resolveAssetSource(userPhoto).uri;
     const [image, setImage] = useState({photoURL:DEFAULT_IMAGE});
 
@@ -46,15 +43,15 @@ export default function Signup(){
         if (status !== 'granted') {
             alert('Sorry! We need permission to change your profile picture!');
         } else {
-            let result = await ImagePicker.launchImageLibraryAsync({
+            let pickedImage = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.All,
                 allowsEditing: true,
                 aspect: [1, 1],
                 quality: 0.5,
             });
 
-            if (!result.canceled) {
-                setImage({photoURL:result.assets[0].uri});
+            if (!pickedImage.canceled) {
+                setImage({photoURL:pickedImage.assets[0].uri});
             }
         }
     };
@@ -66,19 +63,18 @@ export default function Signup(){
         const blob = await response.blob();
 
         const userProfilePic = ref(storage, `${auth.currentUser.uid}/`+ imageName);
-        uploadBytes(userProfilePic, blob).then((snapshot) => {
-
+        uploadBytes(userProfilePic, blob).then(() => {
+            console.log('Uploaded a blob or file!');
         });
         return ref.put(blob)
     }
 
     const handlePrivacyPolicy = async () => {
-        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/privacy-policy');
-        setResult(result);
+        await WebBrowser.openBrowserAsync('https://out2eat.app/privacy-policy');
     };
     const handleToS = async () => {
-        let result = await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
-        setResult(result);
+        await WebBrowser.openBrowserAsync('https://out2eat.app/terms-of-service');
+
     };
 
     async function registerUser(){
@@ -120,7 +116,7 @@ export default function Signup(){
                                 .then(() => {
                                 })
                                 .catch((error) => {
-                                    Sentry.captureException(error.message);
+                                    Sentry.Native.captureException(error.message);
                                 })
                         }).then(() => {
                             navigation.navigate('Profile')
@@ -130,7 +126,7 @@ export default function Signup(){
                                     [{text: 'Try Again', onPress: () => navigation.navigate('Login')}]
                                 )
                             } else {
-                                Sentry.captureException(error.message);
+                                Sentry.Native.captureException(error.message);
                                 Alert.alert('Email Invalid', 'Your email is invalid please enter it again',
                                     [{text: 'Try Again', onPress: () => navigation.goBack()}]
                                 )
@@ -148,7 +144,7 @@ export default function Signup(){
         )
     }
     return(
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={InputStyles.container}>
+        <KeyboardAvoidingView behavior={Device.brand === "Apple" ? "padding" : "height"} style={InputStyles.container}>
             <View style={{  alignItems: 'center', justifyContent: 'center' }}>
                 <TouchableOpacity style={IconStyles.iconContainer} onPress={pickImage}>
                     {image.photoURL === '../assets/user-placeholder.png' ?
